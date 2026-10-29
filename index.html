@@ -1,0 +1,5505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Ứng Dụng Học Tập iOS - Gõ Phím, Luyện Từ & Coi Giờ</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Học Tập iOS">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23007AFF'/><text x='50' y='65' font-size='48' font-family='sans-serif' text-anchor='middle' fill='white' font-weight='bold'>⌨</text></svg>">
+  <style>
+    :root {
+      --app-bg: #0b0f19;
+      --game-bg: #0b0f19;
+      --surface-border: rgba(255, 255, 255, 0.12);
+      --primary-color: #0A84FF;
+      --accent-color: #30D158;
+      --warning-color: #FF9F0A;
+      --danger-color: #FF453A;
+      --text-main: #FFFFFF;
+      --text-muted: #8E8E93;
+      
+      /* Chuẩn màu Bàn phím iOS Dark Theme */
+      --kb-bg: #1c1c1e;
+      --key-normal: #505155;
+      --key-special: #323337;
+      --key-pressed: #6b6c70;
+      --key-shadow: 0 1px 0 #121214;
+
+      /* Màu sắc Đồng hồ */
+      --clock-hour-color: #0055D4;
+      --clock-min-color: #0A8038;
+      --clock-sec-color: #E02020;
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--app-bg);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .bg-glow {
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(10, 132, 255, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* TOP TAB BAR (CHUYỂN ĐỔI 3 GAME) */
+    .app-nav {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      background: rgba(14, 18, 28, 0.95);
+      border-bottom: 1px solid var(--surface-border);
+      padding: env(safe-area-inset-top, 6px) 10px 6px 10px;
+      gap: 6px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 8px 8px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-tab.active {
+      color: #FFFFFF;
+      background: rgba(10, 132, 255, 0.25);
+      border-color: rgba(10, 132, 255, 0.6);
+    }
+
+    /* VIEW CONTAINERS */
+    .game-view {
+      flex: 1;
+      display: none !important;
+      flex-direction: column;
+      height: calc(100% - 50px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-view.active {
+      display: flex !important;
+    }
+
+    /* =====================================================================
+       HEADER CHUNG CỦA GAME GÕ PHÍM
+       ===================================================================== */
+    .game-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: rgba(18, 22, 34, 0.85);
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 7px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-pill .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stat-pill .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-pill .val.highlight {
+      color: var(--accent-color);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--surface-border);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .voice-badge-btn {
+      background: rgba(10, 132, 255, 0.2);
+      border: 1px solid rgba(10, 132, 255, 0.5);
+      color: #64D2FF;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .voice-badge-btn.speaking {
+      animation: pulseVoice 0.6s infinite alternate;
+      border-color: #30D158;
+      color: #30D158;
+    }
+
+    @keyframes pulseVoice {
+      from { transform: scale(1); }
+      to { transform: scale(1.06); }
+    }
+
+    /* =====================================================================
+       VIEW 1: GAME GÕ RƠI TỰ DO
+       ===================================================================== */
+    #typingView {
+      background: var(--game-bg);
+      transition: background 0.3s;
+    }
+
+    #gameArea {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .falling-char {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      background: rgba(28, 34, 52, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transform: translate(-50%, 0);
+      will-change: transform, top;
+      cursor: pointer;
+    }
+
+    /* Khi nền game là màu sáng thì thẻ chữ rơi có phong cách nổi bật */
+    body.light-theme .falling-char {
+      background: #FFFFFF;
+      border-color: #0A84FF;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .falling-char .char-text {
+      line-height: 1;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    body.light-theme .falling-char .char-text {
+      text-shadow: none;
+    }
+
+    @keyframes hitPop {
+      0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+      50% { transform: translate(-50%, -25px) scale(1.4); opacity: 0.85; filter: brightness(1.8); }
+      100% { transform: translate(-50%, -50px) scale(0.2); opacity: 0; }
+    }
+
+    .hit-anim {
+      animation: hitPop 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+      pointer-events: none;
+    }
+
+    /* =====================================================================
+       VIEW 2: GAME TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY
+       ===================================================================== */
+    #wordsPracticeView {
+      background: #EEF4FB !important; /* Xanh pastel sáng sủa, TUYỆT ĐỐI KHÔNG DÙNG MÀU ĐEN */
+      flex-direction: column;
+      overflow-y: auto;
+      padding-bottom: 8px;
+      transition: background 0.3s;
+    }
+
+    #wordsPracticeView.active {
+      display: flex !important;
+    }
+
+    #wordsPracticeView .game-header {
+      background: #E2EBF5;
+      border-bottom: 1.5px solid #CBDCEE;
+    }
+
+    #wordsPracticeView .stat-pill {
+      background: #FFFFFF;
+      border: 1px solid #BFD7EF;
+      box-shadow: 0 2px 6px rgba(10, 80, 160, 0.08);
+    }
+
+    #wordsPracticeView .stat-pill .label {
+      color: #475569;
+    }
+
+    #wordsPracticeView .stat-pill .val {
+      color: #0284C7;
+    }
+
+    input, textarea {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+
+    /* BẢNG CỦA THẦY & VỞ CỦA HỌC TRÒ (2 TEXTBOX RÕ RÀNG, HÀI HÒA) */
+    .two-box-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 6px 12px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Khung 1: Bảng phấn của Thầy (Xanh phấn trường học + viền gỗ hổ phách) */
+    .teacher-box-card {
+      background: #1B5E3C !important; /* Xanh phấn trường học tươi sáng, sạch sẽ, không dùng màu đen */
+      border: 4px solid #C07D38 !important; /* Khung gỗ trường học ấm áp */
+      border-radius: 14px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 16px rgba(27, 94, 60, 0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Khung 2: Bài viết của Học trò (Vở trắng học sinh + viền xanh dương) */
+    .student-box-card {
+      background: #FFFFFF !important;
+      border: 3px solid #0284C7 !important;
+      border-radius: 14px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    body.light-theme .student-box-card {
+      background: #FFFFFF !important;
+      border-color: #0284C7 !important;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.12);
+    }
+
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .box-title {
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .teacher-title {
+      color: #FEF08A !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .student-title {
+      color: #0284C7 !important;
+    }
+
+    /* Toggle Đánh vần Tiếng Việt Lớp 1 */
+    .spelling-toggle-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 20px;
+      padding: 3px 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .spelling-toggle-card:hover {
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .spelling-toggle-card input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #FDE047;
+      cursor: pointer;
+    }
+
+    .spelling-toggle-text {
+      font-size: 12px;
+      font-weight: 800;
+      color: #FEF08A;
+      letter-spacing: 0.3px;
+    }
+
+    /* Textbox 1: Của Thầy */
+    #teacherBlackboardInput {
+      width: 100%;
+      background: #134B2F !important; /* Lòng bảng xanh rêu phấn học sinh */
+      color: #FFFFFF !important; /* Chữ phấn trắng tinh khiết */
+      border: 2px dashed #FDE047 !important; /* Viền nét đứt vàng phấn */
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      resize: none;
+      height: 64px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    #teacherBlackboardInput::placeholder {
+      color: #A7F3D0;
+      opacity: 0.85;
+    }
+
+    #teacherBlackboardInput:focus {
+      border-color: #34D399;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+    }
+
+    /* Textbox 2: Của Học Trò - NỀN TRẮNG, CHỮ ĐEN */
+    #studentNotebookDisplay {
+      width: 100%;
+      min-height: 62px;
+      background: #FFFFFF !important; /* NỀN TRẮNG */
+      color: #0F172A !important;      /* CHỮ ĐEN SẮC NÉT */
+      border: 2px solid #BAE6FD !important;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2px;
+      word-break: break-all;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    body.light-theme #studentNotebookDisplay {
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      border-color: #BAE6FD !important;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Chữ cái trong Textbox của học trò - MÀU ĐEN RÕ NÉT */
+    .student-char {
+      display: inline-block;
+      font-size: 28px;
+      font-weight: 800;
+      color: #0F172A !important; /* Chữ đen chuẩn theo yêu cầu */
+    }
+
+    .student-char.error {
+      color: #DC2626 !important; /* Chữ sai màu đỏ cảnh báo */
+      background: #FEE2E2 !important;
+      border-radius: 4px;
+      padding: 0 4px;
+      animation: charShake 0.35s ease-in-out;
+      text-decoration: underline wavy #DC2626;
+    }
+
+    .student-char.cursor {
+      display: inline-block;
+      width: 3px;
+      height: 28px;
+      background: #0284C7;
+      margin-left: 2px;
+      animation: blinkCursor 0.8s infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Thanh chèn dấu tiếng Việt nhanh cho Thầy */
+    .vn-accent-toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 4px 0 2px 0;
+    }
+
+    .btn-vn-char {
+      background: #FEF08A;
+      border: 1px solid #FACC15;
+      border-radius: 7px;
+      color: #1E3A8A;
+      font-size: 15px;
+      font-weight: 800;
+      width: 32px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.15);
+      transition: all 0.15s;
+    }
+
+    .btn-vn-char:active {
+      transform: scale(0.92);
+      background: #FFFFFF;
+      color: #0284C7;
+    }
+
+    /* Banner hướng dẫn (ẩn khi bắt đầu viết) */
+    .guide-banner {
+      display: none !important;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .guide-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .guide-banner.normal {
+      background: #FEF3C7 !important;
+      border: 2px solid #F59E0B !important;
+      color: #92400E !important;
+    }
+
+    .guide-banner.error-state {
+      background: #FEE2E2 !important;
+      border: 2px solid #EF4444 !important;
+      color: #B91C1C !important;
+      animation: pulseError 0.6s infinite alternate;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+    }
+
+    @keyframes pulseError {
+      from { transform: scale(1); }
+      to { transform: scale(1.02); }
+    }
+
+    .guide-banner.success-state {
+      background: #DCFCE7 !important;
+      border: 2px solid #22C55E !important;
+      color: #15803D !important;
+    }
+
+    /* Khung hiển thị đánh vần Tiếng Việt Lớp 1 trong banner */
+    .guide-spelling-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #DBEAFE;
+      border: 1.5px solid #60A5FA;
+      border-radius: 8px;
+      padding: 5px 10px;
+      margin-top: 2px;
+    }
+
+    .guide-spell-lbl {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1E40AF;
+    }
+
+    .guide-spell-txt {
+      font-size: 16px;
+      font-weight: 900;
+      color: #1D4ED8;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-mini-speech {
+      background: #FFFFFF;
+      border: 1px solid #93C5FD;
+      border-radius: 6px;
+      width: 26px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      color: #1D4ED8;
+      transition: all 0.15s;
+    }
+
+    .btn-mini-speech:active {
+      transform: scale(0.9);
+      background: #2563EB;
+      color: #FFF;
+    }
+
+    /* Nút highlight nhấp nháy đỏ khi cần xoá */
+    .kb-key.delete-highlight {
+      background: #EF4444 !important;
+      color: #FFFFFF !important;
+      outline: 3px solid #FDE047 !important;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.9) !important;
+      animation: pulseDeleteKey 0.5s infinite alternate !important;
+      z-index: 6;
+    }
+
+    @keyframes pulseDeleteKey {
+      from { transform: scale(1); }
+      to { transform: scale(1.12); }
+    }
+
+    /* Các thành phần hỗ trợ 2 Textbox */
+    .student-placeholder {
+      font-size: 15px;
+      font-weight: 500;
+      font-style: italic;
+      color: #8E8E93 !important;
+      user-select: none;
+    }
+
+    body.light-theme .student-placeholder {
+      color: #8E8E93 !important;
+    }
+
+    #teacherPromptTracker {
+      display: none;
+      flex-wrap: wrap;
+      gap: 3px;
+      padding: 6px 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      align-items: center;
+      line-height: 1.25;
+    }
+
+    .track-char {
+      display: inline-block;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.5);
+      transition: all 0.15s;
+    }
+
+    .track-char.done {
+      color: #30D158;
+    }
+
+    .track-char.current {
+      color: #000000 !important;
+      background: #FFD60A !important;
+      box-shadow: 0 0 10px rgba(255, 214, 10, 0.9);
+      transform: scale(1.15);
+      font-weight: 900;
+    }
+
+    .board-stepper-box {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 1px 4px;
+      gap: 3px;
+    }
+
+    body.light-theme .board-stepper-box {
+      background: rgba(0, 0, 0, 0.06);
+      border-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-step {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+
+    .btn-step:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .step-display {
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 36px;
+      text-align: center;
+      color: #FFD60A;
+    }
+
+    body.light-theme .step-display {
+      color: #007AFF;
+    }
+
+    .board-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.15s;
+    }
+
+    .board-char.space {
+      width: 18px;
+    }
+
+    .board-char.done {
+      color: #30D158;
+      text-shadow: 0 0 8px rgba(48, 209, 88, 0.6);
+    }
+
+    .board-char.current {
+      color: #FFD60A;
+      background: rgba(255, 214, 10, 0.25);
+      border: 2px solid #FFD60A;
+      transform: scale(1.15);
+      box-shadow: 0 0 14px rgba(255, 214, 10, 0.8);
+      animation: pulseBoardChar 0.8s infinite alternate;
+    }
+
+    @keyframes pulseBoardChar {
+      from { transform: scale(1.1); }
+      to { transform: scale(1.2); }
+    }
+
+    .board-char.error {
+      color: #FF453A;
+      background: rgba(255, 69, 58, 0.3);
+      border: 2px solid #FF453A;
+      animation: charShake 0.35s ease-in-out;
+    }
+
+    @keyframes charShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .board-actions-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-board {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid var(--surface-border);
+      transition: all 0.2s;
+    }
+
+    .btn-board.start-btn {
+      background: var(--accent-color);
+      color: #000;
+      border-color: transparent;
+      font-size: 14px;
+    }
+
+    .btn-board.edit-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .btn-board.clear-btn {
+      background: rgba(255, 69, 58, 0.2);
+      color: #FF453A;
+      border-color: rgba(255, 69, 58, 0.4);
+    }
+
+    .btn-board:active {
+      transform: scale(0.96);
+    }
+
+    .word-typing-stage {
+      padding: 8px 14px 4px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lesson-hint-banner {
+      background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 10, 0.1));
+      border: 1.5px solid rgba(255, 214, 10, 0.6);
+      border-radius: 14px;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #FFD60A;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 214, 10, 0.25);
+      animation: pulseHint 1s infinite alternate;
+      text-align: center;
+    }
+
+    body.light-theme .lesson-hint-banner {
+      background: #FFF8E1;
+      border-color: #FFA000;
+      color: #E65100;
+    }
+
+    @keyframes pulseHint {
+      from { transform: scale(1); }
+      to { transform: scale(1.03); }
+    }
+
+    .error-guide-box {
+      background: rgba(255, 69, 58, 0.18);
+      border: 1px solid #FF453A;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #FF453A;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      animation: fadeIn 0.2s;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =====================================================================
+       BÀN PHÍM IPHONE CHUẨN IOS - NỀN XUNG QUANH XANH BIỂN GỢN MÂY NỔI BẬT
+       ===================================================================== */
+    #keyboardWrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      /* Nền xung quanh bàn phím: Xanh biển rực rỡ, phân tách rõ rệt với bàn phím và trang (KHÔNG DÙNG MÀU ĐEN) */
+      background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%);
+      border-top: 3px solid #7DD3FC;
+      box-shadow: 0 -8px 24px rgba(2, 132, 199, 0.28);
+      padding: 12px 6px calc(env(safe-area-inset-bottom, 8px) + 8px) 6px;
+    }
+
+    /* Viền gợn mây bồng bềnh ở đỉnh bàn phím */
+    #keyboardWrapper::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 0;
+      right: 0;
+      height: 13px;
+      background: radial-gradient(circle at 7% 100%, #38BDF8 10px, transparent 11px),
+                  radial-gradient(circle at 21% 100%, #38BDF8 15px, transparent 16px),
+                  radial-gradient(circle at 35% 100%, #38BDF8 12px, transparent 13px),
+                  radial-gradient(circle at 50% 100%, #38BDF8 17px, transparent 18px),
+                  radial-gradient(circle at 65% 100%, #38BDF8 13px, transparent 14px),
+                  radial-gradient(circle at 79% 100%, #38BDF8 16px, transparent 17px),
+                  radial-gradient(circle at 93% 100%, #38BDF8 11px, transparent 12px);
+      pointer-events: none;
+    }
+
+    /* Khay đỡ bàn phím (Chassis) - Nền xám bạc ánh băng, phân định rõ ràng giữa nền xung quanh và các phím */
+    #keyboardContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      background: #F1F5F9; /* Khay đệm sáng màu, tạo khối hộp nổi bật */
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
+      padding: 8px 6px;
+      box-shadow: 0 4px 14px rgba(3, 105, 161, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    }
+
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .kb-key {
+      flex: 1;
+      height: 44px;
+      background: #FFFFFF !important; /* Phím chữ màu TRẮNG SÁNG TINH KHÔI */
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 700;
+      color: #0F172A !important; /* Ký tự màu xanh đậm/đen sắc nét */
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 2px 0 #CBD5E1, 0 3px 5px rgba(15, 23, 42, 0.12);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.1s, transform 0.06s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .kb-key:active, .kb-key.pressed {
+      background: #BAE6FD !important;
+      color: #0369A1 !important;
+      transform: translateY(2px);
+      box-shadow: 0 0 0 #CBD5E1, 0 1px 2px rgba(15, 23, 42, 0.1);
+    }
+
+    .kb-key.special-key {
+      background: #E2E8F0 !important; /* Phím chức năng phân biệt rõ với phím chữ trắng */
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155 !important;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 2px 0 #94A3B8, 0 2px 4px rgba(15, 23, 42, 0.08);
+    }
+
+    .kb-key.key-shift, .kb-key.key-delete {
+      flex: 1.45;
+      font-size: 18px;
+    }
+
+    .kb-key.key-delete {
+      background: #FEE2E2 !important; /* Phím xoá phớt đỏ nhẹ dễ nhận biết */
+      color: #B91C1C !important;
+      border-color: #FECACA;
+      box-shadow: 0 2px 0 #FCA5A5, 0 2px 4px rgba(185, 28, 28, 0.1);
+    }
+
+    .kb-key.key-shift.shift-active {
+      background: #0284C7 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 0 #0369A1;
+    }
+
+    .kb-key.key-mode {
+      flex: 1.35;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .kb-key.key-globe {
+      flex: 1.1;
+      font-size: 17px;
+    }
+
+    .kb-key.key-space {
+      flex: 4.8;
+      font-size: 14px;
+      font-weight: 700;
+      color: #64748B !important;
+      background: #FFFFFF !important;
+    }
+
+    .kb-key.key-return {
+      flex: 2.2;
+      background: #0284C7 !important; /* Phím Nhập xanh Apple nổi bật */
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 0 #0369A1, 0 3px 6px rgba(2, 132, 199, 0.3);
+    }
+
+    .kb-key.hint-highlight {
+      outline: 3px solid #D97706 !important;
+      background: #FEF08A !important;
+      color: #0F172A !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.9) !important;
+      animation: pulseKey 0.8s infinite alternate;
+      z-index: 5;
+    }
+
+    @keyframes pulseKey {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); background: #FDE047 !important; }
+    }
+
+    /* =====================================================================
+       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO - MENU ẨN HIỆN)
+       ===================================================================== */
+    #clockView {
+      background: radial-gradient(circle at center, #171d2f 0%, #0a0d17 100%);
+      overflow: hidden;
+      padding: 8px 12px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      position: relative;
+      box-sizing: border-box;
+      width: 100%;
+      height: calc(100% - 50px);
+    }
+
+    #clockView.active {
+      display: flex !important;
+    }
+
+    /* Thanh điều khiển rút gọn phía trên */
+    .clock-compact-header {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .digital-time-compact {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+
+    .digital-time-compact.blurred {
+      filter: blur(8px);
+      user-select: none;
+    }
+
+    .digital-time-compact .h-val { color: var(--clock-hour-color); }
+    .digital-time-compact .m-val { color: var(--clock-min-color); }
+    .digital-time-compact .s-val { color: var(--clock-sec-color); font-size: 16px; }
+
+    .clock-quick-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* MẶT ĐỒNG HỒ TO TỐI ĐA - LUÔN LÀ HÌNH TRÒN HOÀN HẢO */
+    .clock-stage {
+      position: relative;
+      width: min(76vh, 85vw, 680px);
+      height: min(76vh, 85vw, 680px);
+      aspect-ratio: 1 / 1;
+      margin: auto;
+      border-radius: 50%;
+      background: #F8F9FD;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 3px 12px rgba(0, 0, 0, 0.15), 0 0 0 12px #1F273D, 0 0 0 18px #3B4668;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+
+    /* BẢNG MENU TÙY CHỌN ẨN HIỆN CỦA ĐỒNG HỒ */
+    .clock-drawer-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .clock-drawer-overlay.active {
+      display: flex;
+    }
+
+    .clock-drawer-card {
+      background: #171E30;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 18px 20px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    .clock-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 8px;
+    }
+
+    .clock-drawer-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .clock-drawer-close {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #FFFFFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .clock-drawer-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .drawer-setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-group-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #94A3B8;
+    }
+
+    #clockSvg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .dial-number {
+      font-size: 27px;
+      font-weight: 900;
+      fill: #0F141E;
+      text-anchor: middle;
+      dominant-baseline: central;
+      font-family: var(--font-family);
+    }
+
+    .dial-min-sub {
+      font-size: 11px;
+      font-weight: 800;
+      fill: #D9381E;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .tick-major {
+      stroke: #0F141E;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .tick-minor {
+      stroke: #8E8E93;
+      stroke-width: 2;
+    }
+
+    .hand {
+      transform-origin: 180px 180px;
+      transition: transform 0.05s ease-out;
+      cursor: grab;
+    }
+
+    .hand:active {
+      cursor: grabbing;
+    }
+
+    #handHour {
+      stroke: var(--clock-hour-color);
+      stroke-width: 10;
+      stroke-linecap: round;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    }
+
+    #handMin {
+      stroke: var(--clock-min-color);
+      stroke-width: 6.5;
+      stroke-linecap: round;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    }
+
+    #handSec {
+      stroke: var(--clock-sec-color);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .center-pin {
+      fill: #0F141E;
+      stroke: #FFFFFF;
+      stroke-width: 3.5;
+    }
+
+    .center-pin-sec {
+      fill: var(--clock-sec-color);
+    }
+
+    .time-display-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--surface-border);
+      border-radius: 18px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 480px;
+      gap: 12px;
+    }
+
+    .digital-time {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .digital-time.blurred {
+      filter: blur(8px);
+      user-select: none;
+    }
+
+    .digital-time .h-val { color: var(--clock-hour-color); }
+    .digital-time .m-val { color: var(--clock-min-color); }
+    .digital-time .s-val { color: var(--clock-sec-color); font-size: 20px; }
+
+    .clock-actions-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action-pill {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--surface-border);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action-pill.primary {
+      background: var(--primary-color);
+      border-color: transparent;
+    }
+
+    .btn-action-pill:active {
+      transform: scale(0.96);
+    }
+
+    .hand-controllers {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .hand-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 8px 14px;
+    }
+
+    .hand-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .hand-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .hand-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stepper-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--surface-border);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .stepper-btn:active {
+      transform: scale(0.9);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .teaching-tools {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 4px;
+    }
+
+    .tool-btn {
+      flex: 1;
+      padding: 9px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .tool-btn.active {
+      background: rgba(255, 159, 10, 0.2);
+      border-color: #FF9F0A;
+      color: #FFD60A;
+    }
+
+    /* =====================================================================
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MÔN TOÁN)
+       ===================================================================== */
+    #mathView {
+      background: #EEF4FB !important;
+      flex-direction: column;
+      overflow-y: auto;
+      padding-bottom: 12px;
+      transition: background 0.3s;
+    }
+
+    #mathView.active {
+      display: flex !important;
+    }
+
+    #mathView .game-header {
+      background: #E2EBF5;
+      border-bottom: 1.5px solid #CBDCEE;
+    }
+
+    #mathView .stat-pill {
+      background: #FFFFFF;
+      border: 1px solid #BFD7EF;
+      box-shadow: 0 2px 6px rgba(10, 80, 160, 0.08);
+    }
+
+    #mathView .stat-pill .label {
+      color: #475569;
+    }
+
+    #mathView .stat-pill .val {
+      color: #0284C7;
+    }
+
+    .math-two-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 8px 12px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    @media (max-width: 768px) {
+      .math-two-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .math-box-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .math-teacher-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-board-sm {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .btn-board-sm:hover, .btn-board-sm:active {
+      background: #FFFFFF;
+      color: #134B2F;
+    }
+
+    .math-preset-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      min-width: 220px;
+      padding: 6px 0;
+      display: none;
+    }
+
+    .math-preset-dropdown.show {
+      display: block;
+    }
+
+    .preset-item {
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1E293B;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .preset-item:hover {
+      background: #F1F5F9;
+      color: #0284C7;
+    }
+
+    #teacherMathInput {
+      width: 100%;
+      flex: 1;
+      min-height: 240px;
+      background: #134B2F !important;
+      color: #FFFFFF !important;
+      border: 2px dashed #FDE047 !important;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .student-math-sheet {
+      width: 100%;
+      flex: 1;
+      min-height: 240px;
+      max-height: 520px;
+      overflow-y: auto;
+      background: #FFFFFF;
+      border: 2px solid #BAE6FD;
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-sizing: border-box;
+    }
+
+    .math-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 6px 10px;
+      transition: all 0.2s;
+    }
+
+    .math-row:focus-within {
+      background: #EFF6FF;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .math-row.correct {
+      background: #ECFDF5;
+      border-color: #10B981;
+    }
+
+    .math-row.incorrect {
+      background: #FEF2F2;
+      border-color: #EF4444;
+    }
+
+    .math-row-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 16px;
+      color: #0F172A;
+    }
+
+    .math-row-num {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .math-input-box {
+      width: 85px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 2px solid #CBD5E1;
+      font-size: 17px;
+      font-weight: 800;
+      text-align: center;
+      color: #0F172A;
+      outline: none;
+      background: #FFFFFF;
+      transition: border-color 0.2s;
+    }
+
+    .math-input-box:focus {
+      border-color: #0284C7;
+      box-shadow: 0 0 6px rgba(2, 132, 199, 0.35);
+    }
+
+    .math-row-status {
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 80px;
+      justify-content: flex-end;
+    }
+
+    .math-row-status.ok {
+      color: #059669;
+    }
+
+    .math-row-status.err {
+      color: #DC2626;
+    }
+
+    .math-empty-tip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      color: #64748B;
+      font-size: 13px;
+      font-style: italic;
+      padding: 30px 15px;
+    }
+
+    /* Modal bài mẫu của Thầy */
+    .sample-item-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sample-item-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .sample-item-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-sample-action {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-sample-action.apply {
+      background: #0A84FF;
+    }
+
+    .btn-sample-action.delete:hover {
+      background: #FF453A;
+    }
+
+    /* Gợi ý ẩn banner hướng dẫn khi viết */
+    #guideBanner.teaching-hidden {
+      display: none !important;
+    }
+
+    /* MODAL OVERLAYS (Settings & Summary) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #1C2235;
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      padding: 22px;
+      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(30px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-card h2 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .setting-group {
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .setting-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #E5E5EA;
+    }
+
+    .setting-group .hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .setting-group .value-display {
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary-color);
+      height: 6px;
+      background: #3A3A3C;
+      border-radius: 3px;
+      outline: none;
+      margin: 8px 0;
+    }
+
+    select, textarea, input[type="text"] {
+      width: 100%;
+      background: #2C2C2E;
+      color: #fff;
+      border: 1px solid var(--surface-border);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #3A3A3C;
+      transition: .3s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--accent-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .color-presets {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .color-chip {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s;
+    }
+
+    .color-chip.active {
+      border-color: #0A84FF;
+      transform: scale(1.15);
+      box-shadow: 0 0 10px rgba(10, 132, 255, 0.8);
+    }
+
+    .btn-main {
+      width: 100%;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-main:active {
+      transform: scale(0.98);
+      background: #0071E3;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid var(--surface-border);
+      padding: 11px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    /* SUMMARY REPORT CARD */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .summary-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .summary-box .s-val {
+      font-size: 24px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .summary-box .s-lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .rank-banner {
+      background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 10, 0.1));
+      border: 1px solid rgba(255, 214, 10, 0.4);
+      padding: 14px;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .rank-banner .rank-title {
+      font-size: 13px;
+      color: #FFD60A;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .rank-banner .rank-letter {
+      font-size: 50px;
+      font-weight: 900;
+      color: #FFD60A;
+      line-height: 1.1;
+      text-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
+    }
+
+    #pauseBanner {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--surface-border);
+      padding: 18px 32px;
+      border-radius: 20px;
+      font-size: 22px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <!-- NAVIGATION TABS (3 TRÒ CHƠI) -->
+  <nav class="app-nav">
+    <div class="nav-tab" id="tabTyping">
+      <span>⌨️</span> Gõ Rơi Tự Do
+    </div>
+    <div class="nav-tab active" id="tabWords">
+      <span>📝</span> Luyện Từ Của Thầy
+    </div>
+    <div class="nav-tab" id="tabClock">
+      <span>⏰</span> Coi Giờ Đồng Hồ
+    </div>
+    <div class="nav-tab" id="tabMath">
+      <span>🧮</span> Luyện Phép Tính
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       VIEW 1: GAME GÕ RƠI TỰ DO
+       ===================================================================== -->
+  <section class="game-view" id="typingView">
+    <div class="game-header">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span class="label">Điểm</span>
+          <span class="val highlight" id="scoreVal">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Combo</span>
+          <span class="val" id="comboVal">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Đúng / Trượt</span>
+          <span class="val"><span id="hitVal" style="color:var(--accent-color)">0</span> / <span id="missVal" style="color:var(--danger-color)">0</span></span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Còn lại</span>
+          <span class="val" id="timerVal">60s</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="voice-badge-btn" id="repeatVoiceBtn" title="Bấm để nghe lại vị trí phím">
+          <span>🔊</span>
+          <span id="voiceStatusText">Nghe lại</span>
+        </button>
+        <button class="icon-btn" id="pauseBtn" title="Tạm dừng / Tiếp tục">⏸</button>
+        <button class="icon-btn" id="settingsBtn" title="Cài đặt tham số & Màu nền">⚙️</button>
+      </div>
+    </div>
+
+    <!-- KHU VỰC CHỮ RƠI -->
+    <main id="gameArea"></main>
+
+    <div id="pauseBanner">⏸ ĐANG TẠM DỪNG</div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 2: GAME TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY (BẢNG ĐEN)
+       ===================================================================== -->
+  <section class="game-view active" id="wordsPracticeView">
+    <div class="game-header">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span class="label">Tiến Độ Ký Tự</span>
+          <span class="val highlight" id="wordProgressVal">0 / 0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Gõ Đúng</span>
+          <span class="val" style="color:var(--accent-color)" id="wordHitsVal">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Cần Sửa</span>
+          <span class="val" style="color:var(--danger-color)" id="wordErrorsVal">0</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="voice-badge-btn" id="wordRepeatVoiceBtn" title="Nghe lại hướng dẫn chữ hiện tại">
+          <span>🔊</span> Nghe vị trí
+        </button>
+        <button class="icon-btn" id="btnWordsSettings" title="Cài đặt & Màu nền">⚙️</button>
+      </div>
+    </div>
+
+    <!-- 02 TEXTBOX: 1 CHO THẦY RA ĐỀ BÀI, 1 CHO HỌC TRÒ VIẾT -->
+    <div class="two-box-container">
+      <!-- KHUNG 1: ĐỀ BÀI CỦA THẦY (TEXTBOX 1) -->
+      <div class="teacher-box-card">
+        <div class="box-header">
+          <div class="box-title teacher-title">
+            <span>👨‍🏫</span> 1. ĐỀ BÀI CỦA THẦY (BẢNG RA ĐỀ)
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <!-- Nút bật tắt chế độ Đánh vần Tiếng Việt Lớp 1 -->
+            <label class="spelling-toggle-card" title="Bật/Tắt chế độ đánh vần từng từ chuẩn Tiếng Việt Lớp 1">
+              <input type="checkbox" id="chkSpellingGrade1" checked>
+              <span class="spelling-toggle-text">📖 Đánh Vần Lớp 1</span>
+            </label>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <span style="font-size:11px;color:#FEF08A;font-weight:700;">Cỡ chữ:</span>
+              <div class="board-stepper-box">
+                <button class="btn-step" id="btnBoardFontMinus" title="Thu nhỏ chữ">A-</button>
+                <span class="step-display" id="dispBoardFontSize">28px</span>
+                <button class="btn-step" id="btnBoardFontPlus" title="Phóng to chữ">A+</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <span style="font-size:11px;color:#FEF08A;font-weight:700;">Tốc độ:</span>
+              <div class="board-stepper-box">
+                <button class="btn-step" id="btnRateMinus" title="Đọc chậm hơn">🐢</button>
+                <span class="step-display" id="dispVoiceRateInline">1.0x</span>
+                <button class="btn-step" id="btnRatePlus" title="Đọc nhanh hơn">🐇</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Textbox 1: Của thầy để gõ đề bài (Hỗ trợ gõ tiếng Việt có dấu) -->
+        <textarea id="teacherBlackboardInput" lang="vi" spellcheck="false" autocomplete="off" autocapitalize="sentences" placeholder="Thầy gõ chữ hoặc bài học vào đây... (Ví dụ: Bố mẹ yêu con, Việt Nam vô địch, 123 456)"></textarea>
+
+
+
+        <!-- Dòng theo dõi ký tự trên đề bài (với highlight ký tự đang viết) -->
+        <div id="teacherPromptTracker"></div>
+
+        <!-- Hàng nút điều khiển của Thầy -->
+        <div class="board-actions-row">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn-board clear-btn" id="btnClearBoard" title="Xóa trắng đề bài">🧹 Xóa Bảng</button>
+            <button class="btn-board edit-btn" id="btnSampleLessons" title="Chọn bài mẫu có sẵn">📚 Bài Mẫu</button>
+            <button class="btn-board spell-btn" id="btnSpellNow" title="Bấm nghe đánh vần từ đang gõ theo chuẩn Lớp 1">🗣️ Đánh Vần Từ Này</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn-board start-btn" id="btnStartLesson">▶️ BẮT ĐẦU CHO TRÒ VIẾT</button>
+            <button class="btn-board edit-btn" id="btnRestartLesson" style="display:none;">🔄 Viết Lại</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KHUNG 2: BÀI VIẾT CỦA HỌC TRÒ (TEXTBOX 2) -->
+      <div class="student-box-card">
+        <div class="box-header">
+          <div class="box-title student-title">
+            <span>✍️</span> 2. BÀI VIẾT CỦA HỌC TRÒ (VỞ TẬP VIẾT)
+          </div>
+          <span id="studentStatusBadge" style="font-size:11px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
+        </div>
+
+        <!-- Textbox 2: Của học trò, hiển thị chữ đã gõ, chữ đúng màu xanh, sai màu đỏ -->
+        <div id="studentNotebookDisplay">
+          <span class="student-placeholder">Chữ học trò gõ sẽ xuất hiện ở đây theo từng chữ máy đọc...</span>
+        </div>
+      </div>
+
+      <!-- BANNER HƯỚNG DẪN (TỰ ĐỘNG ẨN KHI BẮT ĐẦU VIẾT ĐỂ TĂNG DIỆN TÍCH HIỂN THỊ, TRÁNH SCROLL) -->
+      <div class="guide-banner normal" id="guideBanner" style="display:none;">
+        <div class="guide-main-row">
+          <span id="guideIcon">👉</span>
+          <span id="guideText">Thầy hãy gõ đề bài ở ô trên rồi bấm nút [BẮT ĐẦU CHO TRÒ VIẾT]</span>
+        </div>
+        <div id="guideSpellingBadge" class="guide-spelling-box" style="display:none;">
+          <span class="guide-spell-lbl">📖 Đánh vần (Lớp 1):</span>
+          <span id="guideSpellingText" class="guide-spell-txt">bờ - ô - bô - sắc - bố</span>
+          <button type="button" class="btn-mini-speech" id="btnMiniSpellSpeech" title="Bấm nghe đánh vần lại">🔊</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO)
+       ===================================================================== -->
+  <section class="game-view" id="clockView">
+    <!-- KHỐI THANH ĐIỀU KHIỂN NHANH TRÊN CÙNG (TIẾT KIỆM DIỆN TÍCH TỐI ĐA) -->
+    <div class="clock-compact-header">
+      <div class="digital-time-compact" id="digitalTimeBox" title="Thời gian điện tử">
+        <span class="h-val" id="dispClockH">10</span>:<span class="m-val" id="dispClockM">15</span>:<span class="s-val" id="dispClockS">00</span>
+      </div>
+      <div class="clock-quick-actions">
+        <button class="btn-action-pill primary" id="speakClockBtn" title="Phát âm đọc giờ tiếng Việt">
+          <span>🔊</span> Đọc giờ
+        </button>
+        <button class="btn-action-pill" id="toggleMaskBtn" title="Ẩn/Hiện giờ điện tử để đố học sinh">
+          <span id="maskIcon">👁️</span> <span id="maskText">Ẩn giờ</span>
+        </button>
+        <button class="btn-action-pill menu-btn" id="btnToggleClockDrawer" title="Mở bảng cài đặt & công cụ đồng hồ">
+          <span>⚙️</span> <span id="clockMenuToggleText">Tùy Chọn & Điều Khiển ▾</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MẶT ĐỒNG HỒ SIÊU TO TỐI ĐA TRÊN MÀN HÌNH -->
+    <div class="clock-stage" id="clockStage">
+      <svg id="clockSvg" viewBox="0 0 360 360">
+        <g id="dialTicks"></g>
+        <g id="dialNumbers"></g>
+
+        <!-- KIM GIỜ (Hour Hand) -->
+        <line id="handHour" class="hand" x1="180" y1="180" x2="180" y2="105" />
+        <!-- KIM PHÚT (Minute Hand) -->
+        <line id="handMin" class="hand" x1="180" y1="180" x2="180" y2="65" />
+        <!-- KIM GIÂY (Second Hand) -->
+        <g id="secGroup" class="hand">
+          <line id="handSec" x1="180" y1="210" x2="180" y2="50" />
+          <circle cx="180" cy="50" r="4.5" class="center-pin-sec" />
+        </g>
+
+        <!-- Trục giữa đồng hồ -->
+        <circle cx="180" cy="180" r="8" class="center-pin" />
+        <circle cx="180" cy="180" r="3.5" class="center-pin-sec" />
+      </svg>
+    </div>
+
+    <!-- BẢNG MENU TÙY CHỌN ẨN HIỆN CỦA ĐỒNG HỒ (DRAWER OVERLAY) -->
+    <div class="clock-drawer-overlay" id="clockDrawerOverlay">
+      <div class="clock-drawer-card">
+        <div class="clock-drawer-header">
+          <h3><span>⚙️</span> Bảng Tùy Chọn & Điều Khiển Đồng Hồ</h3>
+          <button class="clock-drawer-close" id="btnCloseClockDrawer" title="Đóng bảng tùy chọn">✕</button>
+        </div>
+
+        <!-- 1. Tùy chọn màu nền đồng hồ -->
+        <div class="drawer-setting-group">
+          <div class="drawer-group-title">🎨 Màu nền mặt đồng hồ:</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="dialColorWhite" style="background:#F8F9FD;border:2px solid #0A84FF;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#000;cursor:pointer;">⚪ Trắng Sứ</button>
+            <button id="dialColorIvory" style="background:#FFF9E6;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#333;cursor:pointer;">🟡 Vàng Kem</button>
+            <button id="dialColorCyan" style="background:#E6F7FF;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#003A8C;cursor:pointer;">🔵 Xanh Băng</button>
+          </div>
+        </div>
+
+        <!-- 2. Công cụ dạy học & đố giờ -->
+        <div class="drawer-setting-group">
+          <div class="drawer-group-title">🛠️ Công cụ dạy học & đố giờ:</div>
+          <div class="teaching-tools" style="margin-top:0;">
+            <button class="tool-btn" id="btnRealtimeClock">
+              <span>⏱️</span> Giờ Thực Tế
+            </button>
+            <button class="tool-btn" id="btnRandomTime">
+              <span>🎲</span> Đố Giờ Ngẫu Nhiên
+            </button>
+            <button class="tool-btn" id="btnLockHands">
+              <span id="lockIcon">🔗</span> <span id="lockText">Kim Liên Hoàn</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Tùy chỉnh tự do 3 kim -->
+        <div class="drawer-setting-group">
+          <div class="drawer-group-title">🖐️ Tùy chỉnh vị trí 3 Kim tự do:</div>
+          <div class="hand-controllers">
+            <div class="hand-card">
+              <div class="hand-card-header">
+                <div class="hand-tag">
+                  <span class="dot-indicator" style="background:var(--clock-hour-color)"></span>
+                  <span>Kim Giờ (Ngắn - Xanh)</span>
+                </div>
+                <span style="color:var(--clock-hour-color)" id="ctrlHourVal">10 Giờ</span>
+              </div>
+              <div class="hand-slider-row">
+                <button class="stepper-btn" id="btnHourMinus">-</button>
+                <input type="range" id="sliderHour" min="1" max="12" step="1" value="10">
+                <button class="stepper-btn" id="btnHourPlus">+</button>
+              </div>
+            </div>
+
+            <div class="hand-card">
+              <div class="hand-card-header">
+                <div class="hand-tag">
+                  <span class="dot-indicator" style="background:var(--clock-min-color)"></span>
+                  <span>Kim Phút (Dài - Xanh lá)</span>
+                </div>
+                <span style="color:var(--clock-min-color)" id="ctrlMinVal">15 Phút</span>
+              </div>
+              <div class="hand-slider-row">
+                <button class="stepper-btn" id="btnMinMinus">-</button>
+                <input type="range" id="sliderMin" min="0" max="59" step="1" value="15">
+                <button class="stepper-btn" id="btnMinPlus">+</button>
+              </div>
+            </div>
+
+            <div class="hand-card">
+              <div class="hand-card-header">
+                <div class="hand-tag">
+                  <span class="dot-indicator" style="background:var(--clock-sec-color)"></span>
+                  <span>Kim Giây (Mảnh - Đỏ)</span>
+                </div>
+                <span style="color:var(--clock-sec-color)" id="ctrlSecVal">00 Giây</span>
+              </div>
+              <div class="hand-slider-row">
+                <button class="stepper-btn" id="btnSecMinus">-</button>
+                <input type="range" id="sliderSec" min="0" max="59" step="1" value="0">
+                <button class="stepper-btn" id="btnSecPlus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-main" id="btnApplyAndCloseClockDrawer" style="margin-top:6px;">✕ Đóng Bảng & Xem Đồng Hồ To</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MÔN TOÁN)
+       ===================================================================== -->
+  <section class="game-view" id="mathView">
+    <div class="game-header">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span class="label">Tiến Độ</span>
+          <span class="val highlight" id="mathProgressVal">0 / 10</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Thời Gian</span>
+          <span class="val" style="color:var(--accent-color)" id="mathTimerVal">00:00</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Điểm Số</span>
+          <span class="val" style="color:#F59E0B" id="mathScoreVal">-- / 10</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Nghe lại nhận xét và chấm điểm">
+          <span>🔊</span> Nghe chấm điểm
+        </button>
+      </div>
+    </div>
+
+    <!-- 02 TEXTBOX: 1 CHO THẦY RA ĐỀ BÀI, 1 CHO HỌC TRÒ NHẬP KẾT QUẢ -->
+    <div class="two-box-container math-two-box">
+      <!-- KHUNG 1: ĐỀ BÀI CỦA THẦY (TEXTBOX 1 - 10 PHÉP TÍNH ĐƠN) -->
+      <div class="teacher-box-card math-box-card">
+        <div class="box-header">
+          <div class="box-title teacher-title">
+            <span>👨‍🏫</span> 1. BẢNG RA ĐỀ CỦA THẦY (10 PHÉP TÍNH)
+          </div>
+          <div class="math-teacher-tools">
+            <div style="position:relative;display:inline-block;">
+              <button class="btn-board-sm" id="btnAutoMathDropdown">🎲 Tạo Đề Tự Động ▾</button>
+              <div class="math-preset-dropdown" id="mathPresetDropdown">
+                <div class="preset-item" data-preset="add20">➕ Phép Cộng (Phạm vi 20)</div>
+                <div class="preset-item" data-preset="sub20">➖ Phép Trừ (Phạm vi 20)</div>
+                <div class="preset-item" data-preset="addsub100">➕➖ Cộng & Trừ (Phạm vi 100)</div>
+                <div class="preset-item" data-preset="mul">✖️ Bảng Nhân (2 đến 9)</div>
+                <div class="preset-item" data-preset="div">➗ Bảng Chia (2 đến 9)</div>
+                <div class="preset-item" data-preset="mix">🎲 Hỗn Hợp (+, -, ×, ÷)</div>
+              </div>
+            </div>
+            <button class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
+            <button class="btn-board-sm" id="btnClearMath">🧹 Xóa</button>
+          </div>
+        </div>
+
+        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 01 phép tính)...
+Ví dụ:
+8 + 5 =
+15 - 7 =
+6 x 4 =
+36 / 6 =
+9 + 9 =
+20 - 8 =
+7 x 3 =
+45 / 5 =
+12 + 18 =
+50 - 25 ="></textarea>
+
+        <div class="board-actions-row">
+          <button class="btn-board start-btn" id="btnStartMathTest" style="width:100%;">
+            ▶️ BẮT ĐẦU CHO TRÒ LÀM BÀI
+          </button>
+        </div>
+      </div>
+
+      <!-- KHUNG 2: BÀI LÀM CỦA HỌC TRÒ (TEXTBOX 2 - NHẬP KẾT QUẢ) -->
+      <div class="student-box-card math-box-card">
+        <div class="box-header">
+          <div class="box-title student-title">
+            <span>✍️</span> 2. BÀI LÀM CỦA HỌC TRÒ (VỞ TẬP TÍNH)
+          </div>
+          <span id="studentMathStatus" style="font-size:12px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
+        </div>
+
+        <div class="student-math-sheet" id="studentMathSheet">
+          <div class="math-empty-tip">
+            Thầy hãy chuẩn bị 10 phép tính đơn ở Khung 1 rồi nhấn <strong>[BẮT ĐẦU CHO TRÒ LÀM BÀI]</strong> nhé!
+          </div>
+        </div>
+
+        <div class="board-actions-row">
+          <button class="btn-board start-btn" id="btnSubmitMathTest" style="width:100%;background:#30D158;display:none;">
+            ✅ NỘP BÀI & CHẤM ĐIỂM
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BÀN PHÍM IPHONE CHUẨN IOS - NỀN XANH NHẠT GỢN MÂY -->
+  <div id="keyboardWrapper">
+    <div id="keyboardContainer">
+      <div id="virtualKeyboard"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CÀI ĐẶT THAM SỐ CHUNG & MÀU NỀN -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <h2>⚙️ Cài Đặt Tham Số</h2>
+
+      <!-- MÀU NỀN CỦA GAME (TÙY CHỌN NỀN SÁNG / TỐI) -->
+      <div class="setting-group">
+        <label>
+          <span>Màu nền màn hình game</span>
+        </label>
+        <div class="color-presets" id="bgThemePresets">
+          <div class="color-chip active" style="background:#0b0f19;border:1px solid #fff;" data-bg="#0b0f19" title="Tối Huyền Bí"></div>
+          <div class="color-chip" style="background:#F2F2F7" data-bg="#F2F2F7" title="Sáng Dịu Apple"></div>
+          <div class="color-chip" style="background:#E3EEF9" data-bg="#E3EEF9" title="Xanh Nhạt Mát Mắt"></div>
+          <div class="color-chip" style="background:#E8F5E9" data-bg="#E8F5E9" title="Xanh Mint Dịu Mắt"></div>
+          <div class="color-chip" style="background:#FAF3E0" data-bg="#FAF3E0" title="Vàng Kem Nhẹ Nhàng"></div>
+        </div>
+        <div class="hint">Chọn màu nền sáng hoặc tối để mắt nhìn dễ chịu nhất</div>
+      </div>
+
+      <!-- Kiểu ký tự (Game 1) -->
+      <div class="setting-group">
+        <label>
+          <span>Kiểu ký tự rơi (Game Rơi Tự Do)</span>
+        </label>
+        <select id="cfgCharMode">
+          <option value="lowercase">Chữ thường (a - z)</option>
+          <option value="uppercase">Chữ hoa (A - Z)</option>
+          <option value="both_case">Chữ hoa & Chữ thường (A - z)</option>
+          <option value="numbers">Chỉ số (0 - 9)</option>
+          <option value="letters_and_numbers">Hỗn hợp (Chữ & Số ngẫu nhiên)</option>
+        </select>
+      </div>
+
+      <!-- Giọng nói hướng dẫn -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
+            <div class="hint">Đọc tên chữ, số dòng và hướng dẫn sửa sai</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgVoiceEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group" id="voiceSpeedGroup">
+        <label>
+          <span>Tốc độ đọc giọng nói</span>
+          <span class="value-display" id="dispVoiceRate">1.0x</span>
+        </label>
+        <input type="range" id="cfgVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
+      </div>
+
+      <!-- Thời gian rơi -->
+      <div class="setting-group">
+        <label>
+          <span>Thời gian rơi (Tốc độ game rơi)</span>
+          <span class="value-display" id="dispFallDuration">4.5 giây</span>
+        </label>
+        <input type="range" id="cfgFallDuration" min="1.5" max="10.0" step="0.5" value="4.5">
+      </div>
+
+      <!-- Kích thước chữ rơi -->
+      <div class="setting-group">
+        <label>
+          <span>Kích thước chữ rơi</span>
+          <span class="value-display" id="dispFontSize">40 px</span>
+        </label>
+        <input type="range" id="cfgFontSize" min="28" max="60" step="2" value="40">
+      </div>
+
+      <!-- Màu chữ rơi -->
+      <div class="setting-group">
+        <label>
+          <span>Màu sắc chữ rơi</span>
+        </label>
+        <div class="color-presets" id="fontColorPresets">
+          <div class="color-chip active" style="background:#FFFFFF;border:1px solid #888;" data-color="#FFFFFF"></div>
+          <div class="color-chip" style="background:#FFD60A" data-color="#FFD60A"></div>
+          <div class="color-chip" style="background:#30D158" data-color="#30D158"></div>
+          <div class="color-chip" style="background:#0A84FF" data-color="#0A84FF"></div>
+          <div class="color-chip" style="background:#FF375F" data-color="#FF375F"></div>
+          <div class="color-chip" style="background:#BF5AF2" data-color="#BF5AF2"></div>
+        </div>
+      </div>
+
+      <!-- Âm thanh -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Âm thanh hiệu ứng</div>
+            <div class="hint">Tiếng gõ phím và hiệu ứng khi gõ trúng/sai</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgSoundEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-main" id="saveSettingsBtn">💾 Lưu Cài Đặt</button>
+      <button class="btn-secondary" id="closeSettingsBtn">Đóng</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY REPORT MODAL -->
+  <div class="modal-overlay" id="summaryModal">
+    <div class="modal-card">
+      <h2>🏆 TỔNG KẾT VÁN CHƠI</h2>
+
+      <div class="rank-banner">
+        <div class="rank-title">XẾP HẠNG KỸ NĂNG</div>
+        <div class="rank-letter" id="sumRank">S</div>
+        <div id="sumComment" style="font-size:13px;color:#fff;margin-top:4px;">Xuất sắc! Bạn phản xạ rất chuẩn xác.</div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="s-lbl">Tổng Điểm</div>
+          <div class="s-val" style="color:var(--accent-color)" id="sumScore">0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Độ Chính Xác</div>
+          <div class="s-val" style="color:#FFD60A" id="sumAccuracy">100%</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Gõ Đúng / Trượt</div>
+          <div class="s-val" id="sumHitsMisses">0 / 0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Tốc Độ (CPM)</div>
+          <div class="s-val" style="color:var(--primary-color)" id="sumCPM">0</div>
+        </div>
+      </div>
+
+      <button class="btn-main" id="playAgainBtn">🔄 Chơi Lại Ngay</button>
+      <button class="btn-main" id="btnRepeatFallingSummaryVoice" style="background:#0A84FF;">🔊 Nghe Lại Tổng Kết</button>
+      <button class="btn-secondary" id="openSettingsFromSummaryBtn">⚙️ Đổi Cài Đặt</button>
+    </div>
+  </div>
+
+  <!-- MODAL QUẢN LÝ VÀ CẬP NHẬT BÀI MẪU CỦA THẦY (GAME 2) -->
+  <div class="modal-overlay" id="sampleLessonsModal">
+    <div class="modal-card" style="max-width:560px;">
+      <h2>📚 Quản Lý & Cập Nhật Bài Mẫu</h2>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
+        Thầy có thể chọn bài mẫu có sẵn, thêm câu mới hoặc chỉnh sửa danh sách theo ý muốn:
+      </div>
+
+      <!-- Ô nhập thêm bài mẫu mới -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <input type="text" id="newSampleInput" placeholder="Gõ câu bài mẫu mới vào đây..." style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--surface-border);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;outline:none;">
+        <button class="btn-main" id="btnAddSampleLesson" style="width:auto;padding:9px 14px;margin:0;font-size:13px;">➕ Thêm</button>
+      </div>
+
+      <!-- Danh sách bài mẫu có sẵn -->
+      <div id="sampleLessonsListContainer" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;padding-right:4px;">
+        <!-- Render động qua JavaScript -->
+      </div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" id="btnResetDefaultSamples" style="flex:1;">🔄 Khôi phục mặc định</button>
+        <button class="btn-main" id="btnCloseSampleModal" style="flex:1;">✕ Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TỔNG KẾT BÀI VIẾT CỦA THẦY (GAME 2) -->
+  <div class="modal-overlay" id="wordCompleteModal">
+    <div class="modal-card" style="max-width:480px;text-align:center;">
+      <div style="font-size:46px;margin-bottom:4px;">🎉</div>
+      <h2 style="margin-bottom:6px;">XUẤT SẮC HOÀN THÀNH!</h2>
+      <div id="wordCompleteSubtitle" style="font-size:14px;color:var(--accent-color);font-weight:700;margin-bottom:12px;">
+        Học trò đã viết xong toàn bộ bài học của Thầy!
+      </div>
+
+      <div class="summary-grid" style="margin-bottom:14px;">
+        <div class="summary-box">
+          <div class="s-lbl">Tổng Ký Tự</div>
+          <div class="s-val" id="sumWordChars" style="color:#0A84FF">0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Thời Gian</div>
+          <div class="s-val" id="sumWordTime" style="color:#FFD60A">00:00</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Gõ Đúng</div>
+          <div class="s-val" id="sumWordHits" style="color:var(--accent-color)">0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Lỗi Đã Sửa</div>
+          <div class="s-val" id="sumWordErrors" style="color:var(--danger-color)">0</div>
+        </div>
+      </div>
+
+      <div id="wordCompleteComment" style="font-size:13px;color:#fff;background:rgba(255,255,255,0.08);padding:10px 14px;border-radius:12px;margin-bottom:14px;line-height:1.45;">
+        Lời nhận xét của Thầy...
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-main" id="btnRepeatWordVoice" style="background:#0A84FF;">🔊 Nghe Lại Nhận Xét Của Thầy</button>
+        <button class="btn-secondary" id="btnRestartWordFromModal">🔄 Viết Lại Bài Này</button>
+        <button class="btn-secondary" id="btnCloseWordModal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHẤM ĐIỂM BÀI TOÁN (GAME 4) -->
+  <div class="modal-overlay" id="mathGradeModal">
+    <div class="modal-card" style="max-width:500px;text-align:center;">
+      <div id="mathGradeIcon" style="font-size:46px;margin-bottom:4px;">🌟</div>
+      <h2 id="mathGradeTitle" style="margin-bottom:4px;">KẾT QUẢ CHẤM ĐIỂM MÔN TOÁN</h2>
+      <div id="mathGradeSubtitle" style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Đánh giá dựa trên độ chính xác & thời gian làm bài</div>
+
+      <div style="display:flex;justify-content:center;align-items:baseline;gap:6px;margin-bottom:14px;">
+        <span style="font-size:52px;font-weight:900;color:#F59E0B;" id="mathFinalScore">10</span>
+        <span style="font-size:22px;color:var(--text-muted);font-weight:700;">/ 10 ĐIỂM</span>
+      </div>
+
+      <div class="summary-grid" style="margin-bottom:14px;">
+        <div class="summary-box">
+          <div class="s-lbl">Thời Gian Làm</div>
+          <div class="s-val" id="mathSumTime" style="color:#0A84FF">00:00</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Số Câu Đúng</div>
+          <div class="s-val" id="mathSumCorrect" style="color:var(--accent-color)">0 / 10</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Số Câu Sai</div>
+          <div class="s-val" id="mathSumWrong" style="color:var(--danger-color)">0 / 10</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Tốc Độ Trung Bình</div>
+          <div class="s-val" id="mathSumPace" style="color:#FFD60A">-- s/câu</div>
+        </div>
+      </div>
+
+      <div id="mathGradeComment" style="font-size:13px;color:#fff;background:rgba(255,255,255,0.08);padding:10px 14px;border-radius:12px;margin-bottom:14px;line-height:1.45;">
+        Nhận xét đánh giá...
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-main" id="btnRepeatMathVoice" style="background:#0A84FF;">🔊 Nghe Lại Lời Chấm Điểm</button>
+        <button class="btn-secondary" id="btnRetryMathTest">🔄 Làm Lại Đề Này</button>
+        <button class="btn-secondary" id="btnCloseMathGradeModal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================================
+       CẤU HÌNH & GHI NHỚ LOCALSTORAGE
+       ===================================================================== */
+    const STORAGE_KEY = 'ios_learning_suite_v4_cfg';
+    const DEFAULT_CONFIG = {
+      gameBgColor: '#0b0f19',    // Màu nền game đánh chữ
+      charMode: 'lowercase',
+      fallDuration: 4.5,
+      spawnCount: 1,
+      spawnInterval: 2.0,
+      fontSize: 40,
+      fontColor: '#FFFFFF',
+      voiceEnabled: true,
+      voiceRate: 1.0,
+      gameDuration: 60,
+      soundEnabled: true,
+      lessonWords: ['BA ME', 'VIET NAM', 'HOC TAP', 'IPHONE', '2026'] // Từ của Thầy
+    };
+
+    function loadSavedConfig() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return { ...DEFAULT_CONFIG, ...JSON.parse(raw) };
+      } catch (e) {}
+      return { ...DEFAULT_CONFIG };
+    }
+
+    function saveConfigToStorage(cfg) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+      } catch (e) {}
+    }
+
+    /* =====================================================================
+       HỆ THỐNG ÂM THANH NATIVE (WEB AUDIO API)
+       ===================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playHit() {
+        if (!cfg.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(540, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(920, this.ctx.currentTime + 0.12);
+          gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.12);
+        } catch (e) {}
+      }
+      playMiss() {
+        if (!cfg.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.22);
+          gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.22);
+        } catch (e) {}
+      }
+      playSuccessWord() {
+        if (!cfg.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+          notes.forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.08);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.08 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + i * 0.08);
+            osc.stop(this.ctx.currentTime + i * 0.08 + 0.2);
+          });
+        } catch (e) {}
+      }
+      playClockTick() {
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.03);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.03);
+        } catch (e) {}
+      }
+    }
+    const sound = new SoundEngine();
+
+    /* =====================================================================
+       GIỌNG NÓI TIẾNG VIỆT (WEB SPEECH API)
+       ===================================================================== */
+    class VoiceEngine {
+      constructor() {
+        this.synth = window.speechSynthesis || null;
+        this.voice = null;
+        this.lastSpokenText = '';
+        this.initVoice();
+      }
+
+      initVoice() {
+        if (!this.synth) return;
+        const update = () => {
+          const voices = this.synth.getVoices();
+          this.voice = voices.find(v => v.lang.includes('vi') || v.lang.includes('VI')) || null;
+        };
+        update();
+        if (this.synth.onvoiceschanged !== undefined) {
+          this.synth.onvoiceschanged = update;
+        }
+      }
+
+      speak(text, priority = false) {
+        if (!cfg.voiceEnabled || !this.synth) return;
+        if (this.synth.speaking && !priority) return;
+
+        try {
+          this.synth.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.rate = cfg.voiceRate || 1.0;
+          utter.pitch = 1.0;
+          utter.lang = 'vi-VN';
+          if (this.voice) utter.voice = this.voice;
+
+          const badge = document.getElementById('repeatVoiceBtn');
+          utter.onstart = () => { if (badge) badge.classList.add('speaking'); };
+          utter.onend = () => { if (badge) badge.classList.remove('speaking'); };
+          utter.onerror = () => { if (badge) badge.classList.remove('speaking'); };
+
+          this.lastSpokenText = text;
+          this.synth.speak(utter);
+        } catch (e) {}
+      }
+    }
+    const voiceEngine = new VoiceEngine();
+
+    // Ánh xạ ký tự tiếng Việt về chữ cái gốc trên bàn phím chuẩn
+    function getVietnameseBaseChar(char) {
+      if (!char) return '';
+      const upper = char.toUpperCase();
+      // Ă, Â, Á, À, Ả, Ã, Ạ, Ắ, Ằ... -> A
+      if (/[AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬ]/.test(upper)) return 'A';
+      // É, È, Ẻ, Ẽ, Ẹ, Ê, Ế, Ề, Ể, Ễ, Ệ -> E
+      if (/[EÉÈẺẼẸÊẾỀỂỄỆ]/.test(upper)) return 'E';
+      // Í, Ì, Ỉ, Ĩ, Ị -> I
+      if (/[IÍÌỈĨỊ]/.test(upper)) return 'I';
+      // Ó, Ò, Ỏ, Õ, Ọ, Ô, Ố, Ồ, Ổ, Ỗ, Ộ, Ơ, Ớ, Ờ, Ở, Ỡ, Ợ -> O
+      if (/[OÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ]/.test(upper)) return 'O';
+      // Ú, Ù, Ủ, Ũ, Ụ, Ư, Ứ, Ừ, Ử, Ữ, Ự -> U
+      if (/[UÚÙỦŨỤƯỨỪỬỮỰ]/.test(upper)) return 'U';
+      // Ý, Ỳ, Ỷ, Ỹ, Ỵ -> Y
+      if (/[YÝỲỶỸỴ]/.test(upper)) return 'Y';
+      // Đ -> D
+      if (/[DĐ]/.test(upper)) return 'D';
+      return upper;
+    }
+
+    // Thông tin dòng bàn phím của ký tự (Hỗ trợ 100% tiếng Việt có dấu)
+    function getCharRowDetail(char) {
+      const upper = char.toUpperCase();
+      const baseKey = getVietnameseBaseChar(upper);
+      const numRow = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+      const r1 = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'];
+      const r2 = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'];
+      const r3 = ['Z', 'X', 'C', 'V', 'B', 'N', 'M'];
+
+      if (numRow.includes(baseKey)) {
+        return { char: upper, baseKey: baseKey, rowName: 'Dòng Số (Bấm nút 123)', rowNumber: 0, speech: `Số ${upper}, bấm một hai ba` };
+      }
+      if (r1.includes(baseKey)) {
+        const speechName = (upper !== baseKey) ? `Chữ ${upper}, phím ${baseKey} dòng một` : `${upper}, dòng một`;
+        return { char: upper, baseKey: baseKey, rowName: `Dòng 1 (Phím ${baseKey})`, rowNumber: 1, speech: speechName };
+      }
+      if (r2.includes(baseKey)) {
+        const speechName = (upper !== baseKey) ? `Chữ ${upper}, phím ${baseKey} dòng hai` : `${upper}, dòng hai`;
+        return { char: upper, baseKey: baseKey, rowName: `Dòng 2 (Phím ${baseKey})`, rowNumber: 2, speech: speechName };
+      }
+      if (r3.includes(baseKey)) {
+        const speechName = (upper !== baseKey) ? `Chữ ${upper}, phím ${baseKey} dòng ba` : `${upper}, dòng ba`;
+        return { char: upper, baseKey: baseKey, rowName: `Dòng 3 (Phím ${baseKey})`, rowNumber: 3, speech: speechName };
+      }
+      if (upper === ' ') {
+        return { char: ' ', baseKey: ' ', rowName: 'Dấu cách (Dòng 4)', rowNumber: 4, speech: `Dấu cách, ở dòng dưới` };
+      }
+      return { char: upper, baseKey: baseKey, rowName: 'Ký tự', rowNumber: 1, speech: `${upper}` };
+    }
+
+    /* =====================================================================
+       THUẬT TOÁN ĐÁNH VẦN TIẾNG VIỆT CHUẨN TIỂU HỌC LỚP 1
+       (Ví dụ: "Bố" -> "bờ - ô - bô - sắc - bố"; "Mẹ" -> "mờ - e - me - nặng - mẹ")
+       ===================================================================== */
+    const VN_VOWEL_TONES = {
+      'á': {base: 'a', tone: 'sắc'}, 'ắ': {base: 'ă', tone: 'sắc'}, 'ấ': {base: 'â', tone: 'sắc'},
+      'é': {base: 'e', tone: 'sắc'}, 'ế': {base: 'ê', tone: 'sắc'},
+      'í': {base: 'i', tone: 'sắc'},
+      'ó': {base: 'o', tone: 'sắc'}, 'ố': {base: 'ô', tone: 'sắc'}, 'ớ': {base: 'ơ', tone: 'sắc'},
+      'ú': {base: 'u', tone: 'sắc'}, 'ứ': {base: 'ư', tone: 'sắc'},
+      'ý': {base: 'y', tone: 'sắc'},
+      'à': {base: 'a', tone: 'huyền'}, 'ằ': {base: 'ă', tone: 'huyền'}, 'ầ': {base: 'â', tone: 'huyền'},
+      'è': {base: 'e', tone: 'huyền'}, 'ề': {base: 'ê', tone: 'huyền'},
+      'ì': {base: 'i', tone: 'huyền'},
+      'ò': {base: 'o', tone: 'huyền'}, 'ồ': {base: 'ô', tone: 'huyền'}, 'ờ': {base: 'ơ', tone: 'huyền'},
+      'ù': {base: 'u', tone: 'huyền'}, 'ừ': {base: 'ư', tone: 'huyền'},
+      'ỳ': {base: 'y', tone: 'huyền'},
+      'ả': {base: 'a', tone: 'hỏi'}, 'ẳ': {base: 'ă', tone: 'hỏi'}, 'ẩ': {base: 'â', tone: 'hỏi'},
+      'ẻ': {base: 'e', tone: 'hỏi'}, 'ể': {base: 'ê', tone: 'hỏi'},
+      'ỉ': {base: 'i', tone: 'hỏi'},
+      'ỏ': {base: 'o', tone: 'hỏi'}, 'ổ': {base: 'ô', tone: 'hỏi'}, 'ở': {base: 'ơ', tone: 'hỏi'},
+      'ủ': {base: 'u', tone: 'hỏi'}, 'ử': {base: 'ư', tone: 'hỏi'},
+      'ỷ': {base: 'y', tone: 'hỏi'},
+      'ã': {base: 'a', tone: 'ngã'}, 'ẵ': {base: 'ă', tone: 'ngã'}, 'ẫ': {base: 'â', tone: 'ngã'},
+      'ẽ': {base: 'e', tone: 'ngã'}, 'ễ': {base: 'ê', tone: 'ngã'},
+      'ĩ': {base: 'i', tone: 'ngã'},
+      'õ': {base: 'o', tone: 'ngã'}, 'ỗ': {base: 'ô', tone: 'ngã'}, 'ỡ': {base: 'ơ', tone: 'ngã'},
+      'ũ': {base: 'u', tone: 'ngã'}, 'ữ': {base: 'ư', tone: 'ngã'},
+      'ỹ': {base: 'y', tone: 'ngã'},
+      'ạ': {base: 'a', tone: 'nặng'}, 'ặ': {base: 'ă', tone: 'nặng'}, 'ậ': {base: 'â', tone: 'nặng'},
+      'ẹ': {base: 'e', tone: 'nặng'}, 'ệ': {base: 'ê', tone: 'nặng'},
+      'ị': {base: 'i', tone: 'nặng'},
+      'ọ': {base: 'o', tone: 'nặng'}, 'ộ': {base: 'ô', tone: 'nặng'}, 'ợ': {base: 'ơ', tone: 'nặng'},
+      'ụ': {base: 'u', tone: 'nặng'}, 'ự': {base: 'ư', tone: 'nặng'},
+      'ỵ': {base: 'y', tone: 'nặng'}
+    };
+
+    const VN_INITIAL_CONSONANTS = [
+      'ngh', 'ng', 'nh', 'ch', 'gh', 'gi', 'kh', 'ph', 'qu', 'th', 'tr',
+      'b', 'c', 'd', 'đ', 'g', 'h', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't', 'v', 'x'
+    ];
+
+    const VN_CONSONANT_SPEECH = {
+      'b': 'bờ', 'c': 'cờ', 'd': 'dờ', 'đ': 'đờ', 'g': 'gờ', 'h': 'hờ', 'k': 'ca',
+      'l': 'lờ', 'm': 'mờ', 'n': 'nờ', 'p': 'pờ', 'r': 'rờ', 's': 'sờ', 't': 'tờ',
+      'v': 'vờ', 'x': 'xờ', 'ch': 'chờ', 'gh': 'gờ', 'gi': 'di', 'kh': 'khờ',
+      'nh': 'nhờ', 'ng': 'ngờ', 'ngh': 'ngờ', 'ph': 'phờ', 'qu': 'quờ', 'th': 'thờ', 'tr': 'trờ'
+    };
+
+    function spellVietnameseWord(rawWord) {
+      if (!rawWord) return null;
+      const word = rawWord.trim().toLowerCase().replace(/^[^a-zà-ỹđ]+|[^a-zà-ỹđ]+$/g, '');
+      if (!word) return null;
+
+      let initial = '';
+      let rest = word;
+
+      for (const c of VN_INITIAL_CONSONANTS) {
+        if (word.startsWith(c)) {
+          initial = c;
+          rest = word.slice(c.length);
+          break;
+        }
+      }
+
+      // Tách dấu thanh từ phần vần
+      let detectedTone = '';
+      let baseRest = '';
+      for (const ch of rest) {
+        if (VN_VOWEL_TONES[ch]) {
+          detectedTone = VN_VOWEL_TONES[ch].tone;
+          baseRest += VN_VOWEL_TONES[ch].base;
+        } else {
+          baseRest += ch;
+        }
+      }
+
+      if (!baseRest && initial) {
+        const spk = VN_CONSONANT_SPEECH[initial] || initial;
+        return {
+          word: word,
+          steps: [spk],
+          display: spk,
+          speech: spk
+        };
+      }
+
+      const initialSpoken = initial ? (VN_CONSONANT_SPEECH[initial] || initial) : '';
+      const baseCombine = initial ? (initial + baseRest) : baseRest;
+
+      let steps = [];
+      if (initial) {
+        steps.push(initialSpoken);
+        steps.push(baseRest);
+        steps.push(baseCombine);
+      } else {
+        steps.push(baseRest);
+      }
+
+      if (detectedTone) {
+        steps.push(detectedTone);
+        steps.push(word);
+      }
+
+      return {
+        word: word,
+        steps: steps,
+        display: steps.join(' - '),
+        speech: steps.join(', ')
+      };
+    }
+
+    let cfg = loadSavedConfig();
+
+    /* =====================================================================
+       ÁP DỤNG MÀU NỀN CHO CÁC GAME
+       ===================================================================== */
+    function applyAppBgTheme(bgColor) {
+      cfg.gameBgColor = bgColor;
+      document.documentElement.style.setProperty('--game-bg', bgColor);
+      
+      // Kiểm tra độ sáng để bật chế độ light-theme
+      const isLight = (bgColor === '#F2F2F7' || bgColor === '#E3EEF9' || bgColor === '#E8F5E9' || bgColor === '#FAF3E0');
+      if (isLight) {
+        document.body.classList.add('light-theme');
+      } else {
+        document.body.classList.remove('light-theme');
+      }
+
+      // Cập nhật active chip trong settings
+      document.querySelectorAll('#bgThemePresets .color-chip').forEach(chip => {
+        if (chip.getAttribute('data-bg') === bgColor) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+      saveConfigToStorage(cfg);
+    }
+
+    /* =====================================================================
+       BÀN PHÍM IPHONE CHUẨN IOS (DÙNG CHUNG)
+       ===================================================================== */
+    const IPHONE_KEYBOARD = {
+      letters: {
+        row1: ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+        row2: ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+        row3: ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
+      },
+      numbers: {
+        row1: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+        row2: ['-', '/', ':', ';', '(', ')', '$', '&', '@', '"'],
+        row3: ['.', ',', '?', '!', '\'']
+      }
+    };
+
+    class IPhoneKeyboardManager {
+      constructor() {
+        this.kbMode = 'letters';
+        this.isShiftActive = false;
+        this.container = document.getElementById('virtualKeyboard');
+      }
+
+      render() {
+        this.container.innerHTML = '';
+        if (this.kbMode === 'numbers') {
+          this.container.appendChild(this.createRow(IPHONE_KEYBOARD.numbers.row1));
+          this.container.appendChild(this.createRow(IPHONE_KEYBOARD.numbers.row2));
+
+          const r3 = document.createElement('div');
+          r3.className = 'kb-row';
+          const symBtn = document.createElement('div');
+          symBtn.className = 'kb-key special-key key-shift';
+          symBtn.textContent = '#+=';
+          r3.appendChild(symBtn);
+
+          IPHONE_KEYBOARD.numbers.row3.forEach(k => r3.appendChild(this.createKey(k)));
+
+          const delBtn = document.createElement('div');
+          delBtn.className = 'kb-key special-key key-delete';
+          delBtn.innerHTML = '⌫';
+          delBtn.addEventListener('click', () => dispatchKeyInput('Backspace'));
+          r3.appendChild(delBtn);
+          this.container.appendChild(r3);
+
+          const r4 = document.createElement('div');
+          r4.className = 'kb-row';
+          const abcBtn = document.createElement('div');
+          abcBtn.className = 'kb-key special-key key-mode';
+          abcBtn.textContent = 'ABC';
+          abcBtn.addEventListener('click', () => { this.kbMode = 'letters'; this.render(); });
+          r4.appendChild(abcBtn);
+
+          const globeBtn = document.createElement('div');
+          globeBtn.className = 'kb-key special-key key-globe';
+          globeBtn.textContent = '🌐';
+          r4.appendChild(globeBtn);
+
+          const spaceBtn = document.createElement('div');
+          spaceBtn.className = 'kb-key key-space';
+          spaceBtn.textContent = 'dấu cách';
+          spaceBtn.addEventListener('click', () => dispatchKeyInput(' '));
+          r4.appendChild(spaceBtn);
+
+          const returnBtn = document.createElement('div');
+          returnBtn.className = 'kb-key key-return';
+          returnBtn.textContent = 'nhập';
+          returnBtn.addEventListener('click', () => dispatchKeyInput('Enter'));
+          r4.appendChild(returnBtn);
+
+          this.container.appendChild(r4);
+        } else {
+          this.container.appendChild(this.createRow(IPHONE_KEYBOARD.letters.row1));
+
+          const r2 = document.createElement('div');
+          r2.className = 'kb-row';
+          r2.style.padding = '0 12px';
+          IPHONE_KEYBOARD.letters.row2.forEach(k => r2.appendChild(this.createKey(k)));
+          this.container.appendChild(r2);
+
+          const r3 = document.createElement('div');
+          r3.className = 'kb-row';
+          const shiftBtn = document.createElement('div');
+          shiftBtn.className = `kb-key special-key key-shift ${this.isShiftActive ? 'shift-active' : ''}`;
+          shiftBtn.textContent = '⇧';
+          shiftBtn.addEventListener('click', () => {
+            this.isShiftActive = !this.isShiftActive;
+            this.render();
+          });
+          r3.appendChild(shiftBtn);
+
+          IPHONE_KEYBOARD.letters.row3.forEach(k => r3.appendChild(this.createKey(k)));
+
+          const delBtn = document.createElement('div');
+          delBtn.className = 'kb-key special-key key-delete';
+          delBtn.innerHTML = '⌫';
+          delBtn.addEventListener('click', () => dispatchKeyInput('Backspace'));
+          r3.appendChild(delBtn);
+          this.container.appendChild(r3);
+
+          const r4 = document.createElement('div');
+          r4.className = 'kb-row';
+          const modeBtn = document.createElement('div');
+          modeBtn.className = 'kb-key special-key key-mode';
+          modeBtn.textContent = '123';
+          modeBtn.addEventListener('click', () => { this.kbMode = 'numbers'; this.render(); });
+          r4.appendChild(modeBtn);
+
+          const globeBtn = document.createElement('div');
+          globeBtn.className = 'kb-key special-key key-globe';
+          globeBtn.textContent = '🌐';
+          r4.appendChild(globeBtn);
+
+          const spaceBtn = document.createElement('div');
+          spaceBtn.className = 'kb-key key-space';
+          spaceBtn.textContent = 'dấu cách';
+          spaceBtn.addEventListener('click', () => dispatchKeyInput(' '));
+          r4.appendChild(spaceBtn);
+
+          const returnBtn = document.createElement('div');
+          returnBtn.className = 'kb-key key-return';
+          returnBtn.textContent = 'nhập';
+          returnBtn.addEventListener('click', () => dispatchKeyInput('Enter'));
+          r4.appendChild(returnBtn);
+
+          this.container.appendChild(r4);
+        }
+      }
+
+      createRow(keys) {
+        const row = document.createElement('div');
+        row.className = 'kb-row';
+        keys.forEach(k => row.appendChild(this.createKey(k)));
+        return row;
+      }
+
+      createKey(char) {
+        const key = document.createElement('div');
+        key.className = 'kb-key';
+        const displayChar = (this.kbMode === 'letters' && !this.isShiftActive) 
+                            ? char.toLowerCase() 
+                            : char.toUpperCase();
+        
+        key.textContent = displayChar;
+        key.setAttribute('data-key', char.toUpperCase());
+
+        const press = (e) => {
+          e.preventDefault();
+          key.classList.add('pressed');
+          setTimeout(() => key.classList.remove('pressed'), 120);
+          dispatchKeyInput(displayChar);
+        };
+
+        key.addEventListener('touchstart', press, { passive: false });
+        key.addEventListener('mousedown', press);
+        return key;
+      }
+
+      highlightDeleteKey(enable = true) {
+        document.querySelectorAll('.key-delete').forEach(k => {
+          if (enable) {
+            k.classList.add('delete-highlight');
+          } else {
+            k.classList.remove('delete-highlight');
+          }
+        });
+      }
+
+      highlightKey(char) {
+        document.querySelectorAll('.kb-key.hint-highlight').forEach(el => el.classList.remove('hint-highlight'));
+        this.highlightDeleteKey(false);
+        if (!char) return;
+        const target = char.toUpperCase();
+
+        if (target === ' ') {
+          const spEl = document.querySelector('.key-space');
+          if (spEl) spEl.classList.add('hint-highlight');
+          return;
+        }
+
+        if (target === '\n' || target === 'ENTER') {
+          const retEl = document.querySelector('.key-return');
+          if (retEl) retEl.classList.add('hint-highlight');
+          return;
+        }
+        
+        // Tự động chuyển mode nếu cần
+        const isNum = ['0','1','2','3','4','5','6','7','8','9'].includes(target);
+        if (isNum && this.kbMode !== 'numbers') {
+          this.kbMode = 'numbers';
+          this.render();
+        } else if (!isNum && this.kbMode === 'numbers' && target >= 'A' && target <= 'Z') {
+          this.kbMode = 'letters';
+          this.render();
+        }
+
+        const el = document.querySelector(`.kb-key[data-key="${target}"]`);
+        if (el) el.classList.add('hint-highlight');
+      }
+    }
+    const kbManager = new IPhoneKeyboardManager();
+
+    // Bộ định tuyến phím gõ đến Game đang mở
+    function dispatchKeyInput(char) {
+      sound.init();
+      if (document.getElementById('typingView').classList.contains('active')) {
+        game1.handleInput(char);
+      } else if (document.getElementById('wordsPracticeView').classList.contains('active')) {
+        game2.handleInput(char);
+      }
+    }
+
+    /* =====================================================================
+       GAME 1: LUYỆN GÕ RƠI TỰ DO
+       ===================================================================== */
+    class FreeFallingGame {
+      constructor() {
+        this.activeChars = [];
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.hits = 0;
+        this.misses = 0;
+        this.isPaused = false;
+        this.isGameOver = false;
+        this.timeLeft = cfg.gameDuration;
+        this.timerInterval = null;
+        this.lastSpawnTime = 0;
+        this.animFrameId = null;
+
+        this.gameArea = document.getElementById('gameArea');
+        this.scoreVal = document.getElementById('scoreVal');
+        this.comboVal = document.getElementById('comboVal');
+        this.hitVal = document.getElementById('hitVal');
+        this.missVal = document.getElementById('missVal');
+        this.timerVal = document.getElementById('timerVal');
+        this.pauseBanner = document.getElementById('pauseBanner');
+      }
+
+      init() {
+        this.start();
+      }
+
+      start() {
+        this.resetStats();
+        this.clearAllFallingChars();
+        this.isPaused = false;
+        this.isGameOver = false;
+        this.pauseBanner.style.display = 'none';
+
+        if (cfg.gameDuration > 0) {
+          this.timeLeft = cfg.gameDuration;
+          this.timerVal.textContent = `${this.timeLeft}s`;
+          clearInterval(this.timerInterval);
+          this.timerInterval = setInterval(() => {
+            if (!this.isPaused && !this.isGameOver && document.getElementById('typingView').classList.contains('active')) {
+              this.timeLeft--;
+              this.timerVal.textContent = `${this.timeLeft}s`;
+              if (this.timeLeft <= 0) this.endGame();
+            }
+          }, 1000);
+        } else {
+          this.timerVal.textContent = '∞';
+        }
+
+        this.lastSpawnTime = performance.now();
+        if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
+        this.gameLoop = this.gameLoop.bind(this);
+        this.animFrameId = requestAnimationFrame(this.gameLoop);
+      }
+
+      resetStats() {
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.hits = 0;
+        this.misses = 0;
+        this.updateStatsUI();
+      }
+
+      updateStatsUI() {
+        this.scoreVal.textContent = this.score;
+        this.comboVal.textContent = this.combo > 1 ? `${this.combo} 🔥` : this.combo;
+        this.hitVal.textContent = this.hits;
+        this.missVal.textContent = this.misses;
+      }
+
+      togglePause() {
+        if (this.isGameOver) return;
+        this.isPaused = !this.isPaused;
+        this.pauseBanner.style.display = this.isPaused ? 'flex' : 'none';
+        document.getElementById('pauseBtn').textContent = this.isPaused ? '▶️' : '⏸';
+      }
+
+      gameLoop(currentTime) {
+        if (!this.isPaused && !this.isGameOver && document.getElementById('typingView').classList.contains('active')) {
+          const intervalMs = cfg.spawnInterval * 1000;
+          if (currentTime - this.lastSpawnTime >= intervalMs) {
+            this.spawnWave();
+            this.lastSpawnTime = currentTime;
+          }
+
+          const gameHeight = this.gameArea.clientHeight;
+          const fallDurationMs = cfg.fallDuration * 1000;
+
+          for (let i = this.activeChars.length - 1; i >= 0; i--) {
+            const item = this.activeChars[i];
+            const elapsed = currentTime - item.startTime;
+            const progress = elapsed / fallDurationMs;
+
+            if (progress >= 1.0) {
+              this.handleMiss(item, i);
+            } else {
+              const currentY = progress * (gameHeight - 60);
+              item.el.style.top = `${currentY}px`;
+            }
+          }
+
+          this.updateHints();
+        }
+
+        this.animFrameId = requestAnimationFrame(this.gameLoop);
+      }
+
+      getRandomChar() {
+        const lettersLower = 'abcdefghijklmnopqrstuvwxyz';
+        const lettersUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+
+        let pool = '';
+        switch (cfg.charMode) {
+          case 'lowercase': pool = lettersLower; break;
+          case 'uppercase': pool = lettersUpper; break;
+          case 'both_case': pool = lettersLower + lettersUpper; break;
+          case 'numbers': pool = numbers; break;
+          case 'letters_and_numbers':
+          default: pool = lettersLower + lettersUpper + numbers; break;
+        }
+
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+
+      spawnWave() {
+        const count = parseInt(cfg.spawnCount, 10);
+        const areaWidth = this.gameArea.clientWidth;
+        const colWidth = Math.max(60, areaWidth / (count + 1));
+        const spawnedInThisWave = [];
+
+        for (let i = 0; i < count; i++) {
+          const char = this.getRandomChar();
+          const el = document.createElement('div');
+          el.className = 'falling-char';
+          
+          const charSize = parseInt(cfg.fontSize, 10);
+          el.style.fontSize = `${charSize}px`;
+          el.style.color = cfg.fontColor;
+          el.style.minWidth = `${charSize + 22}px`;
+          el.style.padding = `${Math.round(charSize * 0.22)}px ${Math.round(charSize * 0.38)}px`;
+
+          const minX = 45;
+          const maxX = areaWidth - 45;
+          const slotX = minX + (i + 0.5) * ((maxX - minX) / count);
+          const jitter = (Math.random() - 0.5) * (colWidth * 0.4);
+          const posX = Math.max(minX, Math.min(maxX, slotX + jitter));
+
+          el.style.left = `${posX}px`;
+          el.style.top = `0px`;
+          el.innerHTML = `<span class="char-text">${char}</span>`;
+
+          el.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.handleInput(char);
+          }, { passive: false });
+
+          this.gameArea.appendChild(el);
+
+          this.activeChars.push({
+            char: char,
+            el: el,
+            startTime: performance.now()
+          });
+          spawnedInThisWave.push(char);
+        }
+
+        if (spawnedInThisWave.length > 0 && cfg.voiceEnabled) {
+          const prompt = getCharRowDetail(spawnedInThisWave[0]).speech;
+          voiceEngine.speak(prompt);
+        }
+      }
+
+      handleInput(inputChar) {
+        if (this.isPaused || this.isGameOver || !document.getElementById('typingView').classList.contains('active')) return;
+
+        let targetIdx = -1;
+        let maxY = -1;
+
+        for (let i = 0; i < this.activeChars.length; i++) {
+          const item = this.activeChars[i];
+          const matches = (item.char === inputChar) || 
+                          (item.char.toLowerCase() === inputChar.toLowerCase());
+
+          if (matches) {
+            const currentTop = parseFloat(item.el.style.top || '0');
+            if (currentTop > maxY) {
+              maxY = currentTop;
+              targetIdx = i;
+            }
+          }
+        }
+
+        if (targetIdx !== -1) {
+          const item = this.activeChars[targetIdx];
+          this.activeChars.splice(targetIdx, 1);
+          
+          this.hits++;
+          this.combo++;
+          if (this.combo > this.maxCombo) this.maxCombo = this.combo;
+
+          const comboBonus = Math.min(this.combo * 5, 50);
+          this.score += 10 + comboBonus;
+
+          sound.playHit();
+          item.el.classList.add('hit-anim');
+          setTimeout(() => {
+            if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+          }, 280);
+
+          this.updateStatsUI();
+        } else {
+          this.combo = 0;
+          this.updateStatsUI();
+        }
+      }
+
+      handleMiss(item, index) {
+        this.activeChars.splice(index, 1);
+        this.misses++;
+        this.combo = 0;
+        this.updateStatsUI();
+        sound.playMiss();
+
+        item.el.style.opacity = '0';
+        item.el.style.transform = 'translate(-50%, 20px) scale(0.8)';
+        setTimeout(() => {
+          if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+        }, 200);
+      }
+
+      clearAllFallingChars() {
+        this.activeChars.forEach(item => {
+          if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+        });
+        this.activeChars = [];
+      }
+
+      updateHints() {
+        if (this.activeChars.length > 0) {
+          let lowest = this.activeChars[0];
+          let maxTop = parseFloat(lowest.el.style.top || '0');
+
+          for (let i = 1; i < this.activeChars.length; i++) {
+            const top = parseFloat(this.activeChars[i].el.style.top || '0');
+            if (top > maxTop) {
+              maxTop = top;
+              lowest = this.activeChars[i];
+            }
+          }
+
+          kbManager.highlightKey(lowest.char);
+        }
+      }
+
+      endGame() {
+        this.isGameOver = true;
+        clearInterval(this.timerInterval);
+        this.clearAllFallingChars();
+
+        const totalAttempts = this.hits + this.misses;
+        const accuracy = totalAttempts > 0 ? Math.round((this.hits / totalAttempts) * 100) : 100;
+        let durationSec = cfg.gameDuration <= 0 ? 60 : cfg.gameDuration;
+        const cpm = Math.round((this.hits / durationSec) * 60);
+
+        let rank = 'C';
+        let comment = 'Hãy luyện tập thêm để ngón tay linh hoạt hơn!';
+        if (accuracy >= 95 && this.hits >= 25) {
+          rank = 'S';
+          comment = 'Đẳng cấp Thần tốc! Phản xạ vị trí phím cực kỳ điêu luyện.';
+        } else if (accuracy >= 85 && this.hits >= 18) {
+          rank = 'A';
+          comment = 'Xuất sắc! Bạn đã ghi nhớ rất tốt các hàng phím.';
+        } else if (accuracy >= 70 && this.hits >= 12) {
+          rank = 'B';
+          comment = 'Rất tốt! Cố gắng tăng thêm một chút tốc độ nhé.';
+        }
+
+        document.getElementById('sumRank').textContent = rank;
+        document.getElementById('sumComment').textContent = comment;
+        document.getElementById('sumScore').textContent = this.score;
+        document.getElementById('sumAccuracy').textContent = `${accuracy}%`;
+        document.getElementById('sumHitsMisses').textContent = `${this.hits} / ${this.misses}`;
+        document.getElementById('sumCPM').textContent = cpm;
+
+        document.getElementById('summaryModal').classList.add('active');
+
+        // BỔ SUNG TỔNG KẾT BẰNG GIỌNG NÓI CHO GAME GÕ RƠI TỰ DO
+        if (cfg.voiceEnabled) {
+          const speechSummary = `Hết giờ rồi! Tổng kết trò chơi gõ rơi tự do: Bạn đạt ${this.score} điểm. Gõ đúng ${this.hits} chữ, để rơi ${this.misses} chữ. Độ chính xác đạt ${accuracy} phần trăm. Tốc độ gõ là ${cpm} ký tự một phút. Xếp loại ${rank}. ${comment}`;
+          this.lastSummarySpeech = speechSummary;
+          voiceEngine.speak(speechSummary, true);
+        }
+      }
+    }
+
+    /* =====================================================================
+       GAME 2: TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY (2 TEXTBOX: THẦY & TRÒ)
+       ===================================================================== */
+    class WordPracticeGame {
+      constructor() {
+        this.boardText = 'BỐ MẸ YÊU CON, VIỆT NAM VÔ ĐỊCH';
+        this.boardFontSize = parseInt(localStorage.getItem('game_board_font_size') || '28', 10);
+        this.currentCharIdx = 0;
+        this.isTeachingMode = false;
+        this.hasError = false;
+        this.errorChar = '';
+        this.studentChars = []; // Mảng các ký tự học trò đã gõ đúng
+        this.totalHits = 0;
+        this.totalErrors = 0;
+
+        // Tùy chọn đánh vần chuẩn Tiếng Việt Lớp 1 (Mặc định: BẬT)
+        this.isSpellingGrade1 = localStorage.getItem('game_spelling_grade1') !== 'false';
+
+        // Elements DOM
+        this.teacherInput = document.getElementById('teacherBlackboardInput');
+        this.teacherTracker = document.getElementById('teacherPromptTracker');
+        this.studentDisplay = document.getElementById('studentNotebookDisplay');
+        this.studentStatusBadge = document.getElementById('studentStatusBadge');
+
+        this.dispFontSize = document.getElementById('dispBoardFontSize');
+        this.dispVoiceRate = document.getElementById('dispVoiceRateInline');
+
+        this.btnStart = document.getElementById('btnStartLesson');
+        this.btnRestart = document.getElementById('btnRestartLesson');
+        this.btnClear = document.getElementById('btnClearBoard');
+        this.btnSample = document.getElementById('btnSampleLessons');
+        this.btnFontMinus = document.getElementById('btnBoardFontMinus');
+        this.btnFontPlus = document.getElementById('btnBoardFontPlus');
+        this.btnRateMinus = document.getElementById('btnRateMinus');
+        this.btnRatePlus = document.getElementById('btnRatePlus');
+
+        this.chkSpellingGrade1 = document.getElementById('chkSpellingGrade1');
+        this.btnSpellNow = document.getElementById('btnSpellNow');
+        this.guideSpellingBadge = document.getElementById('guideSpellingBadge');
+        this.guideSpellingText = document.getElementById('guideSpellingText');
+        this.btnMiniSpellSpeech = document.getElementById('btnMiniSpellSpeech');
+
+        this.guideBanner = document.getElementById('guideBanner');
+        this.guideIcon = document.getElementById('guideIcon');
+        this.guideText = document.getElementById('guideText');
+
+        this.wordProgressVal = document.getElementById('wordProgressVal');
+        this.wordHitsVal = document.getElementById('wordHitsVal');
+        this.wordErrorsVal = document.getElementById('wordErrorsVal');
+
+        this.updateCurrentLetterHint = this.repeatPrompt.bind(this);
+        this.updateCurrentTarget = this.repeatPrompt.bind(this);
+      }
+
+      init() {
+        this.teacherInput.value = this.boardText;
+        if (this.chkSpellingGrade1) {
+          this.chkSpellingGrade1.checked = this.isSpellingGrade1;
+        }
+        this.applyFontSize();
+        this.applyVoiceRate();
+        this.renderStudentNotebook();
+        this.bindEvents();
+      }
+
+      applyFontSize() {
+        if (this.teacherInput) this.teacherInput.style.fontSize = `${this.boardFontSize}px`;
+        if (this.teacherTracker) this.teacherTracker.style.fontSize = `${this.boardFontSize}px`;
+        if (this.studentDisplay) this.studentDisplay.style.fontSize = `${this.boardFontSize}px`;
+        if (this.dispFontSize) this.dispFontSize.textContent = `${this.boardFontSize}px`;
+        localStorage.setItem('game_board_font_size', this.boardFontSize);
+      }
+
+      applyVoiceRate() {
+        if (this.dispVoiceRate) this.dispVoiceRate.textContent = `${(cfg.voiceRate || 1.0).toFixed(1)}x`;
+      }
+
+      // Xác định thông tin từ hiện tại đang gõ và đánh vần Lớp 1
+      getCurrentWordInfo() {
+        if (!this.boardText || this.currentCharIdx >= this.boardText.length) return null;
+        const idx = this.currentCharIdx;
+        const char = this.boardText[idx];
+
+        if (char === ' ' || char === '\n') {
+          return {
+            isSeparator: true,
+            char: char
+          };
+        }
+
+        let start = idx;
+        while (start > 0 && this.boardText[start - 1] !== ' ' && this.boardText[start - 1] !== '\n') {
+          start--;
+        }
+
+        let end = idx;
+        while (end < this.boardText.length && this.boardText[end] !== ' ' && this.boardText[end] !== '\n') {
+          end++;
+        }
+
+        const rawWord = this.boardText.substring(start, end);
+        const isFirstCharOfWord = (idx === start);
+        const isLastCharOfWord = (idx === end - 1);
+        const spelling = spellVietnameseWord(rawWord);
+
+        return {
+          isSeparator: false,
+          rawWord: rawWord,
+          startIndex: start,
+          endIndex: end,
+          isFirstCharOfWord: isFirstCharOfWord,
+          isLastCharOfWord: isLastCharOfWord,
+          spelling: spelling
+        };
+      }
+
+      // Phát âm thanh đánh vần từ hiện tại theo yêu cầu
+      spellCurrentWordNow() {
+        if (!this.isTeachingMode) {
+          const text = this.teacherInput.value.trim();
+          if (text) {
+            const firstWord = text.split(/\s+/)[0];
+            const sp = spellVietnameseWord(firstWord);
+            if (sp && cfg.voiceEnabled) {
+              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true);
+            }
+          }
+          return;
+        }
+
+        const wordInfo = this.getCurrentWordInfo();
+        if (wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
+          if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'flex';
+          if (this.guideSpellingText) this.guideSpellingText.textContent = wordInfo.spelling.display;
+          if (cfg.voiceEnabled) {
+            voiceEngine.speak(`Đánh vần từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}`, true);
+          }
+        } else {
+          this.repeatPrompt();
+        }
+      }
+
+      startTeaching() {
+        const text = this.teacherInput.value.trim();
+        if (!text) {
+          alert('Thầy hãy gõ đề bài hoặc câu luyện tập vào bảng trước nhé!');
+          this.teacherInput.focus();
+          return;
+        }
+
+        this.boardText = text;
+        this.currentCharIdx = 0;
+        this.studentChars = [];
+        this.hasError = false;
+        this.errorChar = '';
+        this.isTeachingMode = true;
+        this.totalHits = 0;
+        this.totalErrors = 0;
+        this.wordHitsVal.textContent = '0';
+        this.wordErrorsVal.textContent = '0';
+
+        if (this.btnRestart) this.btnRestart.style.display = 'inline-flex';
+        if (this.btnStart) this.btnStart.textContent = '▶️ BẮT ĐẦU LẠI';
+        if (this.studentStatusBadge) {
+          this.studentStatusBadge.textContent = 'Đang viết...';
+          this.studentStatusBadge.style.color = '#007AFF';
+        }
+
+        if (this.teacherTracker) this.teacherTracker.style.display = 'flex';
+        this.renderTeacherTracker();
+        this.renderStudentNotebook();
+        this.updateProgressUI();
+
+        // Ghi lại thời gian bắt đầu viết để chấm điểm & tổng kết giọng nói
+        this.startTime = Date.now();
+
+        // Ẩn hoàn toàn textbox hướng dẫn cách đánh để tối đa diện tích hiển thị, không phải cuộn trang
+        if (this.guideBanner) {
+          this.guideBanner.style.display = 'none';
+        }
+
+        // Đọc to chữ cái đầu tiên và hướng dẫn vị trí bàn phím kèm đánh vần
+        this.dictateCurrentChar();
+      }
+
+      renderTeacherTracker() {
+        if (!this.teacherTracker) return;
+        this.teacherTracker.innerHTML = '';
+        for (let i = 0; i < this.boardText.length; i++) {
+          const char = this.boardText[i];
+          const span = document.createElement('span');
+          span.className = 'track-char';
+          span.style.fontSize = `${this.boardFontSize}px`;
+
+          if (i < this.currentCharIdx) {
+            span.classList.add('done');
+          } else if (i === this.currentCharIdx) {
+            span.classList.add('current');
+            span.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+
+          if (char === ' ') {
+            span.textContent = '␣';
+          } else if (char === '\n') {
+            span.innerHTML = '↵<br>';
+          } else {
+            span.textContent = char;
+          }
+          this.teacherTracker.appendChild(span);
+        }
+      }
+
+      renderStudentNotebook() {
+        if (!this.studentDisplay) return;
+        this.studentDisplay.innerHTML = '';
+
+        if (this.studentChars.length === 0 && !this.hasError) {
+          if (!this.isTeachingMode) {
+            const ph = document.createElement('span');
+            ph.className = 'student-placeholder';
+            ph.textContent = 'Chữ học trò gõ sẽ xuất hiện ở đây theo từng chữ máy đọc...';
+            this.studentDisplay.appendChild(ph);
+            return;
+          }
+        }
+
+        // Render các chữ cái học trò đã gõ đúng (MÀU ĐEN RÕ NÉT TRÊN NỀN TRẮNG)
+        this.studentChars.forEach(ch => {
+          const sp = document.createElement('span');
+          sp.className = 'student-char';
+          sp.style.fontSize = `${this.boardFontSize}px`;
+          if (ch === ' ') {
+            sp.innerHTML = '&nbsp;';
+          } else if (ch === '\n') {
+            sp.innerHTML = '<br>';
+          } else {
+            sp.textContent = ch;
+          }
+          this.studentDisplay.appendChild(sp);
+        });
+
+        // Nếu đang bị lỗi: render chữ sai (màu đỏ, gạch chân sóng)
+        if (this.hasError) {
+          const errSp = document.createElement('span');
+          errSp.className = 'student-char error';
+          errSp.style.fontSize = `${this.boardFontSize}px`;
+          errSp.textContent = this.errorChar === ' ' ? '␣' : this.errorChar;
+          this.studentDisplay.appendChild(errSp);
+        }
+
+        // Con trỏ nhấp nháy
+        if (this.isTeachingMode && this.currentCharIdx < this.boardText.length) {
+          const cursor = document.createElement('span');
+          cursor.className = 'student-char cursor';
+          cursor.style.height = `${this.boardFontSize}px`;
+          this.studentDisplay.appendChild(cursor);
+        }
+      }
+
+      updateProgressUI() {
+        if (this.wordProgressVal) {
+          this.wordProgressVal.textContent = `${this.currentCharIdx} / ${this.boardText.length}`;
+        }
+      }
+
+      dictateCurrentChar() {
+        if (!this.isTeachingMode) return;
+
+        if (this.currentCharIdx >= this.boardText.length) {
+          this.handleComplete();
+          return;
+        }
+
+        this.hasError = false;
+        this.errorChar = '';
+        kbManager.highlightDeleteKey(false);
+
+        this.renderTeacherTracker();
+        this.renderStudentNotebook();
+        this.updateProgressUI();
+
+        const targetChar = this.boardText[this.currentCharIdx];
+        const detail = getCharRowDetail(targetChar);
+        const wordInfo = this.getCurrentWordInfo();
+
+        // Cập nhật khung hiển thị đánh vần Lớp 1 trong banner
+        if (this.isSpellingGrade1 && wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
+          if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'flex';
+          if (this.guideSpellingText) this.guideSpellingText.textContent = wordInfo.spelling.display;
+        } else {
+          if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'none';
+        }
+
+        // Giữ Banner hướng dẫn ẩn để tăng diện tích hiển thị, không phải dùng scroll
+        if (this.guideBanner) {
+          this.guideBanner.style.display = 'none';
+        }
+        if (this.guideIcon) {
+          this.guideIcon.textContent = '👉';
+        }
+
+        if (this.guideText) {
+          if (targetChar === ' ') {
+            this.guideText.textContent = 'Bấm phím [Dấu cách] ở Dòng 4 của bàn phím';
+          } else if (targetChar === '\n') {
+            this.guideText.textContent = 'Bấm phím [Nhập / Return] ở góc dưới bên phải';
+          } else {
+            this.guideText.textContent = `Viết chữ "${targetChar}" ➜ Nằm ở ${detail.rowName}`;
+          }
+        }
+
+        // Highlight phím tương ứng trên bàn phím ảo iPhone
+        kbManager.highlightKey(detail.baseKey);
+
+        // Phát giọng nói đọc tên chữ và dòng, có kèm đánh vần nếu là chữ đầu tiên của từ
+        if (cfg.voiceEnabled) {
+          if (this.isSpellingGrade1 && wordInfo && !wordInfo.isSeparator && wordInfo.isFirstCharOfWord && wordInfo.spelling) {
+            const speechText = `Từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}. Bắt đầu bằng ${detail.speech}`;
+            voiceEngine.speak(speechText, true);
+          } else {
+            voiceEngine.speak(detail.speech, true);
+          }
+        }
+      }
+
+      repeatPrompt() {
+        if (!this.isTeachingMode) return;
+        if (this.hasError) {
+          if (cfg.voiceEnabled) {
+            voiceEngine.speak('Bạn đã viết sai rồi! Hãy bấm nút Xoá cạnh chữ M ở dòng ba để xoá chữ sai đi nhé!', true);
+          }
+          kbManager.highlightDeleteKey(true);
+        } else {
+          const wordInfo = this.getCurrentWordInfo();
+          if (this.isSpellingGrade1 && wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
+            const detail = getCharRowDetail(this.boardText[this.currentCharIdx]);
+            if (cfg.voiceEnabled) {
+              voiceEngine.speak(`Từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}. Bạn đang viết ${detail.speech}`, true);
+            }
+          } else {
+            this.dictateCurrentChar();
+          }
+        }
+      }
+
+      handleInput(inputChar) {
+        // TRƯỜNG HỢP 0: Khi chưa bắt đầu bài học -> Bàn phím ảo hỗ trợ nhập trực tiếp vào Textbox đề bài của Thầy
+        if (!this.isTeachingMode) {
+          const input = this.teacherInput;
+          if (inputChar === 'Backspace') {
+            const start = input.selectionStart || input.value.length;
+            const end = input.selectionEnd || input.value.length;
+            if (start === end && start > 0) {
+              input.value = input.value.substring(0, start - 1) + input.value.substring(end);
+              input.selectionStart = input.selectionEnd = start - 1;
+            } else {
+              input.value = input.value.substring(0, start) + input.value.substring(end);
+              input.selectionStart = input.selectionEnd = start;
+            }
+          } else if (inputChar === 'Enter') {
+            input.value += '\n';
+          } else if (inputChar && inputChar.length === 1) {
+            const start = input.selectionStart || input.value.length;
+            const end = input.selectionEnd || input.value.length;
+            input.value = input.value.substring(0, start) + inputChar + input.value.substring(end);
+            input.selectionStart = input.selectionEnd = start + inputChar.length;
+          }
+          return;
+        }
+
+        if (this.currentCharIdx >= this.boardText.length) return;
+
+        // TRƯỜNG HỢP 1: Đang có lỗi viết sai -> BẮT BUỘC BẤM XOÁ MỚI ĐƯỢC ĐI TIẾP
+        if (this.hasError) {
+          if (inputChar === 'Backspace') {
+            // Học trò đã bấm nút Xoá để sửa sai!
+            this.hasError = false;
+            this.errorChar = '';
+            if (this.studentStatusBadge) {
+              this.studentStatusBadge.textContent = 'Đang viết...';
+              this.studentStatusBadge.style.color = '#007AFF';
+            }
+            kbManager.highlightDeleteKey(false);
+            sound.playHit();
+            this.renderStudentNotebook();
+
+            // Nhắc lại chữ cần viết đúng
+            this.dictateCurrentChar();
+          } else {
+            // Học trò vẫn bấm phím khác trong khi chưa xoá chữ sai -> Nhắc nhở mạnh mẽ
+            sound.playMiss();
+            if (this.studentStatusBadge) {
+              this.studentStatusBadge.textContent = '⚠️ Bấm phím Xoá để sửa';
+              this.studentStatusBadge.style.color = '#EF4444';
+            }
+            kbManager.highlightKey('');
+            kbManager.highlightDeleteKey(true);
+            if (cfg.voiceEnabled) {
+              voiceEngine.speak('Hãy bấm nút Xoá cạnh chữ M ở dòng ba để xoá chữ sai đi nhé!', true);
+            }
+          }
+          return;
+        }
+
+        // TRƯỜNG HỢP 2: Học trò đang viết bình thường (Hỗ trợ toàn diện Tiếng Việt có dấu)
+        const targetChar = this.boardText[this.currentCharIdx];
+        const targetBase = getVietnameseBaseChar(targetChar);
+        const inputBase = getVietnameseBaseChar(inputChar);
+
+        let isMatch = false;
+
+        if (targetChar === ' ' && (inputChar === ' ' || inputChar === 'Space')) isMatch = true;
+        else if (targetChar === '\n' && (inputChar === 'Enter' || inputChar === '\n')) isMatch = true;
+        // Khớp trực tiếp ký tự tiếng Việt (kể cả có dấu từ bộ gõ Unikey/Telex)
+        else if (targetChar.toLowerCase() === inputChar.toLowerCase()) isMatch = true;
+        // Khớp qua ký tự gốc (ví dụ bấm phím E cho chữ Ê/Ẹ, phím O cho chữ Ô/Ơ, phím D cho chữ Đ)
+        else if (targetBase.toLowerCase() === inputChar.toLowerCase() || targetBase === inputBase) isMatch = true;
+
+        if (isMatch) {
+          // VIẾT ĐÚNG!
+          const currentWordInfo = this.getCurrentWordInfo();
+          this.totalHits++;
+          if (this.wordHitsVal) this.wordHitsVal.textContent = this.totalHits;
+          this.studentChars.push(targetChar);
+          this.currentCharIdx++;
+          sound.playHit();
+          this.renderStudentNotebook();
+          this.updateProgressUI();
+
+          // Khi học trò vừa gõ xong chữ cái cuối cùng của 1 từ -> Đọc to từ đó khen ngợi
+          if (this.isSpellingGrade1 && currentWordInfo && !currentWordInfo.isSeparator && currentWordInfo.isLastCharOfWord) {
+            if (cfg.voiceEnabled) {
+              voiceEngine.speak(`${currentWordInfo.rawWord}! Giỏi lắm!`, false);
+            }
+          }
+
+          // Chỉ chuyển sang chữ mới và đọc chữ mới khi trò đã viết xong 01 chữ
+          if (this.currentCharIdx >= this.boardText.length) {
+            this.handleComplete();
+          } else {
+            this.dictateCurrentChar();
+          }
+        } else {
+          // VIẾT SAI!
+          this.totalErrors++;
+          if (this.wordErrorsVal) this.wordErrorsVal.textContent = this.totalErrors;
+          this.hasError = true;
+          this.errorChar = inputChar === ' ' ? '␣' : inputChar;
+          sound.playMiss();
+
+          // Hiển thị chữ sai màu đỏ trong Textbox học trò
+          this.renderStudentNotebook();
+
+          if (this.studentStatusBadge) {
+            this.studentStatusBadge.textContent = `⚠️ Sai chữ "${this.errorChar}" - Bấm phím Xoá`;
+            this.studentStatusBadge.style.color = '#EF4444';
+          }
+
+          // Bàn phím ảo nhấp nháy đỏ nút Xoá cạnh chữ M
+          kbManager.highlightKey('');
+          kbManager.highlightDeleteKey(true);
+
+          // Phát âm thanh hướng dẫn sửa lỗi
+          if (cfg.voiceEnabled) {
+            voiceEngine.speak('Bạn đã viết sai rồi! Hãy bấm nút Xoá cạnh chữ M ở dòng ba để xoá chữ sai đi nhé!', true);
+          }
+        }
+      }
+
+      handleComplete() {
+        this.isTeachingMode = false;
+        sound.playSuccessWord();
+        if (this.studentStatusBadge) {
+          this.studentStatusBadge.textContent = 'Hoàn thành 🎉';
+          this.studentStatusBadge.style.color = '#30D158';
+        }
+
+        const elapsedSeconds = Math.max(1, Math.round((Date.now() - (this.startTime || Date.now())) / 1000));
+        const m = Math.floor(elapsedSeconds / 60);
+        const s = elapsedSeconds % 60;
+        const timeStr = m > 0 ? `${m} phút ${s} giây` : `${s} giây`;
+        const timeDigital = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+
+        const totalChars = this.boardText.length;
+        const hits = this.totalHits;
+        const errors = this.totalErrors;
+
+        let speechSummary = '';
+        let commentText = '';
+
+        if (errors === 0) {
+          speechSummary = `Chúc mừng học trò! Bạn đã hoàn thành toàn bộ bài viết của Thầy thật xuất sắc trong ${timeStr}! Viết đúng tuyệt đối tất cả ${totalChars} ký tự mà không mắc lỗi nào. Thầy khen bạn rất nhiều!`;
+          commentText = `🏆 Hoàn hảo tuyệt đối! Bạn viết đúng 100% tất cả ${totalChars} ký tự trong ${timeStr} mà không mắc một lỗi nào.`;
+        } else {
+          speechSummary = `Chúc mừng học trò đã hoàn thành bài viết của Thầy trong ${timeStr}! Tổng cộng ${totalChars} ký tự, số lần gõ đúng là ${hits}, đã sửa chữa ${errors} lỗi. Bạn rất chăm chỉ và tiến bộ!`;
+          commentText = `👏 Rất tốt! Bạn đã kiên trì sửa ${errors} lỗi và hoàn thành trọn vẹn ${totalChars} ký tự trong ${timeStr}.`;
+        }
+
+        this.lastWordSpeech = speechSummary;
+        if (cfg.voiceEnabled) {
+          voiceEngine.speak(speechSummary, true);
+        }
+
+        kbManager.highlightKey('');
+        kbManager.highlightDeleteKey(false);
+
+        // Hiển thị modal tổng kết bài viết của Thầy
+        const modal = document.getElementById('wordCompleteModal');
+        if (modal) {
+          const cEl = document.getElementById('sumWordChars');
+          const tEl = document.getElementById('sumWordTime');
+          const hEl = document.getElementById('sumWordHits');
+          const eEl = document.getElementById('sumWordErrors');
+          const comEl = document.getElementById('wordCompleteComment');
+
+          if (cEl) cEl.textContent = totalChars;
+          if (tEl) tEl.textContent = timeDigital;
+          if (hEl) hEl.textContent = hits;
+          if (eEl) eEl.textContent = errors;
+          if (comEl) comEl.textContent = commentText;
+          modal.classList.add('active');
+        }
+      }
+
+      bindEvents() {
+        if (this.btnStart) this.btnStart.addEventListener('click', () => this.startTeaching());
+        if (this.btnRestart) this.btnRestart.addEventListener('click', () => this.startTeaching());
+
+        // Bật / Tắt tùy chọn Đánh vần Tiếng Việt Lớp 1
+        if (this.chkSpellingGrade1) {
+          this.chkSpellingGrade1.addEventListener('change', (e) => {
+            this.isSpellingGrade1 = e.target.checked;
+            localStorage.setItem('game_spelling_grade1', this.isSpellingGrade1);
+            if (this.guideSpellingBadge) {
+              if (this.isSpellingGrade1 && this.isTeachingMode) {
+                const wi = this.getCurrentWordInfo();
+                if (wi && !wi.isSeparator && wi.spelling) {
+                  this.guideSpellingBadge.style.display = 'flex';
+                  this.guideSpellingText.textContent = wi.spelling.display;
+                }
+              } else {
+                this.guideSpellingBadge.style.display = 'none';
+              }
+            }
+          });
+        }
+
+        // Bấm nút Đánh vần từ hiện tại
+        if (this.btnSpellNow) {
+          this.btnSpellNow.addEventListener('click', () => {
+            this.spellCurrentWordNow();
+          });
+        }
+
+        if (this.btnMiniSpellSpeech) {
+          this.btnMiniSpellSpeech.addEventListener('click', () => {
+            this.spellCurrentWordNow();
+          });
+        }
+
+        // Đã loại bỏ thanh chèn dấu trên màn hình để tăng diện tích hiển thị
+
+        if (this.btnClear) {
+          this.btnClear.addEventListener('click', () => {
+            if (confirm('Thầy có chắc chắn muốn xóa trắng bảng đề bài không?')) {
+              this.teacherInput.value = '';
+              if (this.teacherTracker) this.teacherTracker.style.display = 'none';
+              this.studentChars = [];
+              this.isTeachingMode = false;
+              this.hasError = false;
+              this.renderStudentNotebook();
+              if (this.guideBanner) this.guideBanner.className = 'guide-banner normal';
+              if (this.guideIcon) this.guideIcon.textContent = '👉';
+              if (this.guideText) {
+                this.guideText.textContent = 'Thầy hãy gõ đề bài ở ô trên rồi bấm nút [BẮT ĐẦU CHO TRÒ VIẾT]';
+              }
+              if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'none';
+              if (this.btnRestart) this.btnRestart.style.display = 'none';
+              if (this.btnStart) this.btnStart.textContent = '▶️ BẮT ĐẦU CHO TRÒ VIẾT';
+              if (this.studentStatusBadge) {
+                this.studentStatusBadge.textContent = 'Sẵn sàng';
+                this.studentStatusBadge.style.color = 'var(--text-muted)';
+              }
+              this.teacherInput.focus();
+              kbManager.highlightKey('');
+              kbManager.highlightDeleteKey(false);
+            }
+          });
+        }
+
+        // Tăng giảm cỡ chữ trực tiếp
+        if (this.btnFontMinus) {
+          this.btnFontMinus.addEventListener('click', () => {
+            if (this.boardFontSize > 18) {
+              this.boardFontSize -= 2;
+              this.applyFontSize();
+              this.renderTeacherTracker();
+              this.renderStudentNotebook();
+            }
+          });
+        }
+
+        if (this.btnFontPlus) {
+          this.btnFontPlus.addEventListener('click', () => {
+            if (this.boardFontSize < 50) {
+              this.boardFontSize += 2;
+              this.applyFontSize();
+              this.renderTeacherTracker();
+              this.renderStudentNotebook();
+            }
+          });
+        }
+
+        // Tăng giảm tốc độ đọc nhanh
+        if (this.btnRateMinus) {
+          this.btnRateMinus.addEventListener('click', () => {
+            if (cfg.voiceRate > 0.6) {
+              cfg.voiceRate = Math.round((cfg.voiceRate - 0.1) * 10) / 10;
+              saveConfigToStorage(cfg);
+              this.applyVoiceRate();
+              const rangeEl = document.getElementById('cfgVoiceRate');
+              if (rangeEl) rangeEl.value = cfg.voiceRate;
+              const dispEl = document.getElementById('dispVoiceRate');
+              if (dispEl) dispEl.textContent = `${cfg.voiceRate}x`;
+            }
+          });
+        }
+
+        if (this.btnRatePlus) {
+          this.btnRatePlus.addEventListener('click', () => {
+            if (cfg.voiceRate < 1.4) {
+              cfg.voiceRate = Math.round((cfg.voiceRate + 0.1) * 10) / 10;
+              saveConfigToStorage(cfg);
+              this.applyVoiceRate();
+              const rangeEl = document.getElementById('cfgVoiceRate');
+              if (rangeEl) rangeEl.value = cfg.voiceRate;
+              const dispEl = document.getElementById('dispVoiceRate');
+              if (dispEl) dispEl.textContent = `${cfg.voiceRate}x`;
+            }
+          });
+        }
+
+        // Nút Bài Mẫu: Mở Modal Quản Lý & Cập Nhật Bài Mẫu của Thầy
+        if (this.btnSample) {
+          this.btnSample.addEventListener('click', () => {
+            if (window.sampleManager) {
+              window.sampleManager.open();
+            }
+          });
+        }
+      }
+    }
+
+    /* =====================================================================
+       GAME 3: DẠY COI GIỜ TRÊN ĐỒNG HỒ (CLOCK TEACHER)
+       ===================================================================== */
+    class ClockTeacher {
+      constructor() {
+        this.hour = 10;
+        this.min = 15;
+        this.sec = 0;
+        this.isLockedRealistic = true;
+        this.isMasked = false;
+        this.isRealtimeRunning = false;
+        this.realtimeInterval = null;
+
+        this.handHour = document.getElementById('handHour');
+        this.handMin = document.getElementById('handMin');
+        this.secGroup = document.getElementById('secGroup');
+        this.dispClockH = document.getElementById('dispClockH');
+        this.dispClockM = document.getElementById('dispClockM');
+        this.dispClockS = document.getElementById('dispClockS');
+        this.sliderHour = document.getElementById('sliderHour');
+        this.sliderMin = document.getElementById('sliderMin');
+        this.sliderSec = document.getElementById('sliderSec');
+        this.ctrlHourVal = document.getElementById('ctrlHourVal');
+        this.ctrlMinVal = document.getElementById('ctrlMinVal');
+        this.ctrlSecVal = document.getElementById('ctrlSecVal');
+        this.digitalTimeBox = document.getElementById('digitalTimeBox');
+        this.clockStage = document.getElementById('clockStage');
+        this.draggingHand = null;
+      }
+
+      initDial() {
+        const dialTicks = document.getElementById('dialTicks');
+        const dialNumbers = document.getElementById('dialNumbers');
+        if (dialTicks.children.length > 0) {
+          if (!this.isRealtimeRunning) this.startRealtime();
+          return;
+        }
+
+        const cx = 180;
+        const cy = 180;
+        const r = 152;
+
+        for (let i = 0; i < 60; i++) {
+          const angle = (i * 6) * Math.PI / 180;
+          const isMajor = (i % 5 === 0);
+          const tickLen = isMajor ? 14 : 6;
+          const x1 = cx + (r - tickLen) * Math.sin(angle);
+          const y1 = cy - (r - tickLen) * Math.cos(angle);
+          const x2 = cx + r * Math.sin(angle);
+          const y2 = cy - r * Math.cos(angle);
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', x1);
+          line.setAttribute('y1', y1);
+          line.setAttribute('x2', x2);
+          line.setAttribute('y2', y2);
+          line.setAttribute('class', isMajor ? 'tick-major' : 'tick-minor');
+          dialTicks.appendChild(line);
+        }
+
+        for (let h = 1; h <= 12; h++) {
+          const angle = (h * 30) * Math.PI / 180;
+          const numR = 118;
+          const nx = cx + numR * Math.sin(angle);
+          const ny = cy - numR * Math.cos(angle);
+
+          const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          txt.setAttribute('x', nx);
+          txt.setAttribute('y', ny);
+          txt.setAttribute('class', 'dial-number');
+          txt.textContent = h;
+          dialNumbers.appendChild(txt);
+
+          const subR = 164;
+          const minVal = (h * 5) % 60;
+          const minStr = minVal === 0 ? '60' : (minVal < 10 ? '0' + minVal : minVal);
+          const sx = cx + subR * Math.sin(angle);
+          const sy = cy - subR * Math.cos(angle);
+
+          const subTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          subTxt.setAttribute('x', sx);
+          subTxt.setAttribute('y', sy);
+          subTxt.setAttribute('class', 'dial-min-sub');
+          subTxt.textContent = minStr;
+          dialNumbers.appendChild(subTxt);
+        }
+
+        this.updateClockUI();
+        this.bindEvents();
+        // Cho đồng hồ chạy thật ngay lập tức khi khởi tạo
+        this.startRealtime();
+      }
+
+      setTime(h, m, s) {
+        this.hour = parseInt(h, 10);
+        this.min = parseInt(m, 10);
+        this.sec = parseInt(s, 10);
+        this.updateClockUI();
+      }
+
+      updateClockUI() {
+        const secAngle = this.sec * 6;
+        this.secGroup.style.transform = `rotate(${secAngle}deg)`;
+
+        const minAngle = this.min * 6 + (this.isLockedRealistic ? (this.sec * 0.1) : 0);
+        this.handMin.style.transform = `rotate(${minAngle}deg)`;
+
+        const hourBase = (this.hour % 12) * 30;
+        const hourOffset = this.isLockedRealistic ? (this.min * 0.5) : 0;
+        const hourAngle = hourBase + hourOffset;
+        this.handHour.style.transform = `rotate(${hourAngle}deg)`;
+
+        const fH = this.hour < 10 ? `0${this.hour}` : this.hour;
+        const fM = this.min < 10 ? `0${this.min}` : this.min;
+        const fS = this.sec < 10 ? `0${this.sec}` : this.sec;
+
+        this.dispClockH.textContent = fH;
+        this.dispClockM.textContent = fM;
+        this.dispClockS.textContent = fS;
+
+        this.sliderHour.value = this.hour;
+        this.sliderMin.value = this.min;
+        this.sliderSec.value = this.sec;
+
+        this.ctrlHourVal.textContent = `${this.hour} Giờ`;
+        this.ctrlMinVal.textContent = `${this.min} Phút`;
+        this.ctrlSecVal.textContent = `${fS} Giây`;
+      }
+
+      speakCurrentTime() {
+        sound.init();
+        let text = '';
+        const h = this.hour;
+        const m = this.min;
+
+        if (m === 0) text = `Bây giờ là đúng ${h} giờ`;
+        else if (m === 15) text = `Bây giờ là ${h} giờ 15 phút`;
+        else if (m === 30) text = `Bây giờ là ${h} giờ rưỡi, hoặc ${h} giờ 30 phút`;
+        else if (m === 45) {
+          const nextH = (h % 12) + 1;
+          text = `Bây giờ là ${h} giờ 45 phút, tức là ${nextH} giờ kém 15 phút`;
+        } else if (m > 30) {
+          const nextH = (h % 12) + 1;
+          text = `Bây giờ là ${h} giờ ${m} phút, hoặc ${nextH} giờ kém ${60 - m}`;
+        } else {
+          text = `Bây giờ là ${h} giờ ${m} phút`;
+        }
+
+        if (this.sec > 0) text += ` ${this.sec} giây`;
+        voiceEngine.speak(text, true);
+      }
+
+      startDrag(handType) {
+        this.draggingHand = handType;
+        if (this.isRealtimeRunning) this.stopRealtime();
+      }
+
+      handleDrag(clientX, clientY) {
+        if (!this.draggingHand) return;
+        const rect = this.clockStage.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = clientX - cx;
+        const dy = clientY - cy;
+
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+        if (angle < 0) angle += 360;
+
+        if (this.draggingHand === 'sec') this.sec = Math.round(angle / 6) % 60;
+        else if (this.draggingHand === 'min') this.min = Math.round(angle / 6) % 60;
+        else if (this.draggingHand === 'hour') {
+          let h = Math.round(angle / 30);
+          this.hour = h === 0 ? 12 : h;
+        }
+
+        this.updateClockUI();
+        sound.playClockTick();
+      }
+
+      stopDrag() {
+        this.draggingHand = null;
+      }
+
+      startRealtime() {
+        this.isRealtimeRunning = true;
+        const btn = document.getElementById('btnRealtimeClock');
+        if (btn) {
+          btn.classList.add('active');
+          btn.innerHTML = '<span>⏱️</span> Đang Chạy Thật (Bấm Dừng)';
+        }
+        const update = () => {
+          const now = new Date();
+          let h = now.getHours();
+          if (h > 12) h -= 12;
+          if (h === 0) h = 12;
+          this.setTime(h, now.getMinutes(), now.getSeconds());
+        };
+        update();
+        if (this.realtimeInterval) clearInterval(this.realtimeInterval);
+        this.realtimeInterval = setInterval(update, 1000);
+      }
+
+      stopRealtime() {
+        this.isRealtimeRunning = false;
+        const btn = document.getElementById('btnRealtimeClock');
+        if (btn) {
+          btn.classList.remove('active');
+          btn.innerHTML = '<span>▶️</span> Cho Chạy Thật';
+        }
+        if (this.realtimeInterval) {
+          clearInterval(this.realtimeInterval);
+          this.realtimeInterval = null;
+        }
+      }
+
+      toggleRealtime() {
+        if (this.isRealtimeRunning) {
+          this.stopRealtime();
+        } else {
+          this.startRealtime();
+        }
+      }
+
+      generateRandomTime() {
+        if (this.isRealtimeRunning) this.toggleRealtime();
+        const randH = Math.floor(Math.random() * 12) + 1;
+        const steps = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+        const randM = steps[Math.floor(Math.random() * steps.length)];
+        this.setTime(randH, randM, 0);
+
+        if (!this.isMasked) this.toggleMask();
+        voiceEngine.speak('Đã đổi giờ ngẫu nhiên! Bạn hãy nhìn đồng hồ và đoán xem mấy giờ nhé!', true);
+      }
+
+      toggleMask() {
+        this.isMasked = !this.isMasked;
+        const btn = document.getElementById('toggleMaskBtn');
+        const icon = document.getElementById('maskIcon');
+        const txt = document.getElementById('maskText');
+        if (this.isMasked) {
+          this.digitalTimeBox.classList.add('blurred');
+          icon.textContent = '👁️‍🗨️';
+          txt.textContent = 'Hiện giờ';
+          btn.classList.add('primary');
+        } else {
+          this.digitalTimeBox.classList.remove('blurred');
+          icon.textContent = '👁️';
+          txt.textContent = 'Ẩn giờ';
+          btn.classList.remove('primary');
+        }
+      }
+
+      toggleLock() {
+        this.isLockedRealistic = !this.isLockedRealistic;
+        const btn = document.getElementById('btnLockHands');
+        const icon = document.getElementById('lockIcon');
+        const txt = document.getElementById('lockText');
+        if (this.isLockedRealistic) {
+          icon.textContent = '🔗';
+          txt.textContent = 'Kim Liên Hoàn';
+          btn.classList.remove('active');
+        } else {
+          icon.textContent = '🔓';
+          txt.textContent = 'Kim Độc Lập';
+          btn.classList.add('active');
+        }
+        this.updateClockUI();
+      }
+
+      bindEvents() {
+        this.sliderHour.addEventListener('input', (e) => {
+          this.hour = parseInt(e.target.value, 10);
+          this.updateClockUI();
+        });
+        document.getElementById('btnHourMinus').addEventListener('click', () => {
+          this.hour = this.hour <= 1 ? 12 : this.hour - 1;
+          this.updateClockUI();
+        });
+        document.getElementById('btnHourPlus').addEventListener('click', () => {
+          this.hour = this.hour >= 12 ? 1 : this.hour + 1;
+          this.updateClockUI();
+        });
+
+        this.sliderMin.addEventListener('input', (e) => {
+          this.min = parseInt(e.target.value, 10);
+          this.updateClockUI();
+        });
+        document.getElementById('btnMinMinus').addEventListener('click', () => {
+          this.min = this.min <= 0 ? 59 : this.min - 1;
+          this.updateClockUI();
+        });
+        document.getElementById('btnMinPlus').addEventListener('click', () => {
+          this.min = this.min >= 59 ? 0 : this.min + 1;
+          this.updateClockUI();
+        });
+
+        this.sliderSec.addEventListener('input', (e) => {
+          this.sec = parseInt(e.target.value, 10);
+          this.updateClockUI();
+        });
+        document.getElementById('btnSecMinus').addEventListener('click', () => {
+          this.sec = this.sec <= 0 ? 59 : this.sec - 1;
+          this.updateClockUI();
+        });
+        document.getElementById('btnSecPlus').addEventListener('click', () => {
+          this.sec = this.sec >= 59 ? 0 : this.sec + 1;
+          this.updateClockUI();
+        });
+
+        document.getElementById('speakClockBtn').addEventListener('click', () => this.speakCurrentTime());
+        document.getElementById('toggleMaskBtn').addEventListener('click', () => this.toggleMask());
+        document.getElementById('btnRealtimeClock').addEventListener('click', () => this.toggleRealtime());
+        document.getElementById('btnRandomTime').addEventListener('click', () => this.generateRandomTime());
+        document.getElementById('btnLockHands').addEventListener('click', () => this.toggleLock());
+
+        // BẬT / TẮT MENU TÙY CHỌN ẨN HIỆN ĐỂ MẶT ĐỒNG HỒ TO TỐI ĐA
+        const btnToggleDrawer = document.getElementById('btnToggleClockDrawer');
+        const drawerOverlay = document.getElementById('clockDrawerOverlay');
+        const btnCloseDrawer = document.getElementById('btnCloseClockDrawer');
+        const btnApplyClose = document.getElementById('btnApplyAndCloseClockDrawer');
+
+        const toggleClockDrawer = (show) => {
+          if (!drawerOverlay) return;
+          const isShow = (show !== undefined) ? show : !drawerOverlay.classList.contains('active');
+          if (isShow) drawerOverlay.classList.add('active');
+          else drawerOverlay.classList.remove('active');
+        };
+
+        if (btnToggleDrawer) btnToggleDrawer.addEventListener('click', () => toggleClockDrawer());
+        if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', () => toggleClockDrawer(false));
+        if (btnApplyClose) btnApplyClose.addEventListener('click', () => toggleClockDrawer(false));
+        if (drawerOverlay) {
+          drawerOverlay.addEventListener('click', (e) => {
+            if (e.target === drawerOverlay) toggleClockDrawer(false);
+          });
+        }
+
+        // Đổi màu nền mặt đồng hồ
+        const btnWhite = document.getElementById('dialColorWhite');
+        const btnIvory = document.getElementById('dialColorIvory');
+        const btnCyan = document.getElementById('dialColorCyan');
+
+        if (btnWhite) {
+          btnWhite.addEventListener('click', () => {
+            this.clockStage.style.background = '#F8F9FD';
+            btnWhite.style.borderColor = '#0A84FF';
+            if (btnIvory) btnIvory.style.borderColor = 'rgba(255,255,255,0.2)';
+            if (btnCyan) btnCyan.style.borderColor = 'rgba(255,255,255,0.2)';
+          });
+        }
+        if (btnIvory) {
+          btnIvory.addEventListener('click', () => {
+            this.clockStage.style.background = '#FFF9E6';
+            btnIvory.style.borderColor = '#FF9F0A';
+            if (btnWhite) btnWhite.style.borderColor = 'rgba(255,255,255,0.2)';
+            if (btnCyan) btnCyan.style.borderColor = 'rgba(255,255,255,0.2)';
+          });
+        }
+        if (btnCyan) {
+          btnCyan.addEventListener('click', () => {
+            this.clockStage.style.background = '#E6F7FF';
+            btnCyan.style.borderColor = '#0A84FF';
+            if (btnWhite) btnWhite.style.borderColor = 'rgba(255,255,255,0.2)';
+            if (btnIvory) btnIvory.style.borderColor = 'rgba(255,255,255,0.2)';
+          });
+        }
+
+        this.handHour.addEventListener('pointerdown', (e) => { e.stopPropagation(); this.startDrag('hour'); });
+        this.handMin.addEventListener('pointerdown', (e) => { e.stopPropagation(); this.startDrag('min'); });
+        this.secGroup.addEventListener('pointerdown', (e) => { e.stopPropagation(); this.startDrag('sec'); });
+
+        this.clockStage.addEventListener('pointerdown', (e) => {
+          if (!this.draggingHand) {
+            this.startDrag('min');
+            this.handleDrag(e.clientX, e.clientY);
+          }
+        });
+
+        window.addEventListener('pointermove', (e) => {
+          if (this.draggingHand) this.handleDrag(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('pointerup', () => this.stopDrag());
+      }
+    }
+
+    /* =====================================================================
+       QUẢN LÝ BÀI MẪU CỦA THẦY (CHO PHÉP THAY ĐỔI, CẬP NHẬT & LƯU TRỮ)
+       ===================================================================== */
+    const DEFAULT_SAMPLE_LESSONS = [
+      'BỐ MẸ YÊU CON, VIỆT NAM VÔ ĐỊCH',
+      'QUÊ HƯƠNG TƯƠI ĐẸP, MÙA THU TỰ HÀO',
+      'HỌC TẬP CHĂM CHỈ, THẦY CÔ YÊU QUÝ',
+      'GIA ĐÌNH HẠNH PHÚC, ĐẤT NƯỚC BÌNH AN',
+      'ĂN QUẢ NHỚ KẺ TRỒNG CÂY, UỐNG NƯỚC NHỚ NGUỒN',
+      'TIÊN HỌC LỄ, HẬU HỌC VĂN',
+      '123 456 789 2026'
+    ];
+
+    class SampleLessonManager {
+      constructor(wordGame) {
+        this.wordGame = wordGame;
+        this.storageKey = 'game_custom_sample_lessons_v2';
+        this.lessons = this.loadLessons();
+
+        this.modal = document.getElementById('sampleLessonsModal');
+        this.listContainer = document.getElementById('sampleLessonsListContainer');
+        this.newInput = document.getElementById('newSampleInput');
+        this.btnAdd = document.getElementById('btnAddSampleLesson');
+        this.btnReset = document.getElementById('btnResetDefaultSamples');
+        this.btnClose = document.getElementById('btnCloseSampleModal');
+        this.bindEvents();
+      }
+
+      loadLessons() {
+        try {
+          const raw = localStorage.getItem(this.storageKey);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          }
+        } catch (e) {}
+        return [...DEFAULT_SAMPLE_LESSONS];
+      }
+
+      saveLessons() {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(this.lessons));
+        } catch (e) {}
+      }
+
+      renderList() {
+        if (!this.listContainer) return;
+        this.listContainer.innerHTML = '';
+
+        this.lessons.forEach((lesson, index) => {
+          const item = document.createElement('div');
+          item.className = 'sample-item-card';
+
+          const textEl = document.createElement('div');
+          textEl.className = 'sample-item-text';
+          textEl.textContent = `${index + 1}. ${lesson}`;
+
+          const actions = document.createElement('div');
+          actions.className = 'sample-item-actions';
+
+          const btnApply = document.createElement('button');
+          btnApply.className = 'btn-sample-action apply';
+          btnApply.textContent = '✅ Chọn';
+          btnApply.title = 'Nạp bài này vào bảng của Thầy';
+          btnApply.addEventListener('click', () => {
+            this.applyLesson(lesson);
+            this.close();
+          });
+
+          const btnEdit = document.createElement('button');
+          btnEdit.className = 'btn-sample-action';
+          btnEdit.textContent = '✏️ Sửa';
+          btnEdit.title = 'Chỉnh sửa bài mẫu này';
+          btnEdit.addEventListener('click', () => {
+            const updated = prompt('Chỉnh sửa nội dung bài mẫu:', lesson);
+            if (updated && updated.trim()) {
+              this.lessons[index] = updated.trim();
+              this.saveLessons();
+              this.renderList();
+            }
+          });
+
+          const btnDelete = document.createElement('button');
+          btnDelete.className = 'btn-sample-action delete';
+          btnDelete.textContent = '🗑️';
+          btnDelete.title = 'Xóa bài mẫu này';
+          btnDelete.addEventListener('click', () => {
+            if (confirm(`Xóa bài mẫu: "${lesson}"?`)) {
+              this.lessons.splice(index, 1);
+              if (this.lessons.length === 0) {
+                this.lessons = [...DEFAULT_SAMPLE_LESSONS];
+              }
+              this.saveLessons();
+              this.renderList();
+            }
+          });
+
+          actions.appendChild(btnApply);
+          actions.appendChild(btnEdit);
+          actions.appendChild(btnDelete);
+
+          item.appendChild(textEl);
+          item.appendChild(actions);
+          this.listContainer.appendChild(item);
+        });
+      }
+
+      applyLesson(lessonText) {
+        if (this.wordGame && this.wordGame.teacherInput) {
+          this.wordGame.teacherInput.value = lessonText;
+          if (this.wordGame.teacherTracker) this.wordGame.teacherTracker.style.display = 'none';
+          this.wordGame.studentChars = [];
+          this.wordGame.isTeachingMode = false;
+          this.wordGame.hasError = false;
+          this.wordGame.renderStudentNotebook();
+          if (this.wordGame.btnRestart) this.wordGame.btnRestart.style.display = 'none';
+          if (this.wordGame.btnStart) this.wordGame.btnStart.textContent = '▶️ BẮT ĐẦU CHO TRÒ VIẾT';
+        }
+      }
+
+      open() {
+        this.renderList();
+        if (this.modal) this.modal.classList.add('active');
+        if (this.newInput) this.newInput.focus();
+      }
+
+      close() {
+        if (this.modal) this.modal.classList.remove('active');
+      }
+
+      bindEvents() {
+        if (this.btnAdd) {
+          this.btnAdd.addEventListener('click', () => {
+            const val = this.newInput.value.trim();
+            if (!val) {
+              alert('Thầy hãy nhập nội dung bài mẫu mới trước nhé!');
+              this.newInput.focus();
+              return;
+            }
+            this.lessons.push(val);
+            this.saveLessons();
+            this.newInput.value = '';
+            this.renderList();
+          });
+        }
+
+        if (this.btnReset) {
+          this.btnReset.addEventListener('click', () => {
+            if (confirm('Khôi phục danh sách bài mẫu mặc định của ứng dụng?')) {
+              this.lessons = [...DEFAULT_SAMPLE_LESSONS];
+              this.saveLessons();
+              this.renderList();
+            }
+          });
+        }
+
+        if (this.btnClose) {
+          this.btnClose.addEventListener('click', () => this.close());
+        }
+
+        if (this.modal) {
+          this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) this.close();
+          });
+        }
+      }
+    }
+
+    /* =====================================================================
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MATH GAME)
+       ===================================================================== */
+    class MathPracticeGame {
+      constructor() {
+        this.questions = [];
+        this.studentAnswers = [];
+        this.isTesting = false;
+        this.startTime = null;
+        this.timerInterval = null;
+        this.elapsedSeconds = 0;
+        this.lastGradingSpeech = '';
+
+        this.teacherInput = document.getElementById('teacherMathInput');
+        this.studentSheet = document.getElementById('studentMathSheet');
+        this.studentStatus = document.getElementById('studentMathStatus');
+        this.btnStart = document.getElementById('btnStartMathTest');
+        this.btnSubmit = document.getElementById('btnSubmitMathTest');
+        this.btnClear = document.getElementById('btnClearMath');
+        this.btnSample = document.getElementById('btnMathSample');
+        this.btnAutoDropdown = document.getElementById('btnAutoMathDropdown');
+        this.presetDropdown = document.getElementById('mathPresetDropdown');
+        this.btnVoiceRepeat = document.getElementById('btnMathVoiceRepeat');
+
+        this.timerVal = document.getElementById('mathTimerVal');
+        this.progressVal = document.getElementById('mathProgressVal');
+        this.scoreVal = document.getElementById('mathScoreVal');
+      }
+
+      init() {
+        if (this.teacherInput && !this.teacherInput.value.trim()) {
+          this.loadPreset('add20');
+        }
+        this.bindEvents();
+      }
+
+      // Tự động phân tích và tính toán đáp án cho từng phép tính đơn (+, -, *, /)
+      parseSingleMath(line) {
+        if (!line || !line.trim()) return null;
+        let raw = line.trim();
+        // Bỏ dấu = ở cuối nếu có
+        let expr = raw.replace(/=/g, '').trim();
+        // Chuẩn hóa toán tử nhân chia
+        let normalized = expr.replace(/[xX×.]/g, '*').replace(/[:÷]/g, '/');
+
+        // Khớp: số_1 toán_tử số_2
+        const match = normalized.match(/^(-?\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(-?\d+(?:\.\d+)?)$/);
+        if (!match) return null;
+
+        const num1 = parseFloat(match[1]);
+        const op = match[2];
+        const num2 = parseFloat(match[3]);
+        let result = 0;
+
+        if (op === '+') result = num1 + num2;
+        else if (op === '-') result = num1 - num2;
+        else if (op === '*') result = num1 * num2;
+        else if (op === '/') {
+          if (num2 === 0) return null;
+          result = num1 / num2;
+        }
+
+        result = Math.round(result * 100) / 100;
+        const displayOp = op === '*' ? '×' : (op === '/' ? '÷' : op);
+
+        return {
+          original: raw,
+          num1: num1,
+          op: displayOp,
+          num2: num2,
+          displayExpr: `${num1} ${displayOp} ${num2} =`,
+          result: result
+        };
+      }
+
+      // Tạo tự động 10 bài tập đơn
+      loadPreset(presetType) {
+        let lines = [];
+        if (presetType === 'add20') {
+          // Phép cộng trong phạm vi 20
+          for (let i = 0; i < 10; i++) {
+            const a = Math.floor(Math.random() * 11) + 1; // 1..11
+            const b = Math.floor(Math.random() * (20 - a + 1));
+            lines.push(`${a} + ${b} =`);
+          }
+        } else if (presetType === 'sub20') {
+          // Phép trừ trong phạm vi 20
+          for (let i = 0; i < 10; i++) {
+            const a = Math.floor(Math.random() * 16) + 5; // 5..20
+            const b = Math.floor(Math.random() * (a + 1));
+            lines.push(`${a} - ${b} =`);
+          }
+        } else if (presetType === 'addsub100') {
+          // Cộng trừ trong phạm vi 100
+          for (let i = 0; i < 10; i++) {
+            const isAdd = Math.random() > 0.5;
+            if (isAdd) {
+              const a = Math.floor(Math.random() * 60) + 10;
+              const b = Math.floor(Math.random() * (99 - a)) + 1;
+              lines.push(`${a} + ${b} =`);
+            } else {
+              const a = Math.floor(Math.random() * 70) + 20;
+              const b = Math.floor(Math.random() * (a - 5)) + 1;
+              lines.push(`${a} - ${b} =`);
+            }
+          }
+        } else if (presetType === 'mul') {
+          // Bảng cửu chương nhân (2 đến 9)
+          for (let i = 0; i < 10; i++) {
+            const a = Math.floor(Math.random() * 8) + 2; // 2..9
+            const b = Math.floor(Math.random() * 9) + 1; // 1..9
+            lines.push(`${a} x ${b} =`);
+          }
+        } else if (presetType === 'div') {
+          // Bảng chia hết (2 đến 9)
+          for (let i = 0; i < 10; i++) {
+            const b = Math.floor(Math.random() * 8) + 2; // số chia: 2..9
+            const res = Math.floor(Math.random() * 9) + 1; // thương: 1..9
+            const a = b * res;
+            lines.push(`${a} : ${b} =`);
+          }
+        } else {
+          // Hỗn hợp 10 bài đơn
+          const ops = ['+', '-', 'x', ':'];
+          for (let i = 0; i < 10; i++) {
+            const op = ops[i % ops.length];
+            if (op === '+') {
+              const a = Math.floor(Math.random() * 15) + 3;
+              const b = Math.floor(Math.random() * 15) + 2;
+              lines.push(`${a} + ${b} =`);
+            } else if (op === '-') {
+              const a = Math.floor(Math.random() * 18) + 10;
+              const b = Math.floor(Math.random() * (a - 2)) + 1;
+              lines.push(`${a} - ${b} =`);
+            } else if (op === 'x') {
+              const a = Math.floor(Math.random() * 8) + 2;
+              const b = Math.floor(Math.random() * 8) + 2;
+              lines.push(`${a} x ${b} =`);
+            } else {
+              const b = Math.floor(Math.random() * 7) + 2;
+              const res = Math.floor(Math.random() * 8) + 2;
+              lines.push(`${b * res} : ${b} =`);
+            }
+          }
+        }
+
+        if (this.teacherInput) {
+          this.teacherInput.value = lines.join('\n');
+        }
+      }
+
+      startTest() {
+        if (!this.teacherInput) return;
+        const rawLines = this.teacherInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (rawLines.length === 0) {
+          alert('Thầy hãy ra 10 bài tập phép tính đơn ở Khung 1 trước nhé!');
+          this.teacherInput.focus();
+          return;
+        }
+
+        // Phân tích và lọc lấy tối đa 10 bài tập đơn hợp lệ
+        this.questions = [];
+        for (let i = 0; i < rawLines.length && this.questions.length < 10; i++) {
+          const parsed = this.parseSingleMath(rawLines[i]);
+          if (parsed) {
+            this.questions.push(parsed);
+          }
+        }
+
+        // Nếu thiếu bài tập, tự động bổ sung cho tròn 10 bài
+        if (this.questions.length < 10) {
+          const needed = 10 - this.questions.length;
+          for (let i = 0; i < needed; i++) {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            this.questions.push(this.parseSingleMath(`${a} + ${b} =`));
+          }
+          this.teacherInput.value = this.questions.map(q => q.original).join('\n');
+        }
+
+        this.isTesting = true;
+        this.studentAnswers = new Array(10).fill('');
+        this.elapsedSeconds = 0;
+        this.renderStudentSheet();
+
+        if (this.studentStatus) {
+          this.studentStatus.textContent = 'Đang làm bài...';
+          this.studentStatus.style.color = '#007AFF';
+        }
+        if (this.btnSubmit) this.btnSubmit.style.display = 'block';
+        if (this.scoreVal) this.scoreVal.textContent = '-- / 10';
+        if (this.progressVal) this.progressVal.textContent = '0 / 10';
+
+        // Bắt đầu bấm giờ
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.startTime = Date.now();
+        this.updateTimerUI();
+        this.timerInterval = setInterval(() => {
+          this.elapsedSeconds = Math.floor((Date.now() - this.startTime) / 1000);
+          this.updateTimerUI();
+        }, 1000);
+
+        // Focus vào ô làm bài đầu tiên
+        setTimeout(() => {
+          const firstInput = document.getElementById('mathAns_0');
+          if (firstInput) firstInput.focus();
+        }, 150);
+
+        if (cfg.voiceEnabled) {
+          voiceEngine.speak('Bắt đầu làm bài toán! Có mười bài tập đơn, hãy tính thật nhanh và nộp bài nhé!', true);
+        }
+      }
+
+      updateTimerUI() {
+        const m = Math.floor(this.elapsedSeconds / 60);
+        const s = this.elapsedSeconds % 60;
+        const formatted = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+        if (this.timerVal) this.timerVal.textContent = formatted;
+      }
+
+      renderStudentSheet() {
+        if (!this.studentSheet) return;
+        this.studentSheet.innerHTML = '';
+
+        this.questions.forEach((q, idx) => {
+          const row = document.createElement('div');
+          row.className = 'math-row';
+          row.id = `mathRow_${idx}`;
+
+          const left = document.createElement('div');
+          left.className = 'math-row-left';
+
+          const numBadge = document.createElement('span');
+          numBadge.className = 'math-row-num';
+          numBadge.textContent = `Bài ${idx + 1}`;
+
+          const exprTxt = document.createElement('span');
+          exprTxt.textContent = q.displayExpr;
+
+          left.appendChild(numBadge);
+          left.appendChild(exprTxt);
+
+          const right = document.createElement('div');
+          right.style.display = 'flex';
+          right.style.alignItems = 'center';
+          right.style.gap = '8px';
+
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.inputMode = 'numeric';
+          input.className = 'math-input-box';
+          input.id = `mathAns_${idx}`;
+          input.placeholder = '?';
+          input.value = this.studentAnswers[idx] || '';
+
+          // Tự động nhảy dòng khi nhấn Enter hoặc phím Xuống
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              const next = document.getElementById(`mathAns_${idx + 1}`);
+              if (next) next.focus();
+              else if (idx === 9) {
+                this.submitTest();
+              }
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              const prev = document.getElementById(`mathAns_${idx - 1}`);
+              if (prev) prev.focus();
+            }
+          });
+
+          input.addEventListener('input', (e) => {
+            this.studentAnswers[idx] = e.target.value.trim();
+            const filledCount = this.studentAnswers.filter(a => a !== '').length;
+            if (this.progressVal) this.progressVal.textContent = `${filledCount} / 10`;
+          });
+
+          const statusBadge = document.createElement('span');
+          statusBadge.className = 'math-row-status';
+          statusBadge.id = `mathStatus_${idx}`;
+
+          right.appendChild(input);
+          right.appendChild(statusBadge);
+
+          row.appendChild(left);
+          right.style.flex = '1';
+          right.style.justifyContent = 'flex-end';
+          row.appendChild(right);
+
+          this.studentSheet.appendChild(row);
+        });
+      }
+
+      // Nộp bài và chấm điểm bằng giọng nói
+      submitTest() {
+        if (!this.isTesting) return;
+        this.isTesting = false;
+        clearInterval(this.timerInterval);
+
+        let correctCount = 0;
+        this.questions.forEach((q, idx) => {
+          const userAnsStr = this.studentAnswers[idx];
+          const userAns = parseFloat(userAnsStr);
+          const rowEl = document.getElementById(`mathRow_${idx}`);
+          const statusEl = document.getElementById(`mathStatus_${idx}`);
+          const inputEl = document.getElementById(`mathAns_${idx}`);
+
+          if (inputEl) inputEl.disabled = true;
+
+          const isMatch = (userAnsStr !== '' && !isNaN(userAns) && Math.abs(userAns - q.result) < 0.001);
+
+          if (isMatch) {
+            correctCount++;
+            if (rowEl) {
+              rowEl.classList.remove('incorrect');
+              rowEl.classList.add('correct');
+            }
+            if (statusEl) {
+              statusEl.className = 'math-row-status ok';
+              statusEl.textContent = '✅ Đúng';
+            }
+          } else {
+            if (rowEl) {
+              rowEl.classList.remove('correct');
+              rowEl.classList.add('incorrect');
+            }
+            if (statusEl) {
+              statusEl.className = 'math-row-status err';
+              statusEl.textContent = `❌ Đáp án: ${q.result}`;
+            }
+          }
+        });
+
+        const score = correctCount; // Thang điểm 10
+        if (this.scoreVal) this.scoreVal.textContent = `${score} / 10`;
+        if (this.studentStatus) {
+          this.studentStatus.textContent = `Đã chấm: ${score}/10 điểm`;
+          this.studentStatus.style.color = score >= 8 ? '#30D158' : (score >= 5 ? '#FF9F0A' : '#FF453A');
+        }
+
+        const elapsedSec = Math.max(1, this.elapsedSeconds);
+        const m = Math.floor(elapsedSec / 60);
+        const s = elapsedSec % 60;
+        const timeStr = m > 0 ? `${m} phút ${s} giây` : `${s} giây`;
+        const timeDigital = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+        const avgPace = (elapsedSec / 10).toFixed(1);
+
+        // ĐÁNH GIÁ CHẤM ĐIỂM BẰNG GIỌNG NÓI TRÊN CƠ SỞ THỜI GIAN VÀ SỐ KẾT QUẢ ĐÚNG
+        let speechAssessment = '';
+        let commentText = '';
+        let iconEmoji = '🌟';
+
+        if (score === 10) {
+          iconEmoji = '🏆';
+          if (elapsedSec <= 30) {
+            speechAssessment = `Xuất sắc! Thần đồng toán học! Bạn đã làm đúng tuyệt đối mười trên mười bài tập chỉ trong ${elapsedSec} giây! Đạt điểm mười tuyệt đối! Tốc độ tính toán siêu nhanh và cực kỳ chính xác. Thầy khen bạn rất nhiều!`;
+            commentText = `🏆 ĐẲNG CẤP THẦN TỐC! Đúng 10/10 câu chỉ trong ${elapsedSec} giây (trung bình ${avgPace}s/câu). Đạt điểm 10 tuyệt đối!`;
+          } else if (elapsedSec <= 60) {
+            speechAssessment = `Tuyệt vời! Bạn đã làm đúng toàn bộ mười trên mười bài tập trong thời gian ${elapsedSec} giây. Đạt điểm mười hoàn hảo! Bạn tính toán rất cẩn thận và giỏi giang.`;
+            commentText = `🌟 TUYỆT VỜI! Đúng trọn vẹn 10/10 bài tập trong ${timeStr}. Bạn tính toán rất chuẩn xác!`;
+          } else {
+            speechAssessment = `Rất tốt! Bạn đã trả lời đúng toàn bộ mười trên mười câu hỏi trong ${timeStr}. Đạt điểm mười! Lần sau cố gắng tăng tốc thêm một chút nữa nhé!`;
+            commentText = `👏 RẤT TỐT! Đúng 10/10 câu trong ${timeStr}. Cố gắng tăng tốc độ hơn nữa nhé!`;
+          }
+        } else if (score >= 8) {
+          iconEmoji = '🥇';
+          if (elapsedSec <= 40) {
+            speechAssessment = `Rất giỏi! Bạn làm đúng ${score} trên mười bài tập trong thời gian rất nhanh là ${elapsedSec} giây. Đạt ${score} điểm! Hãy kiểm tra lại những câu chưa đúng để giành điểm mười nhé!`;
+            commentText = `🥇 RẤT GIỎI! Đạt ${score}/10 điểm trong ${elapsedSec} giây. Tốc độ rất tốt!`;
+          } else {
+            speechAssessment = `Khá giỏi! Bạn làm đúng ${score} trên mười bài tập trong ${timeStr}. Đạt ${score} điểm. Thầy khen tinh thần làm bài chăm chỉ của bạn!`;
+            commentText = `👍 KHÁ GIỎI! Đạt ${score}/10 điểm trong ${timeStr}. Hãy rèn thêm để đạt điểm 10 nhé!`;
+          }
+        } else if (score >= 5) {
+          iconEmoji = '📈';
+          speechAssessment = `Bạn đã hoàn thành mười bài tập trong ${timeStr}. Làm đúng ${score} trên mười câu, đạt ${score} điểm. Bạn hãy luyện tập thêm các phép tính để đạt điểm cao hơn nhé!`;
+          commentText = `📈 TIẾN BỘ! Đạt ${score}/10 điểm trong ${timeStr}. Cùng thầy ôn lại các phép tính chưa đúng nhé!`;
+        } else {
+          iconEmoji = '💪';
+          speechAssessment = `Bạn đã hoàn thành bài làm trong ${timeStr}. Làm đúng ${score} trên mười câu, đạt ${score} điểm. Đừng nản lòng nhé, hãy ôn lại bảng tính và cùng thầy luyện tập nhiều hơn!`;
+          commentText = `💪 CỐ GẮNG LÊN! Đạt ${score}/10 điểm trong ${timeStr}. Đừng nản lòng, luyện tập thêm sẽ tiến bộ ngay!`;
+        }
+
+        this.lastGradingSpeech = speechAssessment;
+        if (cfg.voiceEnabled) {
+          voiceEngine.speak(speechAssessment, true);
+        }
+
+        // Hiển thị modal chấm điểm
+        const modal = document.getElementById('mathGradeModal');
+        if (modal) {
+          const iconEl = document.getElementById('mathGradeIcon');
+          const finalScoreEl = document.getElementById('mathFinalScore');
+          const sumTimeEl = document.getElementById('mathSumTime');
+          const sumCorrectEl = document.getElementById('mathSumCorrect');
+          const sumWrongEl = document.getElementById('mathSumWrong');
+          const sumPaceEl = document.getElementById('mathSumPace');
+          const commentEl = document.getElementById('mathGradeComment');
+
+          if (iconEl) iconEl.textContent = iconEmoji;
+          if (finalScoreEl) finalScoreEl.textContent = score;
+          if (sumTimeEl) sumTimeEl.textContent = timeDigital;
+          if (sumCorrectEl) sumCorrectEl.textContent = `${score} / 10`;
+          if (sumWrongEl) sumWrongEl.textContent = `${10 - score} / 10`;
+          if (sumPaceEl) sumPaceEl.textContent = `${avgPace} s/câu`;
+          if (commentEl) commentEl.textContent = commentText;
+          modal.classList.add('active');
+        }
+
+        if (this.btnSubmit) this.btnSubmit.style.display = 'none';
+      }
+
+      bindEvents() {
+        if (this.btnStart) this.btnStart.addEventListener('click', () => this.startTest());
+        if (this.btnSubmit) this.btnSubmit.addEventListener('click', () => this.submitTest());
+
+        if (this.btnClear) {
+          this.btnClear.addEventListener('click', () => {
+            if (confirm('Thầy có chắc chắn muốn xóa bảng ra đề bài không?')) {
+              this.teacherInput.value = '';
+              this.studentSheet.innerHTML = '<div class="math-empty-tip">Thầy hãy chuẩn bị 10 phép tính đơn ở Khung 1 rồi nhấn <strong>[BẮT ĐẦU CHO TRÒ LÀM BÀI]</strong> nhé!</div>';
+              if (this.btnSubmit) this.btnSubmit.style.display = 'none';
+            }
+          });
+        }
+
+        if (this.btnSample) {
+          this.btnSample.addEventListener('click', () => {
+            this.loadPreset('mix');
+          });
+        }
+
+        if (this.btnAutoDropdown && this.presetDropdown) {
+          this.btnAutoDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.presetDropdown.classList.toggle('show');
+          });
+
+          document.addEventListener('click', () => {
+            this.presetDropdown.classList.remove('show');
+          });
+
+          this.presetDropdown.querySelectorAll('.preset-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const preset = item.getAttribute('data-preset');
+              this.loadPreset(preset);
+              this.presetDropdown.classList.remove('show');
+            });
+          });
+        }
+
+        if (this.btnVoiceRepeat) {
+          this.btnVoiceRepeat.addEventListener('click', () => {
+            if (this.lastGradingSpeech) {
+              voiceEngine.speak(this.lastGradingSpeech, true);
+            } else {
+              voiceEngine.speak('Chưa có kết quả chấm điểm. Trò hãy nộp bài để nghe Thầy chấm điểm nhé!', true);
+            }
+          });
+        }
+
+        const btnRepeatModal = document.getElementById('btnRepeatMathVoice');
+        if (btnRepeatModal) {
+          btnRepeatModal.addEventListener('click', () => {
+            if (this.lastGradingSpeech) {
+              voiceEngine.speak(this.lastGradingSpeech, true);
+            }
+          });
+        }
+
+        const btnRetry = document.getElementById('btnRetryMathTest');
+        if (btnRetry) {
+          btnRetry.addEventListener('click', () => {
+            const modal = document.getElementById('mathGradeModal');
+            if (modal) modal.classList.remove('active');
+            this.startTest();
+          });
+        }
+
+        const btnCloseModal = document.getElementById('btnCloseMathGradeModal');
+        if (btnCloseModal) {
+          btnCloseModal.addEventListener('click', () => {
+            const modal = document.getElementById('mathGradeModal');
+            if (modal) modal.classList.remove('active');
+          });
+        }
+      }
+    }
+
+    /* =====================================================================
+       KHỞI TẠO CÁC GAME & SỰ KIỆN TOÀN CỤC
+       ===================================================================== */
+    const game1 = new FreeFallingGame();
+    const game2 = new WordPracticeGame();
+    const sampleManager = new SampleLessonManager(game2);
+    window.sampleManager = sampleManager;
+    const clockTeacher = new ClockTeacher();
+    const mathGame = new MathPracticeGame();
+    mathGame.init();
+
+    // Hook lặp lại giọng nói Game 1
+    const btnRepeatFalling = document.getElementById('btnRepeatFallingSummaryVoice');
+    if (btnRepeatFalling) {
+      btnRepeatFalling.addEventListener('click', () => {
+        if (game1.lastSummarySpeech) {
+          voiceEngine.speak(game1.lastSummarySpeech, true);
+        }
+      });
+    }
+
+    // Hook lặp lại giọng nói & đóng modal Game 2
+    const btnRepeatWord = document.getElementById('btnRepeatWordVoice');
+    if (btnRepeatWord) {
+      btnRepeatWord.addEventListener('click', () => {
+        if (game2.lastWordSpeech) {
+          voiceEngine.speak(game2.lastWordSpeech, true);
+        }
+      });
+    }
+    const btnRestartWord = document.getElementById('btnRestartWordFromModal');
+    if (btnRestartWord) {
+      btnRestartWord.addEventListener('click', () => {
+        const modal = document.getElementById('wordCompleteModal');
+        if (modal) modal.classList.remove('active');
+        game2.startTeaching();
+      });
+    }
+    const btnCloseWord = document.getElementById('btnCloseWordModal');
+    if (btnCloseWord) {
+      btnCloseWord.addEventListener('click', () => {
+        const modal = document.getElementById('wordCompleteModal');
+        if (modal) modal.classList.remove('active');
+      });
+    }
+
+    // Điều hướng Tab
+    const tabTyping = document.getElementById('tabTyping');
+    const tabWords = document.getElementById('tabWords');
+    const tabClock = document.getElementById('tabClock');
+    const tabMath = document.getElementById('tabMath');
+
+    const typingView = document.getElementById('typingView');
+    const wordsView = document.getElementById('wordsPracticeView');
+    const clockView = document.getElementById('clockView');
+    const mathView = document.getElementById('mathView');
+    const kbContainer = document.getElementById('keyboardContainer');
+    const kbWrapper = document.getElementById('keyboardWrapper');
+
+    function switchTab(target) {
+      localStorage.setItem('game_active_tab', target);
+      [tabTyping, tabWords, tabClock, tabMath].forEach(t => { if (t) t.classList.remove('active'); });
+      [typingView, wordsView, clockView, mathView].forEach(v => { if (v) v.classList.remove('active'); });
+
+      if (target === 'typing') {
+        tabTyping.classList.add('active');
+        typingView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'block';
+        game1.isPaused = false;
+        game1.updateHints();
+      } else if (target === 'words') {
+        tabWords.classList.add('active');
+        wordsView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'block';
+        game1.isPaused = true;
+        game2.updateCurrentTarget();
+      } else if (target === 'clock') {
+        tabClock.classList.add('active');
+        clockView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím khi coi đồng hồ
+        game1.isPaused = true;
+        clockTeacher.initDial();
+        if (!clockTeacher.isRealtimeRunning) {
+          clockTeacher.startRealtime();
+        }
+      } else if (target === 'math') {
+        tabMath.classList.add('active');
+        mathView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím iPhone khi làm toán
+        game1.isPaused = true;
+      }
+    }
+
+    tabTyping.addEventListener('click', () => switchTab('typing'));
+    tabWords.addEventListener('click', () => switchTab('words'));
+    tabClock.addEventListener('click', () => switchTab('clock'));
+    if (tabMath) tabMath.addEventListener('click', () => switchTab('math'));
+
+    // Bắt sự kiện phím vật lý từ bàn phím máy tính / iPad
+    window.addEventListener('keydown', (e) => {
+      // Nếu đang focus vào ô gõ đề bài (input/textarea) thì để người dùng gõ tự nhiên
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        if (typingView.classList.contains('active')) game1.togglePause();
+        return;
+      }
+
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        dispatchKeyInput('Backspace');
+        const delEl = document.querySelector('.key-delete');
+        if (delEl) {
+          delEl.classList.add('pressed');
+          setTimeout(() => delEl.classList.remove('pressed'), 120);
+        }
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        dispatchKeyInput('Enter');
+        const retEl = document.querySelector('.key-return');
+        if (retEl) {
+          retEl.classList.add('pressed');
+          setTimeout(() => retEl.classList.remove('pressed'), 120);
+        }
+        return;
+      }
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        dispatchKeyInput(' ');
+        const spEl = document.querySelector('.key-space');
+        if (spEl) {
+          spEl.classList.add('pressed');
+          setTimeout(() => spEl.classList.remove('pressed'), 120);
+        }
+        return;
+      }
+
+      if (e.key && e.key.length === 1) {
+        dispatchKeyInput(e.key);
+        const keyEl = document.querySelector(`.kb-key[data-key="${e.key.toUpperCase()}"]`);
+        if (keyEl) {
+          keyEl.classList.add('pressed');
+          setTimeout(() => keyEl.classList.remove('pressed'), 120);
+        }
+      }
+    });
+
+    // Nút Header Game 1
+    document.getElementById('pauseBtn').addEventListener('click', () => game1.togglePause());
+    document.getElementById('repeatVoiceBtn').addEventListener('click', () => {
+      sound.init();
+      if (game1.activeChars.length > 0) {
+        let lowest = game1.activeChars[0];
+        let maxTop = parseFloat(lowest.el.style.top || '0');
+        for (let i = 1; i < game1.activeChars.length; i++) {
+          const top = parseFloat(game1.activeChars[i].el.style.top || '0');
+          if (top > maxTop) { maxTop = top; lowest = game1.activeChars[i]; }
+        }
+        voiceEngine.speak(getCharRowDetail(lowest.char).speech, true);
+      } else {
+        voiceEngine.speak('Chưa có chữ nào rơi', true);
+      }
+    });
+
+    // Nút Header Game 2
+    document.getElementById('wordRepeatVoiceBtn').addEventListener('click', () => {
+      sound.init();
+      game2.updateCurrentTarget();
+    });
+
+    // Nút mở Modal Cài đặt
+    const openSettings = () => {
+      game1.isPaused = true;
+      document.getElementById('cfgCharMode').value = cfg.charMode;
+      document.getElementById('cfgFallDuration').value = cfg.fallDuration;
+      document.getElementById('dispFallDuration').textContent = `${cfg.fallDuration} giây`;
+      document.getElementById('cfgFontSize').value = cfg.fontSize;
+      document.getElementById('dispFontSize').textContent = `${cfg.fontSize} px`;
+      document.getElementById('cfgVoiceEnabled').checked = cfg.voiceEnabled;
+      document.getElementById('cfgVoiceRate').value = cfg.voiceRate;
+      document.getElementById('dispVoiceRate').textContent = `${cfg.voiceRate}x`;
+      document.getElementById('cfgSoundEnabled').checked = cfg.soundEnabled;
+
+      // Active chips
+      document.querySelectorAll('#bgThemePresets .color-chip').forEach(c => {
+        if (c.getAttribute('data-bg') === cfg.gameBgColor) c.classList.add('active');
+        else c.classList.remove('active');
+      });
+      document.querySelectorAll('#fontColorPresets .color-chip').forEach(c => {
+        if (c.getAttribute('data-color') === cfg.fontColor) c.classList.add('active');
+        else c.classList.remove('active');
+      });
+
+      document.getElementById('settingsModal').classList.add('active');
+    };
+
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+    document.getElementById('btnWordsSettings').addEventListener('click', openSettings);
+
+    // Modal Cài đặt Controls
+    document.getElementById('cfgFallDuration').addEventListener('input', (e) => {
+      document.getElementById('dispFallDuration').textContent = `${e.target.value} giây`;
+    });
+    document.getElementById('cfgFontSize').addEventListener('input', (e) => {
+      document.getElementById('dispFontSize').textContent = `${e.target.value} px`;
+    });
+    document.getElementById('cfgVoiceRate').addEventListener('input', (e) => {
+      document.getElementById('dispVoiceRate').textContent = `${e.target.value}x`;
+    });
+
+    // Chọn màu nền game
+    document.querySelectorAll('#bgThemePresets .color-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#bgThemePresets .color-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const bg = chip.getAttribute('data-bg');
+        applyAppBgTheme(bg);
+      });
+    });
+
+    // Chọn màu chữ rơi
+    document.querySelectorAll('#fontColorPresets .color-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#fontColorPresets .color-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        cfg.fontColor = chip.getAttribute('data-color');
+      });
+    });
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      cfg.charMode = document.getElementById('cfgCharMode').value;
+      cfg.fallDuration = parseFloat(document.getElementById('cfgFallDuration').value);
+      cfg.fontSize = parseInt(document.getElementById('cfgFontSize').value, 10);
+      cfg.voiceEnabled = document.getElementById('cfgVoiceEnabled').checked;
+      cfg.voiceRate = parseFloat(document.getElementById('cfgVoiceRate').value);
+      cfg.soundEnabled = document.getElementById('cfgSoundEnabled').checked;
+
+      saveConfigToStorage(cfg);
+      game2.applyVoiceRate();
+      document.getElementById('settingsModal').classList.remove('active');
+      game1.start();
+    });
+
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+      document.getElementById('settingsModal').classList.remove('active');
+      game1.isPaused = false;
+    });
+
+    // Summary Modal
+    document.getElementById('playAgainBtn').addEventListener('click', () => {
+      document.getElementById('summaryModal').classList.remove('active');
+      game1.start();
+    });
+    document.getElementById('openSettingsFromSummaryBtn').addEventListener('click', () => {
+      document.getElementById('summaryModal').classList.remove('active');
+      openSettings();
+    });
+
+    // Khởi tạo toàn bộ ứng dụng
+    window.addEventListener('DOMContentLoaded', () => {
+      applyAppBgTheme(cfg.gameBgColor);
+      kbManager.render();
+      game1.init();
+      game2.init();
+      clockTeacher.initDial();
+
+      // Mở ngay tab Game 2 "Luyện từ của thầy" (hoặc tab người dùng vừa chọn gần nhất)
+      const initialTab = localStorage.getItem('game_active_tab') || 'words';
+      switchTab(initialTab);
+    });
+  </script>
+</body>
+</html>
