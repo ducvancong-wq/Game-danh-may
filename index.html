@@ -532,50 +532,48 @@
       color: #0284C7;
     }
 
-    /* Banner hướng dẫn (ẩn khi bắt đầu viết) */
-    .guide-banner {
-      display: none !important;
-      border-radius: 12px;
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .guide-main-row {
-      display: flex;
+    /* Thông báo nhắc xóa khi viết sai (Game 2 - Luyện từ của thầy) */
+    .word-error-notice {
+      display: none;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      font-size: 15px;
-      font-weight: 800;
+      padding: 8px 14px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+      border: 2px solid #EF4444;
+      border-radius: 10px;
+      color: #B91C1C;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+      animation: alertBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .word-error-notice.shake {
+      animation: alertShake 0.35s ease-in-out;
+    }
+    .word-error-notice .notice-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .word-error-notice .notice-text {
+      flex: 1;
       text-align: center;
     }
-
-    .guide-banner.normal {
-      background: #FEF3C7 !important;
-      border: 2px solid #F59E0B !important;
-      color: #92400E !important;
+    @keyframes alertBounce {
+      0% { transform: scale(0.95); opacity: 0; }
+      60% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes alertShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
     }
 
-    .guide-banner.error-state {
-      background: #FEE2E2 !important;
-      border: 2px solid #EF4444 !important;
-      color: #B91C1C !important;
-      animation: pulseError 0.6s infinite alternate;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
-    }
-
-    @keyframes pulseError {
-      from { transform: scale(1); }
-      to { transform: scale(1.02); }
-    }
-
-    .guide-banner.success-state {
-      background: #DCFCE7 !important;
-      border: 2px solid #22C55E !important;
-      color: #15803D !important;
+    /* Banner hướng dẫn (đã ẩn hoàn toàn để tăng diện tích hiển thị) */
+    .guide-banner {
+      display: none !important;
     }
 
     /* Khung hiển thị đánh vần Tiếng Việt Lớp 1 trong banner */
@@ -1031,6 +1029,7 @@
        VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO - MENU ẨN HIỆN)
        ===================================================================== */
     #clockView {
+      display: none !important;
       background: radial-gradient(circle at center, #171d2f 0%, #0a0d17 100%);
       overflow: hidden;
       padding: 8px 12px;
@@ -2031,12 +2030,12 @@
         </div>
         <div class="stat-pill">
           <span class="label">Còn lại</span>
-          <span class="val" id="timerVal">60s</span>
+          <span class="val" id="timerVal">03:00</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button class="voice-badge-btn" id="repeatVoiceBtn" title="Bấm để nghe lại vị trí phím">
+        <button class="voice-badge-btn" id="repeatVoiceBtn" title="Bấm để nghe lại tên chữ cái">
           <span>🔊</span>
           <span id="voiceStatusText">Nghe lại</span>
         </button>
@@ -2072,8 +2071,8 @@
       </div>
 
       <div class="header-actions">
-        <button class="voice-badge-btn" id="wordRepeatVoiceBtn" title="Nghe lại hướng dẫn chữ hiện tại">
-          <span>🔊</span> Nghe vị trí
+        <button class="voice-badge-btn" id="wordRepeatVoiceBtn" title="Bấm để nghe lại chữ cái cần viết">
+          <span>🔊</span> Nghe lại
         </button>
         <button class="icon-btn" id="btnWordsSettings" title="Cài đặt & Màu nền">⚙️</button>
       </div>
@@ -2143,22 +2142,15 @@
           <span id="studentStatusBadge" style="font-size:11px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
         </div>
 
+        <!-- THÔNG BÁO NHẮC XOÁ KHI VIẾT SAI (NỔI BẬT TRỰC QUAN) -->
+        <div id="wordErrorNotice" class="word-error-notice" style="display:none;">
+          <span class="notice-icon">⚠️</span>
+          <span id="wordErrorNoticeText" class="notice-text">Bạn đã viết sai! Hãy bấm phím XOÁ ⌫ (màu đỏ cạnh chữ M) để sửa lại nhé!</span>
+        </div>
+
         <!-- Textbox 2: Của học trò, hiển thị chữ đã gõ, chữ đúng màu xanh, sai màu đỏ -->
         <div id="studentNotebookDisplay">
           <span class="student-placeholder">Chữ học trò gõ sẽ xuất hiện ở đây theo từng chữ máy đọc...</span>
-        </div>
-      </div>
-
-      <!-- BANNER HƯỚNG DẪN (TỰ ĐỘNG ẨN KHI BẮT ĐẦU VIẾT ĐỂ TĂNG DIỆN TÍCH HIỂN THỊ, TRÁNH SCROLL) -->
-      <div class="guide-banner normal" id="guideBanner" style="display:none;">
-        <div class="guide-main-row">
-          <span id="guideIcon">👉</span>
-          <span id="guideText">Thầy hãy gõ đề bài ở ô trên rồi bấm nút [BẮT ĐẦU CHO TRÒ VIẾT]</span>
-        </div>
-        <div id="guideSpellingBadge" class="guide-spelling-box" style="display:none;">
-          <span class="guide-spell-lbl">📖 Đánh vần (Lớp 1):</span>
-          <span id="guideSpellingText" class="guide-spell-txt">bờ - ô - bô - sắc - bố</span>
-          <button type="button" class="btn-mini-speech" id="btnMiniSpellSpeech" title="Bấm nghe đánh vần lại">🔊</button>
         </div>
       </div>
     </div>
@@ -2440,7 +2432,7 @@ Ví dụ:
         <div class="toggle-row">
           <div>
             <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
-            <div class="hint">Đọc tên chữ, số dòng và hướng dẫn sửa sai</div>
+            <div class="hint">Đọc tên chữ cái khi rơi</div>
           </div>
           <label class="switch">
             <input type="checkbox" id="cfgVoiceEnabled" checked>
@@ -2455,6 +2447,23 @@ Ví dụ:
           <span class="value-display" id="dispVoiceRate">1.0x</span>
         </label>
         <input type="range" id="cfgVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
+      </div>
+
+      <!-- Thời gian game rơi -->
+      <div class="setting-group">
+        <label>
+          <span>Thời gian chơi (Game Rơi Tự Do)</span>
+          <span class="value-display" id="dispGameDuration">3 phút (180s)</span>
+        </label>
+        <select id="cfgGameDuration">
+          <option value="60">1 phút (60 giây)</option>
+          <option value="120">2 phút (120 giây)</option>
+          <option value="180" selected>3 phút (180 giây) - Mặc định</option>
+          <option value="300">5 phút (300 giây)</option>
+          <option value="600">10 phút (600 giây)</option>
+          <option value="0">Không giới hạn (Chơi tự do)</option>
+        </select>
+        <div class="hint">Chọn thời lượng mỗi ván gõ chữ rơi tự do</div>
       </div>
 
       <!-- Thời gian rơi -->
@@ -2506,6 +2515,76 @@ Ví dụ:
 
       <button class="btn-main" id="saveSettingsBtn">💾 Lưu Cài Đặt</button>
       <button class="btn-secondary" id="closeSettingsBtn">Đóng</button>
+    </div>
+  </div>
+
+  <!-- MODAL CÀI ĐẶT RIÊNG: GAME LUYỆN TỪ CỦA THẦY -->
+  <div class="modal-overlay" id="wordSettingsModal">
+    <div class="modal-card">
+      <h2>⚙️ Cài Đặt Game Luyện Từ Của Thầy</h2>
+
+      <!-- Giọng nói hướng dẫn Game 2 -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
+            <div class="hint">Đọc tên chữ cái và phát âm cả từ khi viết đúng</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgWordVoiceEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Tốc độ đọc Game 2 -->
+      <div class="setting-group">
+        <label>
+          <span>Tốc độ đọc giọng nói</span>
+          <span class="value-display" id="dispWordVoiceRate">1.0x</span>
+        </label>
+        <input type="range" id="cfgWordVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
+      </div>
+
+      <!-- Cỡ chữ trên bảng và vở -->
+      <div class="setting-group">
+        <label>
+          <span>Kích thước chữ (Bảng đề bài & Vở tập viết)</span>
+          <span class="value-display" id="dispWordFontSizeModal">28 px</span>
+        </label>
+        <input type="range" id="cfgWordFontSize" min="20" max="44" step="2" value="28">
+      </div>
+
+      <!-- Đánh vần chuẩn Lớp 1 -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Chế độ Đánh vần Tiếng Việt Lớp 1</div>
+            <div class="hint">Tự động phân tích và đánh vần từ mẫu (ví dụ: Bố -> bờ ô bô sắc bố)</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgWordSpellingGrade1" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Âm thanh hiệu ứng Game 2 -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Âm thanh hiệu ứng</div>
+            <div class="hint">Tiếng gõ đúng và âm thanh hoàn thành bài viết</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgWordSoundEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-main" id="saveWordSettingsBtn">💾 Lưu Cài Đặt</button>
+      <button class="btn-secondary" id="closeWordSettingsBtn">Đóng</button>
     </div>
   </div>
 
@@ -2659,6 +2738,8 @@ Ví dụ:
        CẤU HÌNH & GHI NHỚ LOCALSTORAGE
        ===================================================================== */
     const STORAGE_KEY = 'ios_learning_suite_v4_cfg';
+    const WORD_STORAGE_KEY = 'ios_learning_suite_word_cfg_v1';
+
     const DEFAULT_CONFIG = {
       gameBgColor: '#0b0f19',    // Màu nền game đánh chữ
       charMode: 'lowercase',
@@ -2669,9 +2750,17 @@ Ví dụ:
       fontColor: '#FFFFFF',
       voiceEnabled: true,
       voiceRate: 1.0,
-      gameDuration: 60,
+      gameDuration: 180, // Mặc định 03 phút (180 giây)
       soundEnabled: true,
       lessonWords: ['BA ME', 'VIET NAM', 'HOC TAP', 'IPHONE', '2026'] // Từ của Thầy
+    };
+
+    const DEFAULT_WORD_CONFIG = {
+      voiceEnabled: true,
+      voiceRate: 1.0,
+      boardFontSize: 28,
+      spellingGrade1: true,
+      soundEnabled: true
     };
 
     function loadSavedConfig() {
@@ -2688,6 +2777,30 @@ Ví dụ:
       } catch (e) {}
     }
 
+    function loadSavedWordConfig() {
+      try {
+        const raw = localStorage.getItem(WORD_STORAGE_KEY);
+        if (raw) return { ...DEFAULT_WORD_CONFIG, ...JSON.parse(raw) };
+      } catch (e) {}
+      // Đồng bộ từ các key cũ nếu có
+      const legacyFontSize = parseInt(localStorage.getItem('game_board_font_size') || '28', 10);
+      const legacySpelling = localStorage.getItem('game_spelling_grade1') !== 'false';
+      return {
+        ...DEFAULT_WORD_CONFIG,
+        boardFontSize: legacyFontSize,
+        spellingGrade1: legacySpelling
+      };
+    }
+
+    function saveWordConfigToStorage(wCfg) {
+      try {
+        localStorage.setItem(WORD_STORAGE_KEY, JSON.stringify(wCfg));
+      } catch (e) {}
+    }
+
+    const cfg = loadSavedConfig();
+    const wordCfg = loadSavedWordConfig();
+
     /* =====================================================================
        HỆ THỐNG ÂM THANH NATIVE (WEB AUDIO API)
        ===================================================================== */
@@ -2702,8 +2815,9 @@ Ví dụ:
         }
         if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       }
-      playHit() {
-        if (!cfg.soundEnabled) return;
+      playHit(isWordGame = false) {
+        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
+        if (!soundOn) return;
         this.init();
         if (!this.ctx) return;
         try {
@@ -2720,8 +2834,9 @@ Ví dụ:
           osc.stop(this.ctx.currentTime + 0.12);
         } catch (e) {}
       }
-      playMiss() {
-        if (!cfg.soundEnabled) return;
+      playMiss(isWordGame = false) {
+        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
+        if (!soundOn) return;
         this.init();
         if (!this.ctx) return;
         try {
@@ -2739,7 +2854,7 @@ Ví dụ:
         } catch (e) {}
       }
       playSuccessWord() {
-        if (!cfg.soundEnabled) return;
+        if (!wordCfg.soundEnabled) return;
         this.init();
         if (!this.ctx) return;
         try {
@@ -2800,19 +2915,19 @@ Ví dụ:
         }
       }
 
-      speak(text, priority = false) {
+      speak(text, priority = false, customRate = null, targetBadgeId = 'repeatVoiceBtn') {
         if (!cfg.voiceEnabled || !this.synth) return;
         if (this.synth.speaking && !priority) return;
 
         try {
           this.synth.cancel();
           const utter = new SpeechSynthesisUtterance(text);
-          utter.rate = cfg.voiceRate || 1.0;
+          utter.rate = customRate || cfg.voiceRate || 1.0;
           utter.pitch = 1.0;
           utter.lang = 'vi-VN';
           if (this.voice) utter.voice = this.voice;
 
-          const badge = document.getElementById('repeatVoiceBtn');
+          const badge = document.getElementById(targetBadgeId) || document.getElementById('repeatVoiceBtn');
           utter.onstart = () => { if (badge) badge.classList.add('speaking'); };
           utter.onend = () => { if (badge) badge.classList.remove('speaking'); };
           utter.onerror = () => { if (badge) badge.classList.remove('speaking'); };
@@ -2843,6 +2958,20 @@ Ví dụ:
       // Đ -> D
       if (/[DĐ]/.test(upper)) return 'D';
       return upper;
+    }
+
+    // Thông tin phát âm tên chữ cái thuần túy (KHÔNG đọc số dòng)
+    function getCharPronounceOnly(char) {
+      if (!char) return '';
+      if (char === ' ') return 'Dấu cách';
+      if (char === '\n') return 'Xuống dòng';
+      const upper = char.toUpperCase();
+      const numMap = {
+        '0': 'Số không', '1': 'Số một', '2': 'Số hai', '3': 'Số ba', '4': 'Số bốn',
+        '5': 'Số năm', '6': 'Số sáu', '7': 'Số bảy', '8': 'Số tám', '9': 'Số chín'
+      };
+      if (numMap[upper]) return numMap[upper];
+      return `Chữ ${upper}`;
     }
 
     // Thông tin dòng bàn phím của ký tự (Hỗ trợ 100% tiếng Việt có dấu)
@@ -2986,8 +3115,6 @@ Ví dụ:
         speech: steps.join(', ')
       };
     }
-
-    let cfg = loadSavedConfig();
 
     /* =====================================================================
        ÁP DỤNG MÀU NỀN CHO CÁC GAME
@@ -3267,12 +3394,17 @@ Ví dụ:
 
         if (cfg.gameDuration > 0) {
           this.timeLeft = cfg.gameDuration;
-          this.timerVal.textContent = `${this.timeLeft}s`;
+          const formatTime = (sec) => {
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+          };
+          this.timerVal.textContent = formatTime(this.timeLeft);
           clearInterval(this.timerInterval);
           this.timerInterval = setInterval(() => {
             if (!this.isPaused && !this.isGameOver && document.getElementById('typingView').classList.contains('active')) {
               this.timeLeft--;
-              this.timerVal.textContent = `${this.timeLeft}s`;
+              this.timerVal.textContent = formatTime(this.timeLeft);
               if (this.timeLeft <= 0) this.endGame();
             }
           }, 1000);
@@ -3400,7 +3532,7 @@ Ví dụ:
         }
 
         if (spawnedInThisWave.length > 0 && cfg.voiceEnabled) {
-          const prompt = getCharRowDetail(spawnedInThisWave[0]).speech;
+          const prompt = getCharPronounceOnly(spawnedInThisWave[0]);
           voiceEngine.speak(prompt);
         }
       }
@@ -3534,7 +3666,7 @@ Ví dụ:
     class WordPracticeGame {
       constructor() {
         this.boardText = 'BỐ MẸ YÊU CON, VIỆT NAM VÔ ĐỊCH';
-        this.boardFontSize = parseInt(localStorage.getItem('game_board_font_size') || '28', 10);
+        this.boardFontSize = wordCfg.boardFontSize || 28;
         this.currentCharIdx = 0;
         this.isTeachingMode = false;
         this.hasError = false;
@@ -3543,8 +3675,8 @@ Ví dụ:
         this.totalHits = 0;
         this.totalErrors = 0;
 
-        // Tùy chọn đánh vần chuẩn Tiếng Việt Lớp 1 (Mặc định: BẬT)
-        this.isSpellingGrade1 = localStorage.getItem('game_spelling_grade1') !== 'false';
+        // Tùy chọn đánh vần chuẩn Tiếng Việt Lớp 1 từ cài đặt riêng của Game 2
+        this.isSpellingGrade1 = wordCfg.spellingGrade1 !== false;
 
         // Elements DOM
         this.teacherInput = document.getElementById('teacherBlackboardInput');
@@ -3574,6 +3706,9 @@ Ví dụ:
         this.guideIcon = document.getElementById('guideIcon');
         this.guideText = document.getElementById('guideText');
 
+        this.wordErrorNotice = document.getElementById('wordErrorNotice');
+        this.wordErrorNoticeText = document.getElementById('wordErrorNoticeText');
+
         this.wordProgressVal = document.getElementById('wordProgressVal');
         this.wordHitsVal = document.getElementById('wordHitsVal');
         this.wordErrorsVal = document.getElementById('wordErrorsVal');
@@ -3598,11 +3733,13 @@ Ví dụ:
         if (this.teacherTracker) this.teacherTracker.style.fontSize = `${this.boardFontSize}px`;
         if (this.studentDisplay) this.studentDisplay.style.fontSize = `${this.boardFontSize}px`;
         if (this.dispFontSize) this.dispFontSize.textContent = `${this.boardFontSize}px`;
+        wordCfg.boardFontSize = this.boardFontSize;
+        saveWordConfigToStorage(wordCfg);
         localStorage.setItem('game_board_font_size', this.boardFontSize);
       }
 
       applyVoiceRate() {
-        if (this.dispVoiceRate) this.dispVoiceRate.textContent = `${(cfg.voiceRate || 1.0).toFixed(1)}x`;
+        if (this.dispVoiceRate) this.dispVoiceRate.textContent = `${(wordCfg.voiceRate || 1.0).toFixed(1)}x`;
       }
 
       // Xác định thông tin từ hiện tại đang gõ và đánh vần Lớp 1
@@ -3651,8 +3788,8 @@ Ví dụ:
           if (text) {
             const firstWord = text.split(/\s+/)[0];
             const sp = spellVietnameseWord(firstWord);
-            if (sp && cfg.voiceEnabled) {
-              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true);
+            if (sp && wordCfg.voiceEnabled) {
+              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
             }
           }
           return;
@@ -3662,8 +3799,8 @@ Ví dụ:
         if (wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
           if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'flex';
           if (this.guideSpellingText) this.guideSpellingText.textContent = wordInfo.spelling.display;
-          if (cfg.voiceEnabled) {
-            voiceEngine.speak(`Đánh vần từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}`, true);
+          if (wordCfg.voiceEnabled) {
+            voiceEngine.speak(`Đánh vần từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
           }
         } else {
           this.repeatPrompt();
@@ -3683,6 +3820,7 @@ Ví dụ:
         this.studentChars = [];
         this.hasError = false;
         this.errorChar = '';
+        if (this.wordErrorNotice) this.wordErrorNotice.style.display = 'none';
         this.isTeachingMode = true;
         this.totalHits = 0;
         this.totalErrors = 0;
@@ -3842,13 +3980,14 @@ Ví dụ:
         // Highlight phím tương ứng trên bàn phím ảo iPhone
         kbManager.highlightKey(detail.baseKey);
 
-        // Phát giọng nói đọc tên chữ và dòng, có kèm đánh vần nếu là chữ đầu tiên của từ
-        if (cfg.voiceEnabled) {
+        // Phát giọng nói đọc tên chữ cái thuần túy (bỏ đọc số dòng và bỏ hướng dẫn sửa sai)
+        if (wordCfg.voiceEnabled) {
+          const charSpoken = getCharPronounceOnly(targetChar);
           if (this.isSpellingGrade1 && wordInfo && !wordInfo.isSeparator && wordInfo.isFirstCharOfWord && wordInfo.spelling) {
-            const speechText = `Từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}. Bắt đầu bằng ${detail.speech}`;
-            voiceEngine.speak(speechText, true);
+            const speechText = `Từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}. ${charSpoken}`;
+            voiceEngine.speak(speechText, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
           } else {
-            voiceEngine.speak(detail.speech, true);
+            voiceEngine.speak(charSpoken, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
           }
         }
       }
@@ -3856,16 +3995,14 @@ Ví dụ:
       repeatPrompt() {
         if (!this.isTeachingMode) return;
         if (this.hasError) {
-          if (cfg.voiceEnabled) {
-            voiceEngine.speak('Bạn đã viết sai rồi! Hãy bấm nút Xoá cạnh chữ M ở dòng ba để xoá chữ sai đi nhé!', true);
-          }
+          // Bỏ qua giọng nói hướng dẫn sửa sai, chỉ highlight nút Xóa
           kbManager.highlightDeleteKey(true);
         } else {
           const wordInfo = this.getCurrentWordInfo();
           if (this.isSpellingGrade1 && wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
-            const detail = getCharRowDetail(this.boardText[this.currentCharIdx]);
-            if (cfg.voiceEnabled) {
-              voiceEngine.speak(`Từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}. Bạn đang viết ${detail.speech}`, true);
+            const charSpoken = getCharPronounceOnly(this.boardText[this.currentCharIdx]);
+            if (wordCfg.voiceEnabled) {
+              voiceEngine.speak(`Từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}. ${charSpoken}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
             }
           } else {
             this.dictateCurrentChar();
@@ -3906,28 +4043,37 @@ Ví dụ:
             // Học trò đã bấm nút Xoá để sửa sai!
             this.hasError = false;
             this.errorChar = '';
+            if (this.wordErrorNotice) {
+              this.wordErrorNotice.style.display = 'none';
+            }
             if (this.studentStatusBadge) {
               this.studentStatusBadge.textContent = 'Đang viết...';
               this.studentStatusBadge.style.color = '#007AFF';
             }
             kbManager.highlightDeleteKey(false);
-            sound.playHit();
+            sound.playHit(true);
             this.renderStudentNotebook();
 
             // Nhắc lại chữ cần viết đúng
             this.dictateCurrentChar();
           } else {
-            // Học trò vẫn bấm phím khác trong khi chưa xoá chữ sai -> Nhắc nhở mạnh mẽ
-            sound.playMiss();
+            // Học trò vẫn bấm phím khác trong khi chưa xoá chữ sai -> Nhắc nhở thị giác nổi bật
+            sound.playMiss(true);
+            if (this.wordErrorNotice) {
+              this.wordErrorNotice.style.display = 'flex';
+              this.wordErrorNotice.classList.remove('shake');
+              void this.wordErrorNotice.offsetWidth;
+              this.wordErrorNotice.classList.add('shake');
+              if (this.wordErrorNoticeText) {
+                this.wordErrorNoticeText.textContent = `⚠️ Chú ý: Hãy bấm phím XOÁ ⌫ (màu đỏ cạnh chữ M) để xoá chữ sai trước khi viết tiếp!`;
+              }
+            }
             if (this.studentStatusBadge) {
               this.studentStatusBadge.textContent = '⚠️ Bấm phím Xoá để sửa';
               this.studentStatusBadge.style.color = '#EF4444';
             }
             kbManager.highlightKey('');
             kbManager.highlightDeleteKey(true);
-            if (cfg.voiceEnabled) {
-              voiceEngine.speak('Hãy bấm nút Xoá cạnh chữ M ở dòng ba để xoá chữ sai đi nhé!', true);
-            }
           }
           return;
         }
@@ -3953,14 +4099,14 @@ Ví dụ:
           if (this.wordHitsVal) this.wordHitsVal.textContent = this.totalHits;
           this.studentChars.push(targetChar);
           this.currentCharIdx++;
-          sound.playHit();
+          sound.playHit(true);
           this.renderStudentNotebook();
           this.updateProgressUI();
 
           // Khi học trò vừa gõ xong chữ cái cuối cùng của 1 từ -> Đọc to từ đó khen ngợi
           if (this.isSpellingGrade1 && currentWordInfo && !currentWordInfo.isSeparator && currentWordInfo.isLastCharOfWord) {
-            if (cfg.voiceEnabled) {
-              voiceEngine.speak(`${currentWordInfo.rawWord}! Giỏi lắm!`, false);
+            if (wordCfg.voiceEnabled) {
+              voiceEngine.speak(`${currentWordInfo.rawWord}! Giỏi lắm!`, false, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
             }
           }
 
@@ -3976,29 +4122,38 @@ Ví dụ:
           if (this.wordErrorsVal) this.wordErrorsVal.textContent = this.totalErrors;
           this.hasError = true;
           this.errorChar = inputChar === ' ' ? '␣' : inputChar;
-          sound.playMiss();
+          sound.playMiss(true);
 
           // Hiển thị chữ sai màu đỏ trong Textbox học trò
           this.renderStudentNotebook();
+
+          // Hiển thị thông báo nổi bật nhắc học trò bấm phím Xoá để sửa
+          if (this.wordErrorNotice) {
+            this.wordErrorNotice.style.display = 'flex';
+            this.wordErrorNotice.classList.remove('shake');
+            void this.wordErrorNotice.offsetWidth;
+            this.wordErrorNotice.classList.add('shake');
+            if (this.wordErrorNoticeText) {
+              this.wordErrorNoticeText.textContent = `⚠️ Em đã viết sai chữ "${this.errorChar}"! Hãy bấm phím XOÁ ⌫ (màu đỏ cạnh chữ M) để xoá đi nhé!`;
+            }
+          }
 
           if (this.studentStatusBadge) {
             this.studentStatusBadge.textContent = `⚠️ Sai chữ "${this.errorChar}" - Bấm phím Xoá`;
             this.studentStatusBadge.style.color = '#EF4444';
           }
 
-          // Bàn phím ảo nhấp nháy đỏ nút Xoá cạnh chữ M
+          // Bàn phím ảo nhấp nháy đỏ nút Xoá cạnh chữ M (không phát giọng nói đọc hướng dẫn sửa sai)
           kbManager.highlightKey('');
           kbManager.highlightDeleteKey(true);
-
-          // Phát âm thanh hướng dẫn sửa lỗi
-          if (cfg.voiceEnabled) {
-            voiceEngine.speak('Bạn đã viết sai rồi! Hãy bấm nút Xoá cạnh chữ M ở dòng ba để xoá chữ sai đi nhé!', true);
-          }
         }
       }
 
       handleComplete() {
         this.isTeachingMode = false;
+        if (this.wordErrorNotice) {
+          this.wordErrorNotice.style.display = 'none';
+        }
         sound.playSuccessWord();
         if (this.studentStatusBadge) {
           this.studentStatusBadge.textContent = 'Hoàn thành 🎉';
@@ -4027,8 +4182,8 @@ Ví dụ:
         }
 
         this.lastWordSpeech = speechSummary;
-        if (cfg.voiceEnabled) {
-          voiceEngine.speak(speechSummary, true);
+        if (wordCfg.voiceEnabled) {
+          voiceEngine.speak(speechSummary, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
         }
 
         kbManager.highlightKey('');
@@ -4060,7 +4215,11 @@ Ví dụ:
         if (this.chkSpellingGrade1) {
           this.chkSpellingGrade1.addEventListener('change', (e) => {
             this.isSpellingGrade1 = e.target.checked;
+            wordCfg.spellingGrade1 = this.isSpellingGrade1;
+            saveWordConfigToStorage(wordCfg);
             localStorage.setItem('game_spelling_grade1', this.isSpellingGrade1);
+            const modalChk = document.getElementById('cfgWordSpellingGrade1');
+            if (modalChk) modalChk.checked = this.isSpellingGrade1;
             if (this.guideSpellingBadge) {
               if (this.isSpellingGrade1 && this.isTeachingMode) {
                 const wi = this.getCurrentWordInfo();
@@ -4098,6 +4257,7 @@ Ví dụ:
               this.studentChars = [];
               this.isTeachingMode = false;
               this.hasError = false;
+              if (this.wordErrorNotice) this.wordErrorNotice.style.display = 'none';
               this.renderStudentNotebook();
               if (this.guideBanner) this.guideBanner.className = 'guide-banner normal';
               if (this.guideIcon) this.guideIcon.textContent = '👉';
@@ -4141,31 +4301,31 @@ Ví dụ:
           });
         }
 
-        // Tăng giảm tốc độ đọc nhanh
+        // Tăng giảm tốc độ đọc nhanh (Cài đặt riêng Game 2)
         if (this.btnRateMinus) {
           this.btnRateMinus.addEventListener('click', () => {
-            if (cfg.voiceRate > 0.6) {
-              cfg.voiceRate = Math.round((cfg.voiceRate - 0.1) * 10) / 10;
-              saveConfigToStorage(cfg);
+            if (wordCfg.voiceRate > 0.6) {
+              wordCfg.voiceRate = Math.round((wordCfg.voiceRate - 0.1) * 10) / 10;
+              saveWordConfigToStorage(wordCfg);
               this.applyVoiceRate();
-              const rangeEl = document.getElementById('cfgVoiceRate');
-              if (rangeEl) rangeEl.value = cfg.voiceRate;
-              const dispEl = document.getElementById('dispVoiceRate');
-              if (dispEl) dispEl.textContent = `${cfg.voiceRate}x`;
+              const rangeEl = document.getElementById('cfgWordVoiceRate');
+              if (rangeEl) rangeEl.value = wordCfg.voiceRate;
+              const dispEl = document.getElementById('dispWordVoiceRate');
+              if (dispEl) dispEl.textContent = `${wordCfg.voiceRate}x`;
             }
           });
         }
 
         if (this.btnRatePlus) {
           this.btnRatePlus.addEventListener('click', () => {
-            if (cfg.voiceRate < 1.4) {
-              cfg.voiceRate = Math.round((cfg.voiceRate + 0.1) * 10) / 10;
-              saveConfigToStorage(cfg);
+            if (wordCfg.voiceRate < 1.4) {
+              wordCfg.voiceRate = Math.round((wordCfg.voiceRate + 0.1) * 10) / 10;
+              saveWordConfigToStorage(wordCfg);
               this.applyVoiceRate();
-              const rangeEl = document.getElementById('cfgVoiceRate');
-              if (rangeEl) rangeEl.value = cfg.voiceRate;
-              const dispEl = document.getElementById('dispVoiceRate');
-              if (dispEl) dispEl.textContent = `${cfg.voiceRate}x`;
+              const rangeEl = document.getElementById('cfgWordVoiceRate');
+              if (rangeEl) rangeEl.value = wordCfg.voiceRate;
+              const dispEl = document.getElementById('dispWordVoiceRate');
+              if (dispEl) dispEl.textContent = `${wordCfg.voiceRate}x`;
             }
           });
         }
@@ -5249,8 +5409,8 @@ Ví dụ:
     const btnRepeatWord = document.getElementById('btnRepeatWordVoice');
     if (btnRepeatWord) {
       btnRepeatWord.addEventListener('click', () => {
-        if (game2.lastWordSpeech) {
-          voiceEngine.speak(game2.lastWordSpeech, true);
+        if (game2.lastWordSpeech && wordCfg.voiceEnabled) {
+          voiceEngine.speak(game2.lastWordSpeech, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
         }
       });
     }
@@ -5388,7 +5548,7 @@ Ví dụ:
           const top = parseFloat(game1.activeChars[i].el.style.top || '0');
           if (top > maxTop) { maxTop = top; lowest = game1.activeChars[i]; }
         }
-        voiceEngine.speak(getCharRowDetail(lowest.char).speech, true);
+        voiceEngine.speak(getCharPronounceOnly(lowest.char), true);
       } else {
         voiceEngine.speak('Chưa có chữ nào rơi', true);
       }
@@ -5404,6 +5564,11 @@ Ví dụ:
     const openSettings = () => {
       game1.isPaused = true;
       document.getElementById('cfgCharMode').value = cfg.charMode;
+      if (document.getElementById('cfgGameDuration')) {
+        document.getElementById('cfgGameDuration').value = cfg.gameDuration !== undefined ? cfg.gameDuration : 180;
+        const durMap = { '60': '1 phút', '120': '2 phút', '180': '3 phút', '300': '5 phút', '600': '10 phút', '0': 'Không giới hạn' };
+        document.getElementById('dispGameDuration').textContent = durMap[cfg.gameDuration] || `${cfg.gameDuration}s`;
+      }
       document.getElementById('cfgFallDuration').value = cfg.fallDuration;
       document.getElementById('dispFallDuration').textContent = `${cfg.fallDuration} giây`;
       document.getElementById('cfgFontSize').value = cfg.fontSize;
@@ -5427,9 +5592,77 @@ Ví dụ:
     };
 
     document.getElementById('settingsBtn').addEventListener('click', openSettings);
-    document.getElementById('btnWordsSettings').addEventListener('click', openSettings);
+
+    // =========================================================================
+    // MODAL CÀI ĐẶT RIÊNG: GAME LUYỆN TỪ CỦA THẦY
+    // =========================================================================
+    const openWordSettings = () => {
+      document.getElementById('cfgWordVoiceEnabled').checked = wordCfg.voiceEnabled !== false;
+      document.getElementById('cfgWordVoiceRate').value = wordCfg.voiceRate || 1.0;
+      document.getElementById('dispWordVoiceRate').textContent = `${(wordCfg.voiceRate || 1.0).toFixed(1)}x`;
+      document.getElementById('cfgWordFontSize').value = wordCfg.boardFontSize || 28;
+      document.getElementById('dispWordFontSizeModal').textContent = `${wordCfg.boardFontSize || 28} px`;
+      document.getElementById('cfgWordSpellingGrade1').checked = wordCfg.spellingGrade1 !== false;
+      document.getElementById('cfgWordSoundEnabled').checked = wordCfg.soundEnabled !== false;
+
+      document.getElementById('wordSettingsModal').classList.add('active');
+    };
+
+    document.getElementById('btnWordsSettings').addEventListener('click', openWordSettings);
+
+    const rangeWordRate = document.getElementById('cfgWordVoiceRate');
+    if (rangeWordRate) {
+      rangeWordRate.addEventListener('input', (e) => {
+        document.getElementById('dispWordVoiceRate').textContent = `${parseFloat(e.target.value).toFixed(1)}x`;
+      });
+    }
+
+    const rangeWordFont = document.getElementById('cfgWordFontSize');
+    if (rangeWordFont) {
+      rangeWordFont.addEventListener('input', (e) => {
+        document.getElementById('dispWordFontSizeModal').textContent = `${e.target.value} px`;
+      });
+    }
+
+    document.getElementById('saveWordSettingsBtn').addEventListener('click', () => {
+      wordCfg.voiceEnabled = document.getElementById('cfgWordVoiceEnabled').checked;
+      wordCfg.voiceRate = parseFloat(document.getElementById('cfgWordVoiceRate').value);
+      wordCfg.boardFontSize = parseInt(document.getElementById('cfgWordFontSize').value, 10);
+      wordCfg.spellingGrade1 = document.getElementById('cfgWordSpellingGrade1').checked;
+      wordCfg.soundEnabled = document.getElementById('cfgWordSoundEnabled').checked;
+
+      saveWordConfigToStorage(wordCfg);
+
+      game2.boardFontSize = wordCfg.boardFontSize;
+      game2.isSpellingGrade1 = wordCfg.spellingGrade1;
+      if (game2.chkSpellingGrade1) game2.chkSpellingGrade1.checked = wordCfg.spellingGrade1;
+      game2.applyFontSize();
+      game2.applyVoiceRate();
+      game2.renderTeacherTracker();
+      game2.renderStudentNotebook();
+
+      document.getElementById('wordSettingsModal').classList.remove('active');
+    });
+
+    document.getElementById('closeWordSettingsBtn').addEventListener('click', () => {
+      document.getElementById('wordSettingsModal').classList.remove('active');
+    });
+
+    const wordModalEl = document.getElementById('wordSettingsModal');
+    if (wordModalEl) {
+      wordModalEl.addEventListener('click', (e) => {
+        if (e.target === wordModalEl) wordModalEl.classList.remove('active');
+      });
+    }
 
     // Modal Cài đặt Controls
+    const selDur = document.getElementById('cfgGameDuration');
+    if (selDur) {
+      selDur.addEventListener('change', (e) => {
+        const durMap = { '60': '1 phút', '120': '2 phút', '180': '3 phút', '300': '5 phút', '600': '10 phút', '0': 'Không giới hạn' };
+        document.getElementById('dispGameDuration').textContent = durMap[e.target.value] || `${e.target.value}s`;
+      });
+    }
     document.getElementById('cfgFallDuration').addEventListener('input', (e) => {
       document.getElementById('dispFallDuration').textContent = `${e.target.value} giây`;
     });
@@ -5461,6 +5694,9 @@ Ví dụ:
 
     document.getElementById('saveSettingsBtn').addEventListener('click', () => {
       cfg.charMode = document.getElementById('cfgCharMode').value;
+      if (document.getElementById('cfgGameDuration')) {
+        cfg.gameDuration = parseInt(document.getElementById('cfgGameDuration').value, 10);
+      }
       cfg.fallDuration = parseFloat(document.getElementById('cfgFallDuration').value);
       cfg.fontSize = parseInt(document.getElementById('cfgFontSize').value, 10);
       cfg.voiceEnabled = document.getElementById('cfgVoiceEnabled').checked;
