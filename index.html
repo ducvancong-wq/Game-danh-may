@@ -1693,25 +1693,32 @@
       gap: 8px;
     }
 
+    #mathView input.math-main-input,
+    #mathCurrentInput,
     .math-main-input {
-      width: 110px;
-      height: 52px;
-      font-size: 30px;
-      font-weight: 900;
-      text-align: center;
-      color: #0284C7;
-      background: #F8FAFC;
-      border: 3px solid #0284C7;
-      border-radius: 12px;
-      outline: none;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-      transition: all 0.2s;
+      width: 110px !important;
+      height: 54px !important;
+      font-size: 32px !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+      color: #0F172A !important; /* Chữ số màu đen xanh đậm sắc nét, TUYỆT ĐỐI KHÔNG BỊ TRÙNG MÀU NỀN TRẮNG */
+      -webkit-text-fill-color: #0F172A !important; /* Ngăn chặn triệt để iOS/Chrome tự đổi thành màu trắng */
+      background: #FFFFFF !important;
+      border: 3px solid #0284C7 !important;
+      border-radius: 12px !important;
+      outline: none !important;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+      transition: all 0.2s !important;
     }
 
+    #mathView input.math-main-input:focus,
+    #mathCurrentInput:focus,
     .math-main-input:focus {
-      background: #FFFFFF;
-      border-color: #0369A1;
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      -webkit-text-fill-color: #0F172A !important;
+      border-color: #0369A1 !important;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3) !important;
     }
 
     .btn-math-submit {
@@ -1820,10 +1827,14 @@
       .math-expr-text {
         font-size: 30px;
       }
+      #mathView input.math-main-input,
+      #mathCurrentInput,
       .math-main-input {
-        width: 90px;
-        height: 48px;
-        font-size: 26px;
+        width: 90px !important;
+        height: 48px !important;
+        font-size: 26px !important;
+        color: #0F172A !important;
+        -webkit-text-fill-color: #0F172A !important;
       }
       .btn-math-submit {
         height: 48px;
@@ -1971,7 +1982,7 @@
       margin: 8px 0;
     }
 
-    select, textarea, input[type="text"] {
+    select, textarea, input[type="text"]:not(.math-main-input) {
       width: 100%;
       background: #2C2C2E;
       color: #fff;
@@ -2550,7 +2561,7 @@
         <div class="math-expression-wrap">
           <span class="math-expr-text" id="mathExprText">7 × 8 =</span>
           <div class="math-input-wrapper">
-            <input type="text" id="mathCurrentInput" class="math-main-input" inputmode="numeric" pattern="[0-9\-]*" autocomplete="off" placeholder="?">
+            <input type="text" id="mathCurrentInput" class="math-main-input" inputmode="numeric" pattern="[0-9\-]*" autocomplete="off" placeholder="?" style="color:#0F172A !important; -webkit-text-fill-color:#0F172A !important; background:#FFFFFF !important; caret-color:#0284C7 !important;">
             <button type="button" class="btn-math-submit" id="btnMathCheck" title="Kiểm tra đáp án">↵ KIỂM TRA</button>
           </div>
         </div>
@@ -2998,13 +3009,69 @@
     const cfg = loadSavedConfig();
     const wordCfg = loadSavedWordConfig();
 
+    /* Helper tạo file âm thanh PCM WAV base64 thuần JavaScript, chạy 100% offline mọi trình duyệt */
+    function createPcmWavDataUri(sampleRate, durationMs, waveFn) {
+      try {
+        const numSamples = Math.floor(sampleRate * (durationMs / 1000));
+        const dataSize = numSamples * 2;
+        const buffer = new ArrayBuffer(44 + dataSize);
+        const view = new DataView(buffer);
+        const writeString = (offset, str) => {
+          for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+        };
+        writeString(0, 'RIFF');
+        view.setUint32(4, 36 + dataSize, true);
+        writeString(8, 'WAVE');
+        writeString(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true); // PCM
+        view.setUint16(22, 1, true); // Mono
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true); // 16-bit
+        writeString(36, 'data');
+        view.setUint32(40, dataSize, true);
+        for (let i = 0; i < numSamples; i++) {
+          const t = i / sampleRate;
+          const s = Math.max(-1, Math.min(1, waveFn(t, durationMs / 1000)));
+          const sample = Math.floor(s < 0 ? s * 0x8000 : s * 0x7FFF);
+          view.setInt16(44 + i * 2, sample, true);
+        }
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunk = 8192;
+        for (let i = 0; i < bytes.length; i += chunk) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+        }
+        return 'data:audio/wav;base64,' + (typeof btoa === 'function' ? btoa(binary) : Buffer.from(binary, 'binary').toString('base64'));
+      } catch (e) {
+        return '';
+      }
+    }
+
     /* =====================================================================
-       HỆ THỐNG ÂM THANH NATIVE (WEB AUDIO API) - BẢO VỆ CHỐNG MẤT TIẾNG & TỰ PHỤC HỒI
+       HỆ THỐNG ÂM THANH DUAL-ENGINE (WEB AUDIO API + HTML5 AUDIO FALLBACK)
+       TUYỆT ĐỐI KHÔNG BỊ MẤT TIẾNG, TỰ ĐỘNG PHỤC HỒI KHI TRÌNH DUYỆT NGỦ
        ===================================================================== */
     class SoundEngine {
       constructor() {
         this.ctx = null;
         this.isUnlocked = false;
+
+        // Tạo sẵn âm thanh WAV dự phòng chất lượng cao chạy offline ngay trong bộ nhớ
+        this.hitWav = createPcmWavDataUri(16000, 130, (t, dur) => {
+          const freq = 520 + 440 * (t / dur);
+          const env = Math.exp(-t * 20);
+          return (Math.sin(2 * Math.PI * freq * t) + 0.3 * Math.sin(4 * Math.PI * freq * t)) * env * 0.85;
+        });
+
+        this.missWav = createPcmWavDataUri(16000, 180, (t, dur) => {
+          const freq = 240 - 120 * (t / dur);
+          const env = Math.exp(-t * 14);
+          return (Math.sin(2 * Math.PI * freq * t) + 0.4 * Math.sin(3 * Math.PI * freq * t)) * env * 0.75;
+        });
+
         this.setupAutoUnlock();
       }
 
@@ -3012,7 +3079,7 @@
         const unlock = () => {
           this.unlock();
         };
-        ['click', 'touchstart', 'touchend', 'keydown', 'pointerdown'].forEach(ev => {
+        ['click', 'touchstart', 'touchend', 'keydown', 'pointerdown', 'mousedown'].forEach(ev => {
           window.addEventListener(ev, unlock, { passive: true, capture: true });
         });
       }
@@ -3032,7 +3099,7 @@
             this.ctx.resume().catch(() => {});
           }
         } catch (e) {
-          console.warn('AudioContext init error:', e);
+          console.warn('AudioContext init notice:', e);
         }
       }
 
@@ -3045,107 +3112,144 @@
         }
       }
 
-      // Khởi động lại âm thanh cưỡng bức (cho phần Cài đặt khi người dùng bật lại hoặc thử âm thanh)
+      // Phát âm thanh HTML5 Audio độc lập (hoạt động 100% ngay cả khi Web Audio API bị treo/tắt)
+      playHtmlAudio(wavUri) {
+        if (!wavUri) return;
+        try {
+          const snd = new Audio(wavUri);
+          snd.volume = 0.85;
+          const p = snd.play();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (err) {}
+      }
+
+      // Khởi động lại âm thanh cưỡng bức (Lưu cài đặt và thử âm thanh ngay)
       restartAudio(playTestSound = true) {
+        cfg.soundEnabled = true;
+        wordCfg.soundEnabled = true;
+        saveConfigToStorage(cfg);
+        saveWordConfigToStorage(wordCfg);
+
         this.init(true);
         if (this.ctx) {
-          this.ctx.resume().then(() => {
-            if (playTestSound) this.playHit(false);
-          }).catch(() => {
-            if (playTestSound) this.playHit(false);
-          });
+          this.ctx.resume().catch(() => {});
+        }
+        if (playTestSound) {
+          this.playHit(false, true);
+          this.playHtmlAudio(this.hitWav);
         }
       }
 
-      playHit(isWordGame = false) {
+      playHit(isWordGame = false, forcePlay = false) {
         const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
-        if (!soundOn) return;
-        this.init();
-        if (!this.ctx) return;
+        if (!soundOn && !forcePlay) return;
+
+        let playedWebAudio = false;
         try {
-          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(540, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(920, this.ctx.currentTime + 0.12);
-          gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.12);
+          this.init();
+          if (this.ctx && this.ctx.state !== 'closed') {
+            if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+            const now = this.ctx.currentTime + 0.005;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(540, now);
+            osc.frequency.linearRampToValueAtTime(960, now + 0.14);
+            gain.gain.setValueAtTime(0.75, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.14);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.14);
+            playedWebAudio = true;
+          }
         } catch (e) {
-          // Tự phục hồi: khởi tạo lại AudioContext nếu bị hỏng/đóng
-          this.init(true);
+          playedWebAudio = false;
+        }
+
+        // Nếu Web Audio chưa chạy hoặc bị chặn, phát âm thanh dự phòng qua HTML5 Audio
+        if (!playedWebAudio) {
+          this.playHtmlAudio(this.hitWav);
         }
       }
 
-      playMiss(isWordGame = false) {
+      playMiss(isWordGame = false, forcePlay = false) {
         const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
-        if (!soundOn) return;
-        this.init();
-        if (!this.ctx) return;
+        if (!soundOn && !forcePlay) return;
+
+        let playedWebAudio = false;
         try {
-          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(200, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.22);
-          gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.22);
+          this.init();
+          if (this.ctx && this.ctx.state !== 'closed') {
+            if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+            const now = this.ctx.currentTime + 0.005;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(240, now);
+            osc.frequency.linearRampToValueAtTime(110, now + 0.18);
+            gain.gain.setValueAtTime(0.65, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.18);
+            playedWebAudio = true;
+          }
         } catch (e) {
-          this.init(true);
+          playedWebAudio = false;
+        }
+
+        if (!playedWebAudio) {
+          this.playHtmlAudio(this.missWav);
         }
       }
 
       playSuccessWord() {
         if (!wordCfg.soundEnabled && !cfg.soundEnabled) return;
         this.init();
-        if (!this.ctx) return;
+        if (!this.ctx) {
+          this.playHtmlAudio(this.hitWav);
+          return;
+        }
         try {
           if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
           const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+          const baseNow = this.ctx.currentTime + 0.005;
           notes.forEach((freq, i) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.08);
-            gain.gain.setValueAtTime(0.2, this.ctx.currentTime + i * 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.08 + 0.2);
+            const noteStart = baseNow + i * 0.08;
+            osc.frequency.setValueAtTime(freq, noteStart);
+            gain.gain.setValueAtTime(0.6, noteStart);
+            gain.gain.linearRampToValueAtTime(0.001, noteStart + 0.22);
             osc.connect(gain);
             gain.connect(this.ctx.destination);
-            osc.start(this.ctx.currentTime + i * 0.08);
-            osc.stop(this.ctx.currentTime + i * 0.08 + 0.2);
+            osc.start(noteStart);
+            osc.stop(noteStart + 0.22);
           });
         } catch (e) {
-          this.init(true);
+          this.playHtmlAudio(this.hitWav);
         }
       }
 
       playClockTick() {
-        this.init();
         if (!this.ctx) return;
         try {
           if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+          const now = this.ctx.currentTime + 0.002;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
-          gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.03);
+          osc.frequency.setValueAtTime(1200, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.035);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.03);
-        } catch (e) {
-          this.init(true);
-        }
+          osc.start(now);
+          osc.stop(now + 0.035);
+        } catch (e) {}
       }
     }
     const sound = new SoundEngine();
@@ -3836,6 +3940,7 @@
         } else {
           this.combo = 0;
           this.updateStatsUI();
+          sound.playMiss();
         }
       }
 
