@@ -7,7 +7,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Học Tập iOS">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23007AFF'/><text x='50' y='65' font-size='48' font-family='sans-serif' text-anchor='middle' fill='white' font-weight='bold'>⌨</text></svg>">
   <style>
     :root {
       --app-bg: #0b0f19;
@@ -67,64 +66,39 @@
       pointer-events: none;
     }
 
-    /* TOP TAB BAR (CHUYỂN ĐỔI 4 GAME) - HỖ TRỢ HOÀN TOÀN MOBILE RESPONSIVE & CUỘN NGANG */
+    /* TOP TAB BAR (CHUYỂN ĐỔI 3 GAME) */
     .app-nav {
       position: relative;
       z-index: 20;
       display: flex;
-      align-items: center;
       background: rgba(14, 18, 28, 0.95);
       border-bottom: 1px solid var(--surface-border);
-      padding: max(env(safe-area-inset-top, 6px), 6px) 10px 6px 10px;
-      gap: 8px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      touch-action: pan-x;
-      scrollbar-width: thin;
-      flex-shrink: 0;
-    }
-
-    .app-nav::-webkit-scrollbar {
-      height: 3px;
-    }
-    .app-nav::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
+      padding: env(safe-area-inset-top, 6px) 10px 6px 10px;
+      gap: 6px;
     }
 
     .nav-tab {
-      flex: 0 0 auto; /* Đảm bảo không bị co rúm trên màn hình điện thoại */
-      display: inline-flex;
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 14px;
+      gap: 5px;
+      padding: 8px 8px;
       border-radius: 12px;
       font-size: 13px;
       font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid transparent;
       transition: all 0.2s;
       white-space: nowrap;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .nav-tab:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #FFFFFF;
     }
 
     .nav-tab.active {
       color: #FFFFFF;
-      background: rgba(10, 132, 255, 0.28);
+      background: rgba(10, 132, 255, 0.25);
       border-color: rgba(10, 132, 255, 0.6);
-      box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
     }
 
     /* VIEW CONTAINERS */
@@ -142,6 +116,31 @@
     }
 
     /* =====================================================================
+       HEADER CHUNG CỦA GAME GÕ PHÍM
+       ===================================================================== */
+    .game-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: rgba(18, 22, 34, 0.85);
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 7px;
        HEADER CHUNG CỦA GAME GÕ PHÍM
        ===================================================================== */
     .game-header {
@@ -218,31 +217,6 @@
     .voice-badge-btn {
       background: rgba(10, 132, 255, 0.2);
       border: 1px solid rgba(10, 132, 255, 0.5);
-      color: #64D2FF;
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .voice-badge-btn.speaking {
-      animation: pulseVoice 0.6s infinite alternate;
-      border-color: #30D158;
-      color: #30D158;
-    }
-
-    @keyframes pulseVoice {
-      from { transform: scale(1); }
-      to { transform: scale(1.06); }
-    }
-
-    /* =====================================================================
-       VIEW 1: GAME GÕ RƠI TỰ DO
-       ===================================================================== */
     #typingView {
       background: var(--game-bg);
       transition: background 0.3s;
@@ -393,50 +367,65 @@
       font-weight: 800;
       display: flex;
       align-items: center;
-      gap: 6px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+    .box-title.teacher-title {
+      color: #FEF08A;
+      font-size: 14px;
+      font-weight: 800;
     }
-
-    .teacher-title {
-      color: #FEF08A !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    .box-title.student-title {
+      color: #0284C7;
+      font-size: 14px;
+      font-weight: 800;
     }
-
-    .student-title {
-      color: #0284C7 !important;
-    }
-
-    /* Toggle Đánh vần Tiếng Việt Lớp 1 */
     .spelling-toggle-card {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1.5px solid rgba(255, 255, 255, 0.45);
-      border-radius: 20px;
-      padding: 3px 10px;
+      background: rgba(254, 240, 138, 0.15);
+      border: 1px solid rgba(254, 240, 138, 0.4);
+      padding: 3px 8px;
+      border-radius: 8px;
       cursor: pointer;
-      user-select: none;
-      transition: all 0.2s;
     }
-
-    .spelling-toggle-card:hover {
-      background: rgba(255, 255, 255, 0.32);
-    }
-
     .spelling-toggle-card input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #FDE047;
+      width: 14px;
+      height: 14px;
+      accent-color: #F59E0B;
       cursor: pointer;
     }
-
     .spelling-toggle-text {
-      font-size: 12px;
-      font-weight: 800;
+      font-size: 11px;
+      font-weight: 700;
       color: #FEF08A;
-      letter-spacing: 0.3px;
+    }
+    .board-stepper-box {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .btn-step {
+      background: transparent;
+      border: none;
+      color: #FEF08A;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-step:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .step-display {
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+      padding: 0 4px;
+      min-width: 32px;
+      text-align: center;
+    }
     }
 
     /* Textbox 1: Của Thầy */
@@ -557,48 +546,50 @@
       color: #0284C7;
     }
 
-    /* Thông báo nhắc xóa khi viết sai (Game 2 - Luyện từ của thầy) */
-    .word-error-notice {
-      display: none;
+    /* Banner hướng dẫn (ẩn khi bắt đầu viết) */
+    .guide-banner {
+      display: none !important;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .guide-main-row {
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 8px 14px;
-      margin-bottom: 8px;
-      background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
-      border: 2px solid #EF4444;
-      border-radius: 10px;
-      color: #B91C1C;
-      font-size: 14px;
-      font-weight: 700;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-      animation: alertBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .word-error-notice.shake {
-      animation: alertShake 0.35s ease-in-out;
-    }
-    .word-error-notice .notice-icon {
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .word-error-notice .notice-text {
-      flex: 1;
+      font-size: 15px;
+      font-weight: 800;
       text-align: center;
     }
-    @keyframes alertBounce {
-      0% { transform: scale(0.95); opacity: 0; }
-      60% { transform: scale(1.02); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes alertShake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
+
+    .guide-banner.normal {
+      background: #FEF3C7 !important;
+      border: 2px solid #F59E0B !important;
+      color: #92400E !important;
     }
 
-    /* Banner hướng dẫn (đã ẩn hoàn toàn để tăng diện tích hiển thị) */
-    .guide-banner {
-      display: none !important;
+    .guide-banner.error-state {
+      background: #FEE2E2 !important;
+      border: 2px solid #EF4444 !important;
+      color: #B91C1C !important;
+      animation: pulseError 0.6s infinite alternate;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+    }
+
+    @keyframes pulseError {
+      from { transform: scale(1); }
+      to { transform: scale(1.02); }
+    }
+
+    .guide-banner.success-state {
+      background: #DCFCE7 !important;
+      border: 2px solid #22C55E !important;
+      color: #15803D !important;
     }
 
     /* Khung hiển thị đánh vần Tiếng Việt Lớp 1 trong banner */
@@ -651,7 +642,6 @@
     /* Nút highlight nhấp nháy đỏ khi cần xoá */
     .kb-key.delete-highlight {
       background: #EF4444 !important;
-      color: #FFFFFF !important;
       outline: 3px solid #FDE047 !important;
       box-shadow: 0 0 20px rgba(239, 68, 68, 0.9) !important;
       animation: pulseDeleteKey 0.5s infinite alternate !important;
@@ -670,6 +660,7 @@
       font-style: italic;
       color: #8E8E93 !important;
       user-select: none;
+    }
     }
 
     body.light-theme .student-placeholder {
@@ -701,342 +692,189 @@
       color: #30D158;
     }
 
-    .track-char.current {
-      color: #000000 !important;
-      background: #FFD60A !important;
-      box-shadow: 0 0 10px rgba(255, 214, 10, 0.9);
-      transform: scale(1.15);
-      font-weight: 900;
-    }
-
-    .board-stepper-box {
-      display: inline-flex;
+    /* THÔNG BÁO NHẮC XOÁ CHỮ SAI */
+    .word-error-notice {
+      display: none;
       align-items: center;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      padding: 1px 4px;
-      gap: 3px;
-    }
-
-    body.light-theme .board-stepper-box {
-      background: rgba(0, 0, 0, 0.06);
-      border-color: rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-step {
-      background: transparent;
-      border: none;
-      color: inherit;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      padding: 3px 6px;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.1s;
-    }
-
-    .btn-step:active {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    .step-display {
+      gap: 8px;
+      background: #FEF2F2;
+      border: 1.5px solid #F87171;
+      border-radius: 10px;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      color: #991B1B;
       font-size: 12px;
       font-weight: 700;
-      min-width: 36px;
-      text-align: center;
-      color: #FFD60A;
     }
-
-    body.light-theme .step-display {
-      color: #007AFF;
+    .word-error-notice.shake {
+      animation: shakeNotice 0.4s ease-in-out;
     }
-
-    .board-char {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 32px;
-      color: rgba(255, 255, 255, 0.45);
-      transition: all 0.15s;
-    }
-
-    .board-char.space {
-      width: 18px;
-    }
-
-    .board-char.done {
-      color: #30D158;
-      text-shadow: 0 0 8px rgba(48, 209, 88, 0.6);
-    }
-
-    .board-char.current {
-      color: #FFD60A;
-      background: rgba(255, 214, 10, 0.25);
-      border: 2px solid #FFD60A;
-      transform: scale(1.15);
-      box-shadow: 0 0 14px rgba(255, 214, 10, 0.8);
-      animation: pulseBoardChar 0.8s infinite alternate;
-    }
-
-    @keyframes pulseBoardChar {
-      from { transform: scale(1.1); }
-      to { transform: scale(1.2); }
-    }
-
-    .board-char.error {
-      color: #FF453A;
-      background: rgba(255, 69, 58, 0.3);
-      border: 2px solid #FF453A;
-      animation: charShake 0.35s ease-in-out;
-    }
-
-    @keyframes charShake {
+    @keyframes shakeNotice {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
       40%, 80% { transform: translateX(6px); }
     }
-
-    .board-actions-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
+    .word-error-notice .notice-icon {
+      font-size: 18px;
+    }
+    .word-error-notice .notice-text {
+      flex: 1;
     }
 
-    .btn-board {
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      border: 1px solid var(--surface-border);
-      transition: all 0.2s;
+    /* KHU VỰC CHỮ RƠI & BONG BÓNG */
+    #gameArea {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
     }
-
-    .btn-board.start-btn {
-      background: var(--accent-color);
-      color: #000;
-      border-color: transparent;
-      font-size: 14px;
-    }
-
-    .btn-board.edit-btn {
+    .falling-char {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
       background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
-
-    .btn-board.clear-btn {
-      background: rgba(255, 69, 58, 0.2);
-      color: #FF453A;
-      border-color: rgba(255, 69, 58, 0.4);
-    }
-
-    .btn-board:active {
-      transform: scale(0.96);
-    }
-
-    .word-typing-stage {
-      padding: 8px 14px 4px 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 8px;
-    }
-
-    .lesson-hint-banner {
-      background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 10, 0.1));
-      border: 1.5px solid rgba(255, 214, 10, 0.6);
-      border-radius: 14px;
-      padding: 8px 16px;
-      font-size: 15px;
+      justify-content: center;
+      font-size: 32px;
       font-weight: 800;
-      color: #FFD60A;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(255, 214, 10, 0.25);
-      animation: pulseHint 1s infinite alternate;
-      text-align: center;
+      color: #FFFFFF;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transform: translate(-50%, 0);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 5;
     }
-
-    body.light-theme .lesson-hint-banner {
-      background: #FFF8E1;
-      border-color: #FFA000;
-      color: #E65100;
-    }
-
-    @keyframes pulseHint {
-      from { transform: scale(1); }
-      to { transform: scale(1.03); }
-    }
-
-    .error-guide-box {
-      background: rgba(255, 69, 58, 0.18);
-      border: 1px solid #FF453A;
-      border-radius: 12px;
-      padding: 8px 14px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #FF453A;
-      display: none;
-      align-items: center;
-      gap: 6px;
-      animation: fadeIn 0.2s;
-      text-align: center;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
+    .falling-char.hit-anim {
+      transform: translate(-50%, -20px) scale(1.3);
+      opacity: 0;
+      transition: transform 0.28s ease-out, opacity 0.28s ease-out;
     }
 
     /* =====================================================================
-       BÀN PHÍM IPHONE CHUẨN IOS - NỀN XUNG QUANH XANH BIỂN GỢN MÂY NỔI BẬT
+       BÀN PHÍM IPHONE CHUẨN IOS (3 TẦNG: WRAPPER -> CONTAINER -> KEYS)
        ===================================================================== */
     #keyboardWrapper {
       position: relative;
-      z-index: 10;
       width: 100%;
-      /* Nền xung quanh bàn phím: Xanh biển rực rỡ, phân tách rõ rệt với bàn phím và trang (KHÔNG DÙNG MÀU ĐEN) */
       background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%);
-      border-top: 3px solid #7DD3FC;
-      box-shadow: 0 -8px 24px rgba(2, 132, 199, 0.28);
-      padding: 12px 6px calc(env(safe-area-inset-bottom, 8px) + 8px) 6px;
+      padding: 10px 6px max(env(safe-area-inset-bottom, 12px), 12px) 6px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+      box-shadow: 0 -4px 16px rgba(2, 132, 199, 0.25);
     }
-
-    /* Viền gợn mây bồng bềnh ở đỉnh bàn phím */
     #keyboardWrapper::before {
-      content: "";
+      content: '';
       position: absolute;
-      top: -12px;
+      top: -6px;
       left: 0;
       right: 0;
-      height: 13px;
-      background: radial-gradient(circle at 7% 100%, #38BDF8 10px, transparent 11px),
-                  radial-gradient(circle at 21% 100%, #38BDF8 15px, transparent 16px),
-                  radial-gradient(circle at 35% 100%, #38BDF8 12px, transparent 13px),
-                  radial-gradient(circle at 50% 100%, #38BDF8 17px, transparent 18px),
-                  radial-gradient(circle at 65% 100%, #38BDF8 13px, transparent 14px),
-                  radial-gradient(circle at 79% 100%, #38BDF8 16px, transparent 17px),
-                  radial-gradient(circle at 93% 100%, #38BDF8 11px, transparent 12px);
-      pointer-events: none;
+      height: 8px;
+      background: radial-gradient(circle at 10px 0, transparent 8px, #38BDF8 9px) repeat-x;
+      background-size: 20px 8px;
     }
-
-    /* Khay đỡ bàn phím (Chassis) - Nền xám bạc ánh băng, phân định rõ ràng giữa nền xung quanh và các phím */
     #keyboardContainer {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      width: 100%;
-      max-width: 520px;
+      max-width: 680px;
       margin: 0 auto;
-      background: #F1F5F9; /* Khay đệm sáng màu, tạo khối hộp nổi bật */
-      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: #F1F5F9;
       border-radius: 14px;
-      padding: 8px 6px;
-      box-shadow: 0 4px 14px rgba(3, 105, 161, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      padding: 6px 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border: 2px solid #FFFFFF;
     }
-
     .kb-row {
       display: flex;
       justify-content: center;
-      gap: 5px;
-      width: 100%;
+      gap: 4px;
+      margin-bottom: 5px;
+      touch-action: none;
     }
-
+    .kb-row:last-child {
+      margin-bottom: 0;
+    }
     .kb-key {
       flex: 1;
-      height: 44px;
-      background: #FFFFFF !important; /* Phím chữ màu TRẮNG SÁNG TINH KHÔI */
+      max-width: 48px;
+      height: 46px;
+      background: #FFFFFF;
+      color: #0F172A;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 21px;
+      font-size: 19px;
       font-weight: 700;
-      color: #0F172A !important; /* Ký tự màu xanh đậm/đen sắc nét */
-      border: 1px solid #E2E8F0;
-      box-shadow: 0 2px 0 #CBD5E1, 0 3px 5px rgba(15, 23, 42, 0.12);
       cursor: pointer;
-      position: relative;
-      transition: background 0.1s, transform 0.06s;
-      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      box-shadow: 0 2px 0 #CBD5E1, 0 3px 4px rgba(0, 0, 0, 0.1);
+      border: 1px solid #E2E8F0;
+      transition: transform 0.08s, background 0.08s;
     }
-
     .kb-key:active, .kb-key.pressed {
-      background: #BAE6FD !important;
-      color: #0369A1 !important;
       transform: translateY(2px);
-      box-shadow: 0 0 0 #CBD5E1, 0 1px 2px rgba(15, 23, 42, 0.1);
+      box-shadow: 0 0 0 #CBD5E1;
+      background: #E2E8F0;
     }
-
     .kb-key.special-key {
-      background: #E2E8F0 !important; /* Phím chức năng phân biệt rõ với phím chữ trắng */
+      background: #E2E8F0;
+      color: #334155;
       font-size: 14px;
-      font-weight: 700;
-      color: #334155 !important;
-      border: 1px solid #CBD5E1;
-      box-shadow: 0 2px 0 #94A3B8, 0 2px 4px rgba(15, 23, 42, 0.08);
+      max-width: 62px;
     }
-
-    .kb-key.key-shift, .kb-key.key-delete {
-      flex: 1.45;
-      font-size: 18px;
-    }
-
     .kb-key.key-delete {
-      background: #FEE2E2 !important; /* Phím xoá phớt đỏ nhẹ dễ nhận biết */
-      color: #B91C1C !important;
+      background: #FEE2E2;
+      color: #DC2626;
       border-color: #FECACA;
-      box-shadow: 0 2px 0 #FCA5A5, 0 2px 4px rgba(185, 28, 28, 0.1);
     }
-
-    .kb-key.key-shift.shift-active {
-      background: #0284C7 !important;
-      color: #FFFFFF !important;
-      box-shadow: 0 2px 0 #0369A1;
-    }
-
-    .kb-key.key-mode {
-      flex: 1.35;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .kb-key.key-globe {
-      flex: 1.1;
-      font-size: 17px;
-    }
-
     .kb-key.key-space {
-      flex: 4.8;
+      max-width: 240px;
       font-size: 14px;
-      font-weight: 700;
-      color: #64748B !important;
-      background: #FFFFFF !important;
+      font-weight: 600;
+      color: #64748B;
     }
-
     .kb-key.key-return {
-      flex: 2.2;
-      background: #0284C7 !important; /* Phím Nhập xanh Apple nổi bật */
+      background: #0284C7;
+      color: #FFFFFF;
       font-size: 14px;
-      font-weight: 700;
+      max-width: 76px;
+      border-color: #0369A1;
+    }
+    .kb-key.key-hint {
+      background: #FEF08A !important;
+      color: #0F172A !important;
+      outline: 3px solid #D97706 !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.9) !important;
+      animation: pulseKey 0.8s infinite alternate;
+    }
+    .kb-key.delete-highlight {
+      background: #EF4444 !important;
       color: #FFFFFF !important;
-      box-shadow: 0 2px 0 #0369A1, 0 3px 6px rgba(2, 132, 199, 0.3);
+      outline: 3px solid #FDE047 !important;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.9) !important;
+      animation: pulseKey 0.6s infinite alternate;
+    }
+    @keyframes pulseKey {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); background: #FDE047 !important; }
     }
 
-    .kb-key.hint-highlight {
+    /* =====================================================================
+       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO - MENU ẨN HIỆN)
+       ===================================================================== */
+    #clockView {
+      background: radial-gradient(circle at center, #171d2f 0%, #0a0d17 100%);
+      overflow: hidden;
+      padding: 8px 12px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
       outline: 3px solid #D97706 !important;
       background: #FEF08A !important;
       color: #0F172A !important;
@@ -1118,168 +956,6 @@
     .clock-stage {
       position: relative;
       width: min(76vh, 85vw, 680px);
-      height: min(76vh, 85vw, 680px);
-      aspect-ratio: 1 / 1;
-      margin: auto;
-      border-radius: 50%;
-      background: #F8F9FD;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 3px 12px rgba(0, 0, 0, 0.15), 0 0 0 12px #1F273D, 0 0 0 18px #3B4668;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: none;
-      transition: background 0.3s;
-      flex-shrink: 0;
-    }
-
-    /* BẢNG MENU TÙY CHỌN ẨN HIỆN CỦA ĐỒNG HỒ */
-    .clock-drawer-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 50;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
-    }
-
-    .clock-drawer-overlay.active {
-      display: flex;
-    }
-
-    .clock-drawer-card {
-      background: #171E30;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 520px;
-      max-height: 88vh;
-      overflow-y: auto;
-      padding: 18px 20px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      animation: modalSlide 0.25s ease-out;
-    }
-
-    .clock-drawer-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      padding-bottom: 8px;
-    }
-
-    .clock-drawer-header h3 {
-      font-size: 16px;
-      font-weight: 800;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .clock-drawer-close {
-      background: rgba(255, 255, 255, 0.12);
-      border: none;
-      color: #FFFFFF;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
-    }
-
-    .clock-drawer-close:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    .drawer-setting-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .drawer-group-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #94A3B8;
-    }
-
-    #clockSvg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-
-    .dial-number {
-      font-size: 27px;
-      font-weight: 900;
-      fill: #0F141E;
-      text-anchor: middle;
-      dominant-baseline: central;
-      font-family: var(--font-family);
-    }
-
-    .dial-min-sub {
-      font-size: 11px;
-      font-weight: 800;
-      fill: #D9381E;
-      text-anchor: middle;
-      dominant-baseline: central;
-    }
-
-    .tick-major {
-      stroke: #0F141E;
-      stroke-width: 4;
-      stroke-linecap: round;
-    }
-
-    .tick-minor {
-      stroke: #8E8E93;
-      stroke-width: 2;
-    }
-
-    .hand {
-      transform-origin: 180px 180px;
-      transition: transform 0.05s ease-out;
-      cursor: grab;
-    }
-
-    .hand:active {
-      cursor: grabbing;
-    }
-
-    #handHour {
-      stroke: var(--clock-hour-color);
-      stroke-width: 10;
-      stroke-linecap: round;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
-    }
-
-    #handMin {
-      stroke: var(--clock-min-color);
-      stroke-width: 6.5;
-      stroke-linecap: round;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
-    }
-
-    #handSec {
-      stroke: var(--clock-sec-color);
-      stroke-width: 3;
-      stroke-linecap: round;
-    }
 
     .center-pin {
       fill: #0F141E;
@@ -1445,8 +1121,70 @@
       color: #FFD60A;
     }
 
-    /* =====================================================================
-       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MÔN TOÁN)
+    /* MODAL OVERLAYS (Settings & Summary) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #1C2235;
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      padding: 22px;
+      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlide {
+    }
+    .stepper-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--surface-border);
+      color: #FFF;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stepper-btn:active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .hand-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .hand-slider-row input[type="range"] {
+      flex: 1;
+      accent-color: #0A84FF;
+      cursor: pointer;
+    }
        ===================================================================== */
     #mathView {
       background: #EEF4FB !important;
@@ -1463,8 +1201,31 @@
     #mathView .game-header {
       background: #E2EBF5;
       border-bottom: 1.5px solid #CBDCEE;
-      overflow-x: auto;
-      flex-shrink: 0;
+    }
+
+    #mathView .stat-pill {
+      background: #FFFFFF;
+      border: 1px solid #BFD7EF;
+      box-shadow: 0 2px 6px rgba(10, 80, 160, 0.08);
+    }
+
+    #mathView .stat-pill .label {
+      color: #475569;
+    }
+
+    #mathView .stat-pill .val {
+      color: #0284C7;
+      padding-bottom: 12px;
+      transition: background 0.3s;
+    }
+
+    #mathView.active {
+      display: flex !important;
+    }
+
+    #mathView .game-header {
+      background: #E2EBF5;
+      border-bottom: 1.5px solid #CBDCEE;
     }
 
     #mathView .stat-pill {
@@ -1481,244 +1242,239 @@
       color: #0284C7;
     }
 
-    /* THANH CHỌN CẤP ĐỘ KHÓ */
-    .math-level-bar {
-      width: 100%;
-      background: #E2EBF5;
-      padding: 6px 12px;
-      border-bottom: 1px solid #CBDCEE;
-      overflow-x: auto;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      flex-shrink: 0;
-      box-sizing: border-box;
-    }
-
-    .math-level-tabs {
-      display: inline-flex;
-      gap: 8px;
-    }
-
-    .math-level-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-      background: #FFFFFF;
-      border: 1.5px solid #CBD5E1;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-
-    .math-level-btn:hover {
-      background: #F1F5F9;
-      border-color: #94A3B8;
-    }
-
-    .math-level-btn.active {
-      background: #0284C7;
-      color: #FFFFFF;
-      border-color: #0369A1;
-      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
-    }
-
-    /* BẢNG THẦY TỰ SOẠN ĐỀ */
-    .math-custom-panel {
+    .math-two-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
       padding: 8px 12px;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-      box-sizing: border-box;
+      flex: 1;
+      align-items: stretch;
     }
 
-    .custom-panel-card {
-      background: #FFFFFF;
-      border: 2px solid #BAE6FD;
-      border-radius: 12px;
-      padding: 10px 14px;
+    @media (max-width: 768px) {
+      .math-two-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .math-box-card {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
+      height: 100%;
     }
 
-    .custom-panel-header {
+    .math-teacher-tools {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-board-sm {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .btn-board-sm:hover, .btn-board-sm:active {
+      background: #FFFFFF;
+      color: #134B2F;
+    }
+
+    .math-preset-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      z-index: 50;
+      min-width: 220px;
+      padding: 6px 0;
+      display: none;
+    }
+
+    .math-preset-dropdown.show {
+      display: block;
+    }
+
+    .preset-item {
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1E293B;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .preset-item:hover {
+      background: #F1F5F9;
+      color: #0284C7;
     }
 
     #teacherMathInput {
       width: 100%;
-      min-height: 120px;
-      max-height: 180px;
+      flex: 1;
+      min-height: 240px;
       background: #134B2F !important;
       color: #FFFFFF !important;
       border: 2px dashed #FDE047 !important;
-      border-radius: 10px;
-      padding: 8px 12px;
+      border-radius: 12px;
+      padding: 10px 14px;
       font-family: inherit;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 700;
-      line-height: 1.5;
-      resize: vertical;
+      line-height: 1.6;
+      resize: none;
       outline: none;
       box-sizing: border-box;
     }
 
-    /* KHUNG CHƠI TOÁN TUẦN TỰ */
-    .math-quiz-container {
+    .student-math-sheet {
+      width: 100%;
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      padding: 10px 14px;
-      max-width: 540px;
-      width: 100%;
-      margin: 0 auto;
-      box-sizing: border-box;
-    }
-
-    /* VẠCH TIẾN ĐỘ 10 BƯỚC */
-    .math-steps-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      width: 100%;
-      padding: 4px 0;
-    }
-
-    .math-step-dot {
-      flex: 1;
-      height: 8px;
-      border-radius: 4px;
-      background: #CBD5E1;
-      transition: all 0.25s ease;
-    }
-
-    .math-step-dot.done {
-      background: #10B981;
-      box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
-    }
-
-    .math-step-dot.current {
-      background: #0284C7;
-      transform: scaleY(1.4);
-      box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
-    }
-
-    /* THẺ BÀI TOÁN HIỆN TẠI (LỚN & ĐẸP) */
-    .math-card {
-      width: 100%;
+      min-height: 240px;
+      max-height: 520px;
+      overflow-y: auto;
       background: #FFFFFF;
-      border: 3px solid #0284C7;
-      border-radius: 16px;
-      padding: 16px 18px;
+      border: 2px solid #BAE6FD;
+      border-radius: 12px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.12);
-      transition: all 0.25s ease;
+      gap: 6px;
       box-sizing: border-box;
     }
 
-    .math-card.correct-flash {
-      border-color: #10B981 !important;
-      background: #ECFDF5 !important;
-      transform: scale(1.02);
-    }
-
-    .math-card.wrong-shake {
-      border-color: #EF4444 !important;
-      background: #FEF2F2 !important;
-      animation: alertShake 0.35s ease-in-out;
-    }
-
-    .math-card-header {
-      width: 100%;
+    .math-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      border-bottom: 1px solid #E2E8F0;
-      padding-bottom: 8px;
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 6px 10px;
+      transition: all 0.2s;
     }
 
-    .math-card-step-badge {
+    .math-row:focus-within {
+      background: #EFF6FF;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .math-row.correct {
+      background: #ECFDF5;
+      border-color: #10B981;
+    }
+
+    .math-row.incorrect {
+      background: #FEF2F2;
+      border-color: #EF4444;
+    }
+
+    .math-row-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 16px;
+      color: #0F172A;
+    }
+
+    .math-row-num {
       background: #0284C7;
       color: #FFFFFF;
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .math-input-box {
+      width: 85px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 2px solid #CBD5E1;
+      font-size: 17px;
+      font-weight: 800;
+      text-align: center;
+      color: #0F172A;
+      outline: none;
+      background: #FFFFFF;
+      transition: border-color 0.2s;
+    }
+
+    .math-input-box:focus {
+      border-color: #0284C7;
+      box-shadow: 0 0 6px rgba(2, 132, 199, 0.35);
+    }
+
+    .math-row-status {
       font-size: 12px;
       font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 8px;
-      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 80px;
+      justify-content: flex-end;
     }
 
-    .math-card-hint {
-      font-size: 11px;
-      font-weight: 600;
-      color: #64748B;
+    .math-row-status.ok {
+      color: #059669;
     }
 
-    .math-expression-wrap {
+    .math-row-status.err {
+      color: #DC2626;
+    }
+
+    .math-empty-tip {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      width: 100%;
-      padding: 8px 0;
-    }
-
-    .math-expr-text {
-      font-size: 38px;
-      font-weight: 900;
-      color: #0F172A;
-      font-family: inherit;
-      letter-spacing: 1px;
-    }
-
+      text-align: center;
+      height: 100%;
+      color: #64748B;
+      font-size: 13px;
+      font-style: italic;
+      padding: 30px 15px;
     .math-input-wrapper {
       display: inline-flex;
       align-items: center;
       gap: 8px;
     }
 
-    #mathView input.math-main-input,
-    #mathCurrentInput,
     .math-main-input {
-      width: 110px !important;
-      height: 54px !important;
-      font-size: 32px !important;
-      font-weight: 900 !important;
-      text-align: center !important;
-      color: #0F172A !important; /* Chữ số màu đen xanh đậm sắc nét, TUYỆT ĐỐI KHÔNG BỊ TRÙNG MÀU NỀN TRẮNG */
-      -webkit-text-fill-color: #0F172A !important; /* Ngăn chặn triệt để iOS/Chrome tự đổi thành màu trắng */
-      background: #FFFFFF !important;
-      border: 3px solid #0284C7 !important;
-      border-radius: 12px !important;
-      outline: none !important;
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08) !important;
-      transition: all 0.2s !important;
+      width: 110px;
+      height: 52px;
+      font-size: 30px;
+      font-weight: 900;
+      text-align: center;
+      color: #0284C7;
+      background: #F8FAFC;
+      border: 3px solid #0284C7;
+      border-radius: 12px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
     }
 
-    #mathView input.math-main-input:focus,
-    #mathCurrentInput:focus,
     .math-main-input:focus {
-      background: #FFFFFF !important;
-      color: #0F172A !important;
-      -webkit-text-fill-color: #0F172A !important;
-      border-color: #0369A1 !important;
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3) !important;
+      background: #FFFFFF;
+      border-color: #0369A1;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
     }
 
     .btn-math-submit {
@@ -1730,97 +1486,82 @@
       border-radius: 12px;
       font-size: 14px;
       font-weight: 800;
+    .btn-math-submit {
+      height: 52px;
+      padding: 0 20px;
+      background: #0284C7;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
       transition: all 0.15s;
-      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
     }
-
-    .btn-math-submit:hover, .btn-math-submit:active {
-      background: #059669;
-      transform: translateY(1px);
+    .btn-math-submit:active {
+      transform: scale(0.96);
+      background: #0369A1;
     }
-
     .math-feedback-notice {
-      width: 100%;
-      display: flex;
+      display: none;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: 10px;
       font-size: 13px;
       font-weight: 700;
-      text-align: center;
-      box-sizing: border-box;
+      margin-top: 10px;
+      background: #FEF2F2;
+      border: 1.5px solid #F87171;
+      color: #991B1B;
     }
-
-    .math-feedback-notice.ok {
-      background: #DCFCE7;
-      border: 1.5px solid #10B981;
-      color: #15803D;
+    .math-feedback-notice.correct {
+      background: #F0FDF4;
+      border-color: #4ADE80;
+      color: #166534;
     }
-
-    .math-feedback-notice.err {
-      background: #FEE2E2;
-      border: 1.5px solid #EF4444;
-      color: #B91C1C;
-    }
-
-    /* BÀN PHÍM SỐ CẢM ỨNG DI ĐỘNG */
     .math-numpad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      width: 100%;
       max-width: 320px;
-      background: #FFFFFF;
-      border: 2px solid #BAE6FD;
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.08);
-      box-sizing: border-box;
+      margin: 14px auto 0 auto;
+      width: 100%;
     }
-
     .math-np-btn {
-      height: 48px;
-      font-size: 20px;
-      font-weight: 800;
+      height: 52px;
+      background: #FFFFFF;
       color: #0F172A;
-      background: #F1F5F9;
-      border: 1px solid #E2E8F0;
-      border-radius: 10px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 800;
       cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.1s;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
     }
-
     .math-np-btn:active {
       transform: scale(0.94);
       background: #E2E8F0;
     }
-
     .math-np-btn.np-action {
       background: #FEE2E2;
       color: #DC2626;
       border-color: #FECACA;
-      font-size: 14px;
+      font-size: 15px;
     }
-
     .math-np-btn.np-enter {
       background: #0284C7;
       color: #FFFFFF;
       border-color: #0369A1;
       font-size: 15px;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
     }
 
     @media (max-width: 480px) {
@@ -1888,90 +1629,15 @@
       background: #0A84FF;
     }
 
-    .btn-sample-action.delete:hover {
-      background: #FF453A;
-    }
 
-    /* Gợi ý ẩn banner hướng dẫn khi viết */
-    #guideBanner.teaching-hidden {
-      display: none !important;
-    }
 
-    /* MODAL OVERLAYS (Settings & Summary) */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
+      <!-- Thời gian rơi -->
 
-    .modal-overlay.active {
-      display: flex;
-    }
+      <!-- Kích thước chữ rơi -->
 
-    .modal-card {
-      background: #1C2235;
-      border: 1px solid var(--surface-border);
-      border-radius: 24px;
-      width: 100%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      padding: 22px;
-      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+      <!-- Màu chữ rơi -->
 
-    @keyframes modalSlide {
-      from { transform: translateY(30px) scale(0.95); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
-    }
-
-    .modal-card h2 {
-      font-size: 21px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
-    .setting-group {
-      margin-bottom: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .setting-group label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #E5E5EA;
-    }
-
-    .setting-group .hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .setting-group .value-display {
-      color: var(--primary-color);
-      font-weight: 700;
-    }
-
+      <!-- Âm thanh -->
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary-color);
@@ -1999,13 +1665,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin: 12px 0;
     }
 
     .switch {
       position: relative;
       display: inline-block;
-      width: 48px;
-      height: 28px;
+      width: 50px;
+      height: 30px;
+      flex-shrink: 0;
     }
 
     .switch input {
@@ -2017,38 +1685,56 @@
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #3A3A3C;
+      inset: 0;
+      background-color: #39393D;
       transition: .3s;
-      border-radius: 28px;
+      border-radius: 30px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 22px;
-      width: 22px;
-      left: 3px;
-      bottom: 3px;
+      height: 26px;
+      width: 26px;
+      left: 2px;
+      bottom: 2px;
       background-color: white;
       transition: .3s;
       border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     input:checked + .slider {
-      background-color: var(--accent-color);
+      background-color: #30D158;
     }
 
     input:checked + .slider:before {
       transform: translateX(20px);
     }
 
+    .setting-group {
+      margin-bottom: 16px;
+    }
+
+    .setting-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .setting-group .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
     .color-presets {
       display: flex;
-      gap: 10px;
-      margin-top: 8px;
-      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
+      margin-top: 6px;
     }
 
     .color-chip {
@@ -2057,94 +1743,130 @@
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: transform 0.15s;
+      transition: all 0.2s;
     }
 
     .color-chip.active {
-      border-color: #0A84FF;
+      border-color: #fff;
       transform: scale(1.15);
-      box-shadow: 0 0 10px rgba(10, 132, 255, 0.8);
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
     }
 
     .btn-main {
       width: 100%;
-      background: var(--primary-color);
+      padding: 12px;
+      background: #0A84FF;
       color: #fff;
       border: none;
-      padding: 13px;
-      border-radius: 14px;
+      border-radius: 12px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
       margin-top: 10px;
-      transition: background 0.2s, transform 0.1s;
+      transition: background 0.2s;
     }
 
     .btn-main:active {
-      transform: scale(0.98);
       background: #0071E3;
     }
 
     .btn-secondary {
       width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      padding: 10px;
+      background: transparent;
+      color: #8E8E93;
       border: 1px solid var(--surface-border);
-      padding: 11px;
-      border-radius: 14px;
+      border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       margin-top: 8px;
     }
 
-    /* SUMMARY REPORT CARD */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #1C1C1E;
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-card h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
     .summary-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 18px 0;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 16px 0;
     }
 
     .summary-box {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
       padding: 12px;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .summary-box .s-val {
-      font-size: 24px;
-      font-weight: 800;
-      margin-top: 4px;
     }
 
     .summary-box .s-lbl {
       font-size: 11px;
-      color: var(--text-muted);
       text-transform: uppercase;
+      color: var(--text-muted);
       font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .summary-box .s-val {
+      font-size: 20px;
+      font-weight: 800;
     }
 
     .rank-banner {
-      background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 10, 0.1));
-      border: 1px solid rgba(255, 214, 10, 0.4);
-      padding: 14px;
-      border-radius: 16px;
       text-align: center;
-      margin-bottom: 14px;
+      padding: 16px;
+      background: rgba(255,214,10,0.1);
+      border: 1px solid rgba(255,214,10,0.3);
+      border-radius: 16px;
+      margin-bottom: 16px;
     }
 
     .rank-banner .rank-title {
-      font-size: 13px;
+      font-size: 11px;
+      font-weight: 800;
       color: #FFD60A;
-      font-weight: 700;
       letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
     .rank-banner .rank-letter {
@@ -2172,12 +1894,209 @@
       align-items: center;
       gap: 12px;
     }
+      /* =====================================================================
+       MOBILE RESPONSIVE CHO GAME HEADER
+       ===================================================================== */
+    @media (max-width: 600px) {
+      .game-header {
+        padding: 4px 6px;
+        gap: 5px;
+      }
+      .stat-pill {
+        padding: 2px 5px;
+        border-radius: 6px;
+      }
+      .stat-pill .label {
+        font-size: 8.5px;
+      }
+      .stat-pill .val {
+        font-size: 12px;
+      }
+      .icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        border-radius: 8px;
+      }
+      .voice-badge-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        height: 32px;
+        border-radius: 8px;
+      }
+    }
+
+    /* =====================================================================
+       VIEW 5: GAME VẼ HÌNH & TÔ MÀU (DRAW & COLORING)
+       ===================================================================== */
+    #drawView {
+      background: #0f172a;
+      display: none !important;
+      flex-direction: column;
+      overflow: hidden;
+      width: 100%;
+      height: calc(100% - 50px);
+      box-sizing: border-box;
+    }
+    #drawView.active {
+      display: flex !important;
+    }
+    .draw-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #1e293b;
+      border-bottom: 1.5px solid #334155;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    .draw-toolbar::-webkit-scrollbar {
+      height: 3px;
+    }
+    .draw-toolbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    .draw-tool-group, .draw-size-group, .draw-template-group, .draw-actions-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .draw-group-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-right: 2px;
+    }
+    .draw-tool-btn, .draw-action-btn {
+      padding: 6px 12px;
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .draw-tool-btn:hover, .draw-action-btn:hover {
+      background: #475569;
+    }
+    .draw-tool-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+    .draw-size-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .draw-size-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+    .draw-select {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+    .draw-action-btn.praise-btn {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #fbbf24;
+      color: #ffffff;
+    }
+    .draw-color-palette {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: #111827;
+      border-bottom: 1.5px solid #1f2937;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    .draw-color-palette::-webkit-scrollbar {
+      height: 3px;
+    }
+    .draw-color-palette::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    .draw-color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+      transition: transform 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .draw-color-swatch:hover {
+      transform: scale(1.15);
+    }
+    .draw-color-swatch.active {
+      border: 3px solid #ffffff;
+      transform: scale(1.22);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+    }
+    .draw-canvas-container {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      background: #ffffff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    #drawCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
   </style>
+</style>
 </head>
 <body>
   <div class="bg-glow"></div>
 
-  <!-- NAVIGATION TABS (3 TRÒ CHƠI) -->
+  <!-- NAVIGATION TABS (5 TRÒ CHƠI) -->
   <nav class="app-nav">
     <div class="nav-tab" id="tabTyping">
       <span>⌨️</span> Gõ Rơi Tự Do
@@ -2190,6 +2109,9 @@
     </div>
     <div class="nav-tab" id="tabMath">
       <span>🧮</span> Luyện Phép Tính
+    </div>
+    <div class="nav-tab" id="tabDraw">
+      <span>🎨</span> Vẽ Hình & Tô Màu
     </div>
   </nav>
 
@@ -2297,8 +2219,6 @@
         <!-- Textbox 1: Của thầy để gõ đề bài (Hỗ trợ gõ tiếng Việt có dấu) -->
         <textarea id="teacherBlackboardInput" lang="vi" spellcheck="false" autocomplete="off" autocapitalize="sentences" placeholder="Thầy gõ chữ hoặc bài học vào đây... (Ví dụ: Bố mẹ yêu con, Việt Nam vô địch, 123 456)"></textarea>
 
-
-
         <!-- Dòng theo dõi ký tự trên đề bài (với highlight ký tự đang viết) -->
         <div id="teacherPromptTracker"></div>
 
@@ -2342,26 +2262,400 @@
   <!-- =====================================================================
        VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO)
        ===================================================================== -->
-  <section class="game-view" id="clockView">
-    <!-- KHỐI THANH ĐIỀU KHIỂN NHANH TRÊN CÙNG (TIẾT KIỆM DIỆN TÍCH TỐI ĐA) -->
-    <div class="clock-compact-header">
-      <div class="digital-time-compact" id="digitalTimeBox" title="Thời gian điện tử">
-        <span class="h-val" id="dispClockH">10</span>:<span class="m-val" id="dispClockM">15</span>:<span class="s-val" id="dispClockS">00</span>
+    .rank-banner .rank-letter {
+      font-size: 50px;
+      font-weight: 900;
+      color: #FFD60A;
+      line-height: 1.1;
+      text-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
+    }
+
+    #pauseBanner {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid var(--surface-border);
+      padding: 18px 32px;
+      border-radius: 20px;
+      font-size: 22px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+      /* =====================================================================
+       MOBILE RESPONSIVE CHO GAME HEADER
+       ===================================================================== */
+    @media (max-width: 600px) {
+      .game-header {
+        padding: 4px 6px;
+        gap: 5px;
+      }
+      .stat-pill {
+        padding: 2px 5px;
+        border-radius: 6px;
+      }
+      .stat-pill .label {
+        font-size: 8.5px;
+      }
+      .stat-pill .val {
+        font-size: 12px;
+      }
+      .icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        border-radius: 8px;
+      }
+      .voice-badge-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+        height: 32px;
+        border-radius: 8px;
+      }
+    }
+
+    /* =====================================================================
+       VIEW 5: GAME VẼ HÌNH & TÔ MÀU (DRAW & COLORING)
+       ===================================================================== */
+    #drawView {
+      background: #0f172a;
+      display: none !important;
+      flex-direction: column;
+      overflow: hidden;
+      width: 100%;
+      height: calc(100% - 50px);
+      box-sizing: border-box;
+    }
+    #drawView.active {
+      display: flex !important;
+    }
+    .draw-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 10px;
+      background: #1e293b;
+      border-bottom: 1.5px solid #334155;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    .draw-toolbar::-webkit-scrollbar {
+      height: 3px;
+    }
+    .draw-toolbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    .draw-tool-group, .draw-size-group, .draw-template-group, .draw-actions-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .draw-group-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-right: 2px;
+    }
+    .draw-tool-btn, .draw-action-btn {
+      padding: 6px 12px;
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .draw-tool-btn:hover, .draw-action-btn:hover {
+      background: #475569;
+    }
+    .draw-tool-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+    .draw-size-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .draw-size-btn.active {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+    .draw-select {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+    .draw-action-btn.praise-btn {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #fbbf24;
+      color: #ffffff;
+    }
+    .draw-color-palette {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: #111827;
+      border-bottom: 1.5px solid #1f2937;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    .draw-color-palette::-webkit-scrollbar {
+      height: 3px;
+    }
+    .draw-color-palette::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    .draw-color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+      transition: transform 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .draw-color-swatch:hover {
+      transform: scale(1.15);
+    }
+    .draw-color-swatch.active {
+      border: 3px solid #ffffff;
+      transform: scale(1.22);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+    }
+    .draw-canvas-container {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      background: #ffffff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    #drawCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+  </style>
+</style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <!-- NAVIGATION TABS (5 TRÒ CHƠI) -->
+  <nav class="app-nav">
+    <div class="nav-tab" id="tabTyping">
+      <span>⌨️</span> Gõ Rơi Tự Do
+    </div>
+    <div class="nav-tab active" id="tabWords">
+      <span>📝</span> Luyện Từ Của Thầy
+    </div>
+    <div class="nav-tab" id="tabClock">
+      <span>⏰</span> Coi Giờ Đồng Hồ
+    </div>
+    <div class="nav-tab" id="tabMath">
+      <span>🧮</span> Luyện Phép Tính
+    </div>
+    <div class="nav-tab" id="tabDraw">
+      <span>🎨</span> Vẽ Hình & Tô Màu
+    </div>
+  </nav>
+
+  <!-- =====================================================================
+       VIEW 1: GAME GÕ RƠI TỰ DO
+       ===================================================================== -->
+  <section class="game-view" id="typingView">
+    <div class="game-header">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span class="label">Điểm</span>
+          <span class="val highlight" id="scoreVal">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Combo</span>
+          <span class="val" id="comboVal">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Đúng / Trượt</span>
+          <span class="val"><span id="hitVal" style="color:var(--accent-color)">0</span> / <span id="missVal" style="color:var(--danger-color)">0</span></span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Còn lại</span>
+          <span class="val" id="timerVal">03:00</span>
+        </div>
       </div>
-      <div class="clock-quick-actions">
-        <button class="btn-action-pill primary" id="speakClockBtn" title="Phát âm đọc giờ tiếng Việt">
-          <span>🔊</span> Đọc giờ
+
+      <div class="header-actions">
+        <button class="voice-badge-btn" id="repeatVoiceBtn" title="Bấm để nghe lại tên chữ cái">
+          <span>🔊</span>
+          <span id="voiceStatusText">Nghe lại</span>
         </button>
-        <button class="btn-action-pill" id="toggleMaskBtn" title="Ẩn/Hiện giờ điện tử để đố học sinh">
-          <span id="maskIcon">👁️</span> <span id="maskText">Ẩn giờ</span>
-        </button>
-        <button class="btn-action-pill menu-btn" id="btnToggleClockDrawer" title="Mở bảng cài đặt & công cụ đồng hồ">
-          <span>⚙️</span> <span id="clockMenuToggleText">Tùy Chọn & Điều Khiển ▾</span>
-        </button>
+        <button class="icon-btn" id="pauseBtn" title="Tạm dừng / Tiếp tục">⏸</button>
+        <button class="icon-btn" id="settingsBtn" title="Cài đặt tham số & Màu nền">⚙️</button>
       </div>
     </div>
 
-    <!-- MẶT ĐỒNG HỒ SIÊU TO TỐI ĐA TRÊN MÀN HÌNH -->
+    <!-- KHU VỰC CHỮ RƠI -->
+    <main id="gameArea"></main>
+
+    <div id="pauseBanner">⏸ ĐANG TẠM DỪNG</div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 2: GAME TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY (BẢNG ĐEN)
+       ===================================================================== -->
+  <section class="game-view active" id="wordsPracticeView">
+    <div class="game-header">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span class="label">Tiến Độ Ký Tự</span>
+          <span class="val highlight" id="wordProgressVal">0 / 0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Gõ Đúng</span>
+          <span class="val" style="color:var(--accent-color)" id="wordHitsVal">0</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Cần Sửa</span>
+          <span class="val" style="color:var(--danger-color)" id="wordErrorsVal">0</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="voice-badge-btn" id="wordRepeatVoiceBtn" title="Bấm để nghe lại chữ cái cần viết">
+          <span>🔊</span> Nghe lại
+        </button>
+        <button class="icon-btn" id="btnWordsSettings" title="Cài đặt & Màu nền">⚙️</button>
+      </div>
+    </div>
+
+    <!-- 02 TEXTBOX: 1 CHO THẦY RA ĐỀ BÀI, 1 CHO HỌC TRÒ VIẾT -->
+    <div class="two-box-container">
+      <!-- KHUNG 1: ĐỀ BÀI CỦA THẦY (TEXTBOX 1) -->
+      <div class="teacher-box-card">
+        <div class="box-header">
+          <div class="box-title teacher-title">
+            <span>👨‍🏫</span> 1. ĐỀ BÀI CỦA THẦY (BẢNG RA ĐỀ)
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <!-- Nút bật tắt chế độ Đánh vần Tiếng Việt Lớp 1 -->
+            <label class="spelling-toggle-card" title="Bật/Tắt chế độ đánh vần từng từ chuẩn Tiếng Việt Lớp 1">
+              <input type="checkbox" id="chkSpellingGrade1" checked>
+              <span class="spelling-toggle-text">📖 Đánh Vần Lớp 1</span>
+            </label>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <span style="font-size:11px;color:#FEF08A;font-weight:700;">Cỡ chữ:</span>
+              <div class="board-stepper-box">
+                <button class="btn-step" id="btnBoardFontMinus" title="Thu nhỏ chữ">A-</button>
+                <span class="step-display" id="dispBoardFontSize">28px</span>
+                <button class="btn-step" id="btnBoardFontPlus" title="Phóng to chữ">A+</button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <span style="font-size:11px;color:#FEF08A;font-weight:700;">Tốc độ:</span>
+              <div class="board-stepper-box">
+                <button class="btn-step" id="btnRateMinus" title="Đọc chậm hơn">🐢</button>
+                <span class="step-display" id="dispVoiceRateInline">1.0x</span>
+                <button class="btn-step" id="btnRatePlus" title="Đọc nhanh hơn">🐇</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Textbox 1: Của thầy để gõ đề bài (Hỗ trợ gõ tiếng Việt có dấu) -->
+        <textarea id="teacherBlackboardInput" lang="vi" spellcheck="false" autocomplete="off" autocapitalize="sentences" placeholder="Thầy gõ chữ hoặc bài học vào đây... (Ví dụ: Bố mẹ yêu con, Việt Nam vô địch, 123 456)"></textarea>
+
+        <!-- Dòng theo dõi ký tự trên đề bài (với highlight ký tự đang viết) -->
+        <div id="teacherPromptTracker"></div>
+
+        <!-- Hàng nút điều khiển của Thầy -->
+        <div class="board-actions-row">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn-board clear-btn" id="btnClearBoard" title="Xóa trắng đề bài">🧹 Xóa Bảng</button>
+            <button class="btn-board edit-btn" id="btnSampleLessons" title="Chọn bài mẫu có sẵn">📚 Bài Mẫu</button>
+            <button class="btn-board spell-btn" id="btnSpellNow" title="Bấm nghe đánh vần từ đang gõ theo chuẩn Lớp 1">🗣️ Đánh Vần Từ Này</button>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn-board start-btn" id="btnStartLesson">▶️ BẮT ĐẦU CHO TRÒ VIẾT</button>
+            <button class="btn-board edit-btn" id="btnRestartLesson" style="display:none;">🔄 Viết Lại</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KHUNG 2: BÀI VIẾT CỦA HỌC TRÒ (TEXTBOX 2) -->
+      <div class="student-box-card">
+        <div class="box-header">
+          <div class="box-title student-title">
+            <span>✍️</span> 2. BÀI VIẾT CỦA HỌC TRÒ (VỞ TẬP VIẾT)
+          </div>
+          <span id="studentStatusBadge" style="font-size:11px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
+        </div>
+
+        <!-- THÔNG BÁO NHẮC XOÁ KHI VIẾT SAI (NỔI BẬT TRỰC QUAN) -->
+        <div id="wordErrorNotice" class="word-error-notice" style="display:none;">
+          <span class="notice-icon">⚠️</span>
+          <span id="wordErrorNoticeText" class="notice-text">Bạn đã viết sai! Hãy bấm phím XOÁ ⌫ (màu đỏ cạnh chữ M) để sửa lại nhé!</span>
+        </div>
+
+        <!-- Textbox 2: Của học trò, hiển thị chữ đã gõ, chữ đúng màu xanh, sai màu đỏ -->
+        <div id="studentNotebookDisplay">
+          <span class="student-placeholder">Chữ học trò gõ sẽ xuất hiện ở đây theo từng chữ máy đọc...</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ
+       ===================================================================== -->
+  <section class="game-view" id="clockView">
     <div class="clock-stage" id="clockStage">
       <svg id="clockSvg" viewBox="0 0 360 360">
         <g id="dialTicks"></g>
@@ -2383,263 +2677,145 @@
       </svg>
     </div>
 
-    <!-- BẢNG MENU TÙY CHỌN ẨN HIỆN CỦA ĐỒNG HỒ (DRAWER OVERLAY) -->
-    <div class="clock-drawer-overlay" id="clockDrawerOverlay">
-      <div class="clock-drawer-card">
-        <div class="clock-drawer-header">
-          <h3><span>⚙️</span> Bảng Tùy Chọn & Điều Khiển Đồng Hồ</h3>
-          <button class="clock-drawer-close" id="btnCloseClockDrawer" title="Đóng bảng tùy chọn">✕</button>
-        </div>
+    <!-- TÙY CHỌN MÀU NỀN MẶT ĐỒNG HỒ -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:-2px;">
+      <span style="font-size:12px;color:var(--text-muted);font-weight:600;">Màu nền đồng hồ:</span>
+      <div style="display:flex;gap:8px;">
+        <button id="dialColorWhite" style="background:#F8F9FD;border:2px solid #0A84FF;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#000;cursor:pointer;">⚪ Trắng Sứ</button>
+        <button id="dialColorIvory" style="background:#FFF9E6;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#333;cursor:pointer;">🟡 Vàng Kem</button>
+        <button id="dialColorCyan" style="background:#E6F7FF;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#003A8C;cursor:pointer;">🔵 Xanh Băng</button>
+      </div>
+    </div>
 
-        <!-- 1. Tùy chọn màu nền đồng hồ -->
-        <div class="drawer-setting-group">
-          <div class="drawer-group-title">🎨 Màu nền mặt đồng hồ:</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button id="dialColorWhite" style="background:#F8F9FD;border:2px solid #0A84FF;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#000;cursor:pointer;">⚪ Trắng Sứ</button>
-            <button id="dialColorIvory" style="background:#FFF9E6;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#333;cursor:pointer;">🟡 Vàng Kem</button>
-            <button id="dialColorCyan" style="background:#E6F7FF;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#003A8C;cursor:pointer;">🔵 Xanh Băng</button>
+    <!-- KHỐI HIỂN THỊ GIỜ ĐIỆN TỬ & CÔNG CỤ ĐỌC GIỜ -->
+    <div class="time-display-card">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">Thời gian hiện tại</div>
+        <div class="digital-time" id="digitalTimeBox">
+          <span class="h-val" id="dispClockH">10</span>:<span class="m-val" id="dispClockM">15</span>:<span class="s-val" id="dispClockS">00</span>
+        </div>
+      </div>
+      <div class="clock-actions-row">
+        <button class="btn-action-pill" id="toggleMaskBtn" title="Ẩn/Hiện giờ điện tử để đố học sinh">
+          <span id="maskIcon">👁️</span> <span id="maskText">Ẩn giờ</span>
+        </button>
+        <button class="btn-action-pill primary" id="speakClockBtn" title="Phát âm đọc giờ tiếng Việt">
+          <span>🔊</span> Đọc giờ
+        </button>
+      </div>
+    </div>
+
+    <!-- BẢNG TÙY CHỈNH 01 TRONG 03 KIM TÙY Ý -->
+    <div class="hand-controllers">
+      <div class="hand-card">
+        <div class="hand-card-header">
+          <div class="hand-tag">
+            <span class="dot-indicator" style="background:var(--clock-hour-color)"></span>
+            <span>Kim Giờ (Ngắn - Xanh)</span>
           </div>
+          <span style="color:var(--clock-hour-color)" id="ctrlHourVal">10 Giờ</span>
         </div>
-
-        <!-- 2. Công cụ dạy học & đố giờ -->
-        <div class="drawer-setting-group">
-          <div class="drawer-group-title">🛠️ Công cụ dạy học & đố giờ:</div>
-          <div class="teaching-tools" style="margin-top:0;">
-            <button class="tool-btn" id="btnRealtimeClock">
-              <span>⏱️</span> Giờ Thực Tế
-            </button>
-            <button class="tool-btn" id="btnRandomTime">
-              <span>🎲</span> Đố Giờ Ngẫu Nhiên
-            </button>
-            <button class="tool-btn" id="btnLockHands">
-              <span id="lockIcon">🔗</span> <span id="lockText">Kim Liên Hoàn</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 3. Tùy chỉnh tự do 3 kim -->
-        <div class="drawer-setting-group">
-          <div class="drawer-group-title">🖐️ Tùy chỉnh vị trí 3 Kim tự do:</div>
-          <div class="hand-controllers">
-            <div class="hand-card">
-              <div class="hand-card-header">
-                <div class="hand-tag">
-                  <span class="dot-indicator" style="background:var(--clock-hour-color)"></span>
-                  <span>Kim Giờ (Ngắn - Xanh)</span>
-                </div>
-                <span style="color:var(--clock-hour-color)" id="ctrlHourVal">10 Giờ</span>
-              </div>
-              <div class="hand-slider-row">
-                <button class="stepper-btn" id="btnHourMinus">-</button>
-                <input type="range" id="sliderHour" min="1" max="12" step="1" value="10">
-                <button class="stepper-btn" id="btnHourPlus">+</button>
-              </div>
-            </div>
-
-            <div class="hand-card">
-              <div class="hand-card-header">
-                <div class="hand-tag">
-                  <span class="dot-indicator" style="background:var(--clock-min-color)"></span>
-                  <span>Kim Phút (Dài - Xanh lá)</span>
-                </div>
-                <span style="color:var(--clock-min-color)" id="ctrlMinVal">15 Phút</span>
-              </div>
-              <div class="hand-slider-row">
-                <button class="stepper-btn" id="btnMinMinus">-</button>
-                <input type="range" id="sliderMin" min="0" max="59" step="1" value="15">
-                <button class="stepper-btn" id="btnMinPlus">+</button>
-              </div>
-            </div>
-
-            <div class="hand-card">
-              <div class="hand-card-header">
-                <div class="hand-tag">
-                  <span class="dot-indicator" style="background:var(--clock-sec-color)"></span>
-                  <span>Kim Giây (Mảnh - Đỏ)</span>
-                </div>
-                <span style="color:var(--clock-sec-color)" id="ctrlSecVal">00 Giây</span>
-              </div>
-              <div class="hand-slider-row">
-                <button class="stepper-btn" id="btnSecMinus">-</button>
-                <input type="range" id="sliderSec" min="0" max="59" step="1" value="0">
-                <button class="stepper-btn" id="btnSecPlus">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <button class="btn-main" id="btnApplyAndCloseClockDrawer" style="margin-top:6px;">✕ Đóng Bảng & Xem Đồng Hồ To</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================================
-       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (10 BÀI TUẦN TỰ)
-       ===================================================================== -->
-  <section class="game-view" id="mathView">
-    <div class="game-header">
-      <div class="stats-bar">
-        <div class="stat-pill">
-          <span class="label">Tiến Độ</span>
-          <span class="val highlight" id="mathProgressVal">1 / 10</span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Thời Gian</span>
-          <span class="val" style="color:var(--accent-color)" id="mathTimerVal">00:00</span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Cấp Độ</span>
-          <span class="val" style="color:#F59E0B;font-size:11px;" id="mathCurrentLevelBadge">1 Chữ Số</span>
+        <div class="hand-slider-row">
+          <button class="stepper-btn" id="btnHourMinus">-</button>
+          <input type="range" id="sliderHour" min="1" max="12" step="1" value="10">
+          <button class="stepper-btn" id="btnHourPlus">+</button>
         </div>
       </div>
 
-      <div class="header-actions">
-        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Đọc to đề bài toán hiện tại">
-          <span>🔊</span> Đọc Đề
-        </button>
-        <button class="icon-btn" id="btnRestartMathGame" title="Làm lại 10 bài mới">🔄</button>
-      </div>
-    </div>
+      <div class="hand-card">
+        <div class="hand-card-header">
+          <div class="hand-tag">
+      color: #FFFFFF;
+      border-color: #0369A1;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    }
 
-    <!-- THANH CHỌN CẤP ĐỘ KHÓ (1 CHỮ SỐ, 2 CHỮ SỐ, BẢNG CỬU CHƯƠNG, THẦY RA ĐỀ) -->
-    <div class="math-level-bar">
-      <div class="math-level-tabs">
-        <button type="button" class="math-level-btn active" id="btnLvlSingle" data-level="single">
-          <span>🟢</span> 1 Chữ Số
-        </button>
-        <button type="button" class="math-level-btn" id="btnLvlDouble" data-level="double">
-          <span>🟡</span> 2 Chữ Số
-        </button>
-        <button type="button" class="math-level-btn" id="btnLvlTimes" data-level="times_table">
-          <span>🔴</span> Bảng Cửu Chương
-        </button>
-        <button type="button" class="math-level-btn" id="btnLvlCustom" data-level="custom">
-          <span>👨‍🏫</span> Thầy Tự Ra Đề
-        </button>
-      </div>
-    </div>
+    @media (max-width: 480px) {
+      .math-expr-text {
+        font-size: 30px;
+      }
+      .math-main-input {
+        width: 90px;
+        height: 48px;
+        font-size: 26px;
+      }
+      .btn-math-submit {
+        height: 48px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+      .math-np-btn {
+        height: 44px;
+        font-size: 18px;
+      }
+    }
 
-    <!-- KHU VỰC THẦY TỰ SOẠN ĐỀ (CHỈ HIỆN KHI CHỌN "THẦY TỰ RA ĐỀ") -->
-    <div class="math-custom-panel" id="mathCustomPanel" style="display:none;">
-      <div class="custom-panel-card">
-        <div class="custom-panel-header">
-          <span style="font-weight:700;font-size:13px;color:#134B2F;">👨‍🏫 Thầy gõ 10 phép tính đơn vào đây:</span>
-          <button type="button" class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
-        </div>
-        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 1 phép tính)...
-8 + 5 =
-15 - 7 =
-6 x 4 =
-36 / 6 =
-9 + 9 =
-20 - 8 =
-7 x 3 =
-45 / 5 =
-12 + 18 =
-50 - 25 ="></textarea>
-        <button type="button" class="btn-board start-btn" id="btnStartCustomMath" style="width:100%;margin-top:6px;">
-          ▶️ BẮT ĐẦU CHO TRÒ LÀM 10 BÀI TUẦN TỰ
-        </button>
-      </div>
-    </div>
+    @media (max-width: 480px) {
+      .math-expr-text {
+        font-size: 30px;
+      }
+      #mathView input.math-main-input,
+      #mathCurrentInput,
+      .math-main-input {
+        width: 90px !important;
+        height: 48px !important;
+        font-size: 26px !important;
+        color: #0F172A !important;
+        -webkit-text-fill-color: #0F172A !important;
+      }
+      .btn-math-submit {
+        height: 48px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+      .math-np-btn {
+        height: 44px;
+        font-size: 18px;
+      }
+    }
 
-    <!-- VÙNG CHƠI CHÍNH: 10 BÀI TÍNH HIỂN THỊ TUẦN TỰ -->
-    <div class="math-quiz-container" id="mathQuizContainer">
-      <!-- VẠCH TIẾN ĐỘ 10 BÀI (PROGRESS STEPS) -->
-      <div class="math-steps-bar" id="mathStepsBar">
-        <!-- JS generates 10 step pills -->
-      </div>
+    /* Modal bài mẫu của Thầy */
+    .sample-item-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
 
-      <!-- THẺ BÀI TOÁN HIỆN TẠI (SIÊU TO, DỄ NHÌN) -->
-      <div class="math-card" id="mathCard">
-        <div class="math-card-header">
-          <span class="math-card-step-badge" id="mathBadgeQNum">BÀI 1 TRÊN 10</span>
-          <span class="math-card-hint" id="mathCardHint">Gõ đúng kết quả để sang bài tiếp theo</span>
-        </div>
+    .sample-item-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      flex: 1;
+      word-break: break-word;
+    }
 
-        <!-- KHUNG PHÉP TÍNH TO -->
-        <div class="math-expression-wrap">
-          <span class="math-expr-text" id="mathExprText">7 × 8 =</span>
-          <div class="math-input-wrapper">
-            <input type="text" id="mathCurrentInput" class="math-main-input" inputmode="numeric" pattern="[0-9\-]*" autocomplete="off" placeholder="?" style="color:#0F172A !important; -webkit-text-fill-color:#0F172A !important; background:#FFFFFF !important; caret-color:#0284C7 !important;">
-            <button type="button" class="btn-math-submit" id="btnMathCheck" title="Kiểm tra đáp án">↵ KIỂM TRA</button>
-          </div>
-        </div>
+    .sample-item-actions {
+      display: flex;
+      gap: 4px;
+    }
 
-        <!-- THÔNG BÁO PHẢN HỒI (ĐÚNG/SAI) -->
-        <div class="math-feedback-notice" id="mathFeedbackNotice" style="display:none;">
-          <span id="mathFeedbackIcon">⚠️</span>
-          <span id="mathFeedbackText">Chưa đúng rồi! Em hãy tính lại nhé!</span>
-        </div>
-      </div>
+    .btn-sample-action {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
 
-      <!-- BÀN PHÍM SỐ CẢM ỨNG DI ĐỘNG (DỄ BẤM TRÊN IPAD & ĐIỆN THOẠI) -->
-      <div class="math-numpad" id="mathNumpad">
-        <button type="button" class="math-np-btn" data-val="1">1</button>
-        <button type="button" class="math-np-btn" data-val="2">2</button>
-        <button type="button" class="math-np-btn" data-val="3">3</button>
-        <button type="button" class="math-np-btn" data-val="4">4</button>
-        <button type="button" class="math-np-btn" data-val="5">5</button>
-        <button type="button" class="math-np-btn" data-val="6">6</button>
-        <button type="button" class="math-np-btn" data-val="7">7</button>
-        <button type="button" class="math-np-btn" data-val="8">8</button>
-        <button type="button" class="math-np-btn" data-val="9">9</button>
-        <button type="button" class="math-np-btn np-action" data-val="del" title="Xoá một số">⌫ Xoá</button>
-        <button type="button" class="math-np-btn" data-val="0">0</button>
-        <button type="button" class="math-np-btn np-enter" data-val="enter" title="Kiểm tra đáp án">↵ Xong</button>
-      </div>
-    </div>
-  </section>
+    .btn-sample-action.apply {
+      background: #0A84FF;
+    }
 
-  <!-- BÀN PHÍM IPHONE CHUẨN IOS - NỀN XANH NHẠT GỢN MÂY -->
-  <div id="keyboardWrapper">
-    <div id="keyboardContainer">
-      <div id="virtualKeyboard"></div>
-    </div>
-  </div>
-
-  <!-- MODAL CÀI ĐẶT THAM SỐ CHUNG & MÀU NỀN -->
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal-card">
-      <h2>⚙️ Cài Đặt Tham Số</h2>
-
-      <!-- MÀU NỀN CỦA GAME (TÙY CHỌN NỀN SÁNG / TỐI) -->
-      <div class="setting-group">
-        <label>
-          <span>Màu nền màn hình game</span>
-        </label>
-        <div class="color-presets" id="bgThemePresets">
-          <div class="color-chip active" style="background:#0b0f19;border:1px solid #fff;" data-bg="#0b0f19" title="Tối Huyền Bí"></div>
-          <div class="color-chip" style="background:#F2F2F7" data-bg="#F2F2F7" title="Sáng Dịu Apple"></div>
-          <div class="color-chip" style="background:#E3EEF9" data-bg="#E3EEF9" title="Xanh Nhạt Mát Mắt"></div>
-          <div class="color-chip" style="background:#E8F5E9" data-bg="#E8F5E9" title="Xanh Mint Dịu Mắt"></div>
-          <div class="color-chip" style="background:#FAF3E0" data-bg="#FAF3E0" title="Vàng Kem Nhẹ Nhàng"></div>
-        </div>
-        <div class="hint">Chọn màu nền sáng hoặc tối để mắt nhìn dễ chịu nhất</div>
-      </div>
-
-      <!-- Kiểu ký tự (Game 1) -->
-      <div class="setting-group">
-        <label>
-          <span>Kiểu ký tự rơi (Game Rơi Tự Do)</span>
-        </label>
-        <select id="cfgCharMode">
-          <option value="lowercase">Chữ thường (a - z)</option>
-          <option value="uppercase">Chữ hoa (A - Z)</option>
-          <option value="both_case">Chữ hoa & Chữ thường (A - z)</option>
-          <option value="numbers">Chỉ số (0 - 9)</option>
-          <option value="letters_and_numbers">Hỗn hợp (Chữ & Số ngẫu nhiên)</option>
-        </select>
-      </div>
-
-      <!-- Giọng nói hướng dẫn -->
-      <div class="setting-group">
-        <div class="toggle-row">
-          <div>
-            <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
-            <div class="hint">Đọc tên chữ cái khi rơi</div>
-          </div>
-          <label class="switch">
             <input type="checkbox" id="cfgVoiceEnabled" checked>
             <span class="slider"></span>
           </label>
@@ -2652,23 +2828,6 @@
           <span class="value-display" id="dispVoiceRate">1.0x</span>
         </label>
         <input type="range" id="cfgVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
-      </div>
-
-      <!-- Thời gian game rơi -->
-      <div class="setting-group">
-        <label>
-          <span>Thời gian chơi (Game Rơi Tự Do)</span>
-          <span class="value-display" id="dispGameDuration">3 phút (180s)</span>
-        </label>
-        <select id="cfgGameDuration">
-          <option value="60">1 phút (60 giây)</option>
-          <option value="120">2 phút (120 giây)</option>
-          <option value="180" selected>3 phút (180 giây) - Mặc định</option>
-          <option value="300">5 phút (300 giây)</option>
-          <option value="600">10 phút (600 giây)</option>
-          <option value="0">Không giới hạn (Chơi tự do)</option>
-        </select>
-        <div class="hint">Chọn thời lượng mỗi ván gõ chữ rơi tự do</div>
       </div>
 
       <!-- Thời gian rơi -->
@@ -2716,105 +2875,32 @@
             <span class="slider"></span>
           </label>
         </div>
-        <button type="button" class="btn-secondary" id="btnTestAudio" style="margin-top:8px;padding:6px 12px;font-size:12px;width:100%;background:rgba(10,132,255,0.15);border:1px solid rgba(10,132,255,0.5);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-          <span>🔊</span> Khởi động lại & Thử âm thanh ngay
-        </button>
-      </div>
 
-      <button class="btn-main" id="saveSettingsBtn">💾 Lưu Cài Đặt</button>
-      <button class="btn-secondary" id="closeSettingsBtn">Đóng</button>
-    </div>
-  </div>
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary-color);
+      height: 6px;
+      background: #3A3A3C;
+      border-radius: 3px;
+      outline: none;
+      margin: 8px 0;
+    }
 
-  <!-- MODAL CÀI ĐẶT RIÊNG: GAME LUYỆN TỪ CỦA THẦY -->
-  <div class="modal-overlay" id="wordSettingsModal">
-    <div class="modal-card">
-      <h2>⚙️ Cài Đặt Game Luyện Từ Của Thầy</h2>
+    select, textarea, input[type="text"] {
+      width: 100%;
+      background: #2C2C2E;
+      color: #fff;
+      border: 1px solid var(--surface-border);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      outline: none;
+      font-family: inherit;
+    }
 
-      <!-- Giọng nói hướng dẫn Game 2 -->
-      <div class="setting-group">
-        <div class="toggle-row">
-          <div>
-            <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
-            <div class="hint">Đọc tên chữ cái và phát âm cả từ khi viết đúng</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="cfgWordVoiceEnabled" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Tốc độ đọc Game 2 -->
-      <div class="setting-group">
-        <label>
-          <span>Tốc độ đọc giọng nói</span>
-          <span class="value-display" id="dispWordVoiceRate">1.0x</span>
-        </label>
-        <input type="range" id="cfgWordVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
-      </div>
-
-      <!-- Cỡ chữ trên bảng và vở -->
-      <div class="setting-group">
-        <label>
-          <span>Kích thước chữ (Bảng đề bài & Vở tập viết)</span>
-          <span class="value-display" id="dispWordFontSizeModal">28 px</span>
-        </label>
-        <input type="range" id="cfgWordFontSize" min="20" max="44" step="2" value="28">
-      </div>
-
-      <!-- Đánh vần chuẩn Lớp 1 -->
-      <div class="setting-group">
-        <div class="toggle-row">
-          <div>
-            <div style="font-weight:600;font-size:14px;">Chế độ Đánh vần Tiếng Việt Lớp 1</div>
-            <div class="hint">Tự động phân tích và đánh vần từ mẫu (ví dụ: Bố -> bờ ô bô sắc bố)</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="cfgWordSpellingGrade1" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Âm thanh hiệu ứng Game 2 -->
-      <div class="setting-group">
-        <div class="toggle-row">
-          <div>
-            <div style="font-weight:600;font-size:14px;">Âm thanh hiệu ứng</div>
-            <div class="hint">Tiếng gõ đúng và âm thanh hoàn thành bài viết</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="cfgWordSoundEnabled" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <button class="btn-main" id="saveWordSettingsBtn">💾 Lưu Cài Đặt</button>
-      <button class="btn-secondary" id="closeWordSettingsBtn">Đóng</button>
-    </div>
-  </div>
-
-  <!-- SUMMARY REPORT MODAL -->
-  <div class="modal-overlay" id="summaryModal">
-    <div class="modal-card">
-      <h2>🏆 TỔNG KẾT VÁN CHƠI</h2>
-
-      <div class="rank-banner">
-        <div class="rank-title">XẾP HẠNG KỸ NĂNG</div>
-        <div class="rank-letter" id="sumRank">S</div>
-        <div id="sumComment" style="font-size:13px;color:#fff;margin-top:4px;">Xuất sắc! Bạn phản xạ rất chuẩn xác.</div>
-      </div>
-
-      <div class="summary-grid">
-        <div class="summary-box">
-          <div class="s-lbl">Tổng Điểm</div>
-          <div class="s-val" style="color:var(--accent-color)" id="sumScore">0</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Độ Chính Xác</div>
-          <div class="s-val" style="color:#FFD60A" id="sumAccuracy">100%</div>
+    .toggle-row {
+      display: flex;
         </div>
         <div class="summary-box">
           <div class="s-lbl">Gõ Đúng / Trượt</div>
@@ -2827,121 +2913,11 @@
       </div>
 
       <button class="btn-main" id="playAgainBtn">🔄 Chơi Lại Ngay</button>
-      <button class="btn-main" id="btnRepeatFallingSummaryVoice" style="background:#0A84FF;">🔊 Nghe Lại Tổng Kết</button>
       <button class="btn-secondary" id="openSettingsFromSummaryBtn">⚙️ Đổi Cài Đặt</button>
     </div>
   </div>
 
-  <!-- MODAL QUẢN LÝ VÀ CẬP NHẬT BÀI MẪU CỦA THẦY (GAME 2) -->
-  <div class="modal-overlay" id="sampleLessonsModal">
-    <div class="modal-card" style="max-width:560px;">
-      <h2>📚 Quản Lý & Cập Nhật Bài Mẫu</h2>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
-        Thầy có thể chọn bài mẫu có sẵn, thêm câu mới hoặc chỉnh sửa danh sách theo ý muốn:
-      </div>
-
-      <!-- Ô nhập thêm bài mẫu mới -->
-      <div style="display:flex;gap:6px;margin-bottom:12px;">
-        <input type="text" id="newSampleInput" placeholder="Gõ câu bài mẫu mới vào đây..." style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--surface-border);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;outline:none;">
-        <button class="btn-main" id="btnAddSampleLesson" style="width:auto;padding:9px 14px;margin:0;font-size:13px;">➕ Thêm</button>
-      </div>
-
-      <!-- Danh sách bài mẫu có sẵn -->
-      <div id="sampleLessonsListContainer" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;padding-right:4px;">
-        <!-- Render động qua JavaScript -->
-      </div>
-
-      <div style="display:flex;gap:8px;">
-        <button class="btn-secondary" id="btnResetDefaultSamples" style="flex:1;">🔄 Khôi phục mặc định</button>
-        <button class="btn-main" id="btnCloseSampleModal" style="flex:1;">✕ Đóng</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL TỔNG KẾT BÀI VIẾT CỦA THẦY (GAME 2) -->
-  <div class="modal-overlay" id="wordCompleteModal">
-    <div class="modal-card" style="max-width:480px;text-align:center;">
-      <div style="font-size:46px;margin-bottom:4px;">🎉</div>
-      <h2 style="margin-bottom:6px;">XUẤT SẮC HOÀN THÀNH!</h2>
-      <div id="wordCompleteSubtitle" style="font-size:14px;color:var(--accent-color);font-weight:700;margin-bottom:12px;">
-        Học trò đã viết xong toàn bộ bài học của Thầy!
-      </div>
-
-      <div class="summary-grid" style="margin-bottom:14px;">
-        <div class="summary-box">
-          <div class="s-lbl">Tổng Ký Tự</div>
-          <div class="s-val" id="sumWordChars" style="color:#0A84FF">0</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Thời Gian</div>
-          <div class="s-val" id="sumWordTime" style="color:#FFD60A">00:00</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Gõ Đúng</div>
-          <div class="s-val" id="sumWordHits" style="color:var(--accent-color)">0</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Lỗi Đã Sửa</div>
-          <div class="s-val" id="sumWordErrors" style="color:var(--danger-color)">0</div>
-        </div>
-      </div>
-
-      <div id="wordCompleteComment" style="font-size:13px;color:#fff;background:rgba(255,255,255,0.08);padding:10px 14px;border-radius:12px;margin-bottom:14px;line-height:1.45;">
-        Lời nhận xét của Thầy...
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <button class="btn-main" id="btnRepeatWordVoice" style="background:#0A84FF;">🔊 Nghe Lại Nhận Xét Của Thầy</button>
-        <button class="btn-secondary" id="btnRestartWordFromModal">🔄 Viết Lại Bài Này</button>
-        <button class="btn-secondary" id="btnCloseWordModal">Đóng</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL CHẤM ĐIỂM BÀI TOÁN (GAME 4) -->
-  <div class="modal-overlay" id="mathGradeModal">
-    <div class="modal-card" style="max-width:500px;text-align:center;">
-      <div id="mathGradeIcon" style="font-size:46px;margin-bottom:4px;">🌟</div>
-      <h2 id="mathGradeTitle" style="margin-bottom:4px;">KẾT QUẢ CHẤM ĐIỂM MÔN TOÁN</h2>
-      <div id="mathGradeSubtitle" style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Đánh giá dựa trên độ chính xác & thời gian làm bài</div>
-
-      <div style="display:flex;justify-content:center;align-items:baseline;gap:6px;margin-bottom:14px;">
-        <span style="font-size:52px;font-weight:900;color:#F59E0B;" id="mathFinalScore">10</span>
-        <span style="font-size:22px;color:var(--text-muted);font-weight:700;">/ 10 ĐIỂM</span>
-      </div>
-
-      <div class="summary-grid" style="margin-bottom:14px;">
-        <div class="summary-box">
-          <div class="s-lbl">Thời Gian Làm</div>
-          <div class="s-val" id="mathSumTime" style="color:#0A84FF">00:00</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Số Câu Đúng</div>
-          <div class="s-val" id="mathSumCorrect" style="color:var(--accent-color)">0 / 10</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Số Câu Sai</div>
-          <div class="s-val" id="mathSumWrong" style="color:var(--danger-color)">0 / 10</div>
-        </div>
-        <div class="summary-box">
-          <div class="s-lbl">Tốc Độ Trung Bình</div>
-          <div class="s-val" id="mathSumPace" style="color:#FFD60A">-- s/câu</div>
-        </div>
-      </div>
-
-      <div id="mathGradeComment" style="font-size:13px;color:#fff;background:rgba(255,255,255,0.08);padding:10px 14px;border-radius:12px;margin-bottom:14px;line-height:1.45;">
-        Nhận xét đánh giá...
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <button class="btn-main" id="btnRepeatMathVoice" style="background:#0A84FF;">🔊 Nghe Lại Lời Chấm Điểm</button>
-        <button class="btn-secondary" id="btnRetryMathTest">🔄 Làm Lại Đề Này</button>
-        <button class="btn-secondary" id="btnCloseMathGradeModal">Đóng</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+    <script>
     /* =====================================================================
        CẤU HÌNH & GHI NHỚ LOCALSTORAGE
        ===================================================================== */
