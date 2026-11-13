@@ -3451,7 +3451,7 @@
        ===================================================================== */
     function applyAppBgTheme(bgColor) {
       cfg.gameBgColor = bgColor;
-      document.documentElement.style.setProperty('--game-bg', bgColor);
+      if (document.documentElement && document.documentElement.style) document.documentElement.style.setProperty('--game-bg', bgColor);
       
       // Kiểm tra độ sáng để bật chế độ light-theme
       const isLight = (bgColor === '#F2F2F7' || bgColor === '#E3EEF9' || bgColor === '#E8F5E9' || bgColor === '#FAF3E0');
@@ -5756,396 +5756,7 @@
     }
 
     /* =====================================================================
-       KHỞI TẠO CÁC GAME & SỰ KIỆN TOÀN CỤC
-       ===================================================================== */
-    const game1 = new FreeFallingGame();
-    const game2 = new WordPracticeGame();
-    const sampleManager = new SampleLessonManager(game2);
-    window.sampleManager = sampleManager;
-    const clockTeacher = new ClockTeacher();
-    const mathGame = new MathPracticeGame();
-    mathGame.init();
-      window.drawGame = new DrawingGame();
-      window.drawGame.init();
-
-    // Hook lặp lại giọng nói Game 1
-    const btnRepeatFalling = document.getElementById('btnRepeatFallingSummaryVoice');
-    if (btnRepeatFalling) {
-      btnRepeatFalling.addEventListener('click', () => {
-        if (game1.lastSummarySpeech) {
-          voiceEngine.speak(game1.lastSummarySpeech, true);
-        }
-      });
-    }
-
-    // Hook lặp lại giọng nói & đóng modal Game 2
-    const btnRepeatWord = document.getElementById('btnRepeatWordVoice');
-    if (btnRepeatWord) {
-      btnRepeatWord.addEventListener('click', () => {
-        if (game2.lastWordSpeech && wordCfg.voiceEnabled) {
-          voiceEngine.speak(game2.lastWordSpeech, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
-        }
-      });
-    }
-    const btnRestartWord = document.getElementById('btnRestartWordFromModal');
-    if (btnRestartWord) {
-      btnRestartWord.addEventListener('click', () => {
-        const modal = document.getElementById('wordCompleteModal');
-        if (modal) modal.classList.remove('active');
-        game2.startTeaching();
-      });
-    }
-    const btnCloseWord = document.getElementById('btnCloseWordModal');
-    if (btnCloseWord) {
-      btnCloseWord.addEventListener('click', () => {
-        const modal = document.getElementById('wordCompleteModal');
-        if (modal) modal.classList.remove('active');
-      });
-    }
-
-    // Điều hướng Tab
-    const tabTyping = document.getElementById('tabTyping');
-    const tabWords = document.getElementById('tabWords');
-    const tabClock = document.getElementById('tabClock');
-    const tabMath = document.getElementById('tabMath');
-
-    const typingView = document.getElementById('typingView');
-    const wordsView = document.getElementById('wordsPracticeView');
-    const clockView = document.getElementById('clockView');
-    const mathView = document.getElementById('mathView');
-    const tabDraw = document.getElementById('tabDraw');
-    const drawView = document.getElementById('drawView');
-    const kbContainer = document.getElementById('keyboardContainer');
-    const kbWrapper = document.getElementById('keyboardWrapper');
-
-    function switchTab(target) {
-      sound.unlock();
-      localStorage.setItem('game_active_tab', target);
-      const allTabs = [tabTyping, tabWords, tabClock, tabMath, tabDraw];
-      const allViews = [typingView, wordsView, clockView, mathView, drawView];
-      allTabs.forEach(t => { if (t) t.classList.remove('active'); });
-      allViews.forEach(v => { if (v) v.classList.remove('active'); });
-
-      const tabMap = { 'typing': tabTyping, 'words': tabWords, 'clock': tabClock, 'math': tabMath, 'draw': tabDraw };
-      const curTab = tabMap[target];
-      if (curTab && typeof curTab.scrollIntoView === 'function') {
-        curTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-
-      if (target === 'typing') {
-        tabTyping.classList.add('active');
-        typingView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'block';
-        game1.isPaused = false;
-        game1.updateHints();
-      } else if (target === 'words') {
-        tabWords.classList.add('active');
-        wordsView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'block';
-        game1.isPaused = true;
-        game2.updateCurrentTarget();
-      } else if (target === 'clock') {
-        tabClock.classList.add('active');
-        clockView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none';
-        game1.isPaused = true;
-        clockTeacher.initDial();
-      } else if (target === 'math') {
-        tabMath.classList.add('active');
-        mathView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'block';
-        game1.isPaused = true;
-        if (typeof mathGame !== 'undefined') mathGame.onTabActivated();
-      } else if (target === 'draw') {
-        if (tabDraw) tabDraw.classList.add('active');
-        if (drawView) drawView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none';
-        game1.isPaused = true;
-        if (window.drawGame) window.drawGame.resize();
-      }
-    }
-
-    tabTyping.addEventListener('click', () => switchTab('typing'));
-    tabWords.addEventListener('click', () => switchTab('words'));
-    tabClock.addEventListener('click', () => switchTab('clock'));
-    if (tabMath) tabMath.addEventListener('click', () => switchTab('math'));
-      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
-      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
-
-    // Bắt sự kiện phím vật lý từ bàn phím máy tính / iPad
-    window.addEventListener('keydown', (e) => {
-      // Nếu đang focus vào ô gõ đề bài (input/textarea) thì để người dùng gõ tự nhiên
-      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
-        return;
-      }
-
-      // Nếu đang ở Tab Môn Toán: nhận phím số, xoá và Enter cho bài toán tuần tự
-      if (mathView && mathView.classList.contains('active')) {
-        if (typeof mathGame !== 'undefined' && mathGame) {
-          if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Enter' || e.key === '-') {
-            e.preventDefault();
-            mathGame.handleKey(e.key);
-            return;
-          }
-        }
-      }
-
-      if (e.key === 'Escape') {
-        if (typingView.classList.contains('active')) game1.togglePause();
-        return;
-      }
-
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-        dispatchKeyInput('Backspace');
-        const delEl = document.querySelector('.key-delete');
-        if (delEl) {
-          delEl.classList.add('pressed');
-          setTimeout(() => delEl.classList.remove('pressed'), 120);
-        }
-        return;
-      }
-
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        dispatchKeyInput('Enter');
-        const retEl = document.querySelector('.key-return');
-        if (retEl) {
-          retEl.classList.add('pressed');
-          setTimeout(() => retEl.classList.remove('pressed'), 120);
-        }
-        return;
-      }
-
-      if (e.key === ' ') {
-        e.preventDefault();
-        dispatchKeyInput(' ');
-        const spEl = document.querySelector('.key-space');
-        if (spEl) {
-          spEl.classList.add('pressed');
-          setTimeout(() => spEl.classList.remove('pressed'), 120);
-        }
-        return;
-      }
-
-      if (e.key && e.key.length === 1) {
-        dispatchKeyInput(e.key);
-        const keyEl = document.querySelector(`.kb-key[data-key="${e.key.toUpperCase()}"]`);
-        if (keyEl) {
-          keyEl.classList.add('pressed');
-          setTimeout(() => keyEl.classList.remove('pressed'), 120);
-        }
-      }
-    });
-
-    // Nút Header Game 1
-    document.getElementById('pauseBtn').addEventListener('click', () => game1.togglePause());
-    document.getElementById('repeatVoiceBtn').addEventListener('click', () => {
-      sound.init();
-      if (game1.activeChars.length > 0) {
-        let lowest = game1.activeChars[0];
-        let maxTop = parseFloat(lowest.el.style.top || '0');
-        for (let i = 1; i < game1.activeChars.length; i++) {
-          const top = parseFloat(game1.activeChars[i].el.style.top || '0');
-          if (top > maxTop) { maxTop = top; lowest = game1.activeChars[i]; }
-        }
-        voiceEngine.speak(getCharPronounceOnly(lowest.char), true);
-      } else {
-        voiceEngine.speak('Chưa có chữ nào rơi', true);
-      }
-    });
-
-    // Nút Header Game 2
-    document.getElementById('wordRepeatVoiceBtn').addEventListener('click', () => {
-      sound.init();
-      game2.updateCurrentTarget();
-    });
-
-    // Nút mở Modal Cài đặt
-    const openSettings = () => {
-      game1.isPaused = true;
-      document.getElementById('cfgCharMode').value = cfg.charMode;
-      if (document.getElementById('cfgGameDuration')) {
-        document.getElementById('cfgGameDuration').value = cfg.gameDuration !== undefined ? cfg.gameDuration : 180;
-        const durMap = { '60': '1 phút', '120': '2 phút', '180': '3 phút', '300': '5 phút', '600': '10 phút', '0': 'Không giới hạn' };
-        document.getElementById('dispGameDuration').textContent = durMap[cfg.gameDuration] || `${cfg.gameDuration}s`;
-      }
-      document.getElementById('cfgFallDuration').value = cfg.fallDuration;
-      document.getElementById('dispFallDuration').textContent = `${cfg.fallDuration} giây`;
-      document.getElementById('cfgFontSize').value = cfg.fontSize;
-      document.getElementById('dispFontSize').textContent = `${cfg.fontSize} px`;
-      document.getElementById('cfgVoiceEnabled').checked = cfg.voiceEnabled;
-      document.getElementById('cfgVoiceRate').value = cfg.voiceRate;
-      document.getElementById('dispVoiceRate').textContent = `${cfg.voiceRate}x`;
-      document.getElementById('cfgSoundEnabled').checked = cfg.soundEnabled;
-
-      // Active chips
-      document.querySelectorAll('#bgThemePresets .color-chip').forEach(c => {
-        if (c.getAttribute('data-bg') === cfg.gameBgColor) c.classList.add('active');
-        else c.classList.remove('active');
-      });
-      document.querySelectorAll('#fontColorPresets .color-chip').forEach(c => {
-        if (c.getAttribute('data-color') === cfg.fontColor) c.classList.add('active');
-        else c.classList.remove('active');
-      });
-
-      document.getElementById('settingsModal').classList.add('active');
-    };
-
-    document.getElementById('settingsBtn').addEventListener('click', openSettings);
-
-    // =========================================================================
-    // MODAL CÀI ĐẶT RIÊNG: GAME LUYỆN TỪ CỦA THẦY
-    // =========================================================================
-    const openWordSettings = () => {
-      document.getElementById('cfgWordVoiceEnabled').checked = wordCfg.voiceEnabled !== false;
-      document.getElementById('cfgWordVoiceRate').value = wordCfg.voiceRate || 1.0;
-      document.getElementById('dispWordVoiceRate').textContent = `${(wordCfg.voiceRate || 1.0).toFixed(1)}x`;
-      document.getElementById('cfgWordFontSize').value = wordCfg.boardFontSize || 28;
-      document.getElementById('dispWordFontSizeModal').textContent = `${wordCfg.boardFontSize || 28} px`;
-      document.getElementById('cfgWordSpellingGrade1').checked = wordCfg.spellingGrade1 !== false;
-      document.getElementById('cfgWordSoundEnabled').checked = wordCfg.soundEnabled !== false;
-
-      document.getElementById('wordSettingsModal').classList.add('active');
-    };
-
-    document.getElementById('btnWordsSettings').addEventListener('click', openWordSettings);
-
-    const rangeWordRate = document.getElementById('cfgWordVoiceRate');
-    if (rangeWordRate) {
-      rangeWordRate.addEventListener('input', (e) => {
-        document.getElementById('dispWordVoiceRate').textContent = `${parseFloat(e.target.value).toFixed(1)}x`;
-      });
-    }
-
-    const rangeWordFont = document.getElementById('cfgWordFontSize');
-    if (rangeWordFont) {
-      rangeWordFont.addEventListener('input', (e) => {
-        document.getElementById('dispWordFontSizeModal').textContent = `${e.target.value} px`;
-      });
-    }
-
-    document.getElementById('saveWordSettingsBtn').addEventListener('click', () => {
-      wordCfg.voiceEnabled = document.getElementById('cfgWordVoiceEnabled').checked;
-      wordCfg.voiceRate = parseFloat(document.getElementById('cfgWordVoiceRate').value);
-      wordCfg.boardFontSize = parseInt(document.getElementById('cfgWordFontSize').value, 10);
-      wordCfg.spellingGrade1 = document.getElementById('cfgWordSpellingGrade1').checked;
-      wordCfg.soundEnabled = document.getElementById('cfgWordSoundEnabled').checked;
-
-      saveWordConfigToStorage(wordCfg);
-
-      game2.boardFontSize = wordCfg.boardFontSize;
-      game2.isSpellingGrade1 = wordCfg.spellingGrade1;
-      if (game2.chkSpellingGrade1) game2.chkSpellingGrade1.checked = wordCfg.spellingGrade1;
-      game2.applyFontSize();
-      game2.applyVoiceRate();
-      game2.renderTeacherTracker();
-      game2.renderStudentNotebook();
-
-      document.getElementById('wordSettingsModal').classList.remove('active');
-    });
-
-    document.getElementById('closeWordSettingsBtn').addEventListener('click', () => {
-      document.getElementById('wordSettingsModal').classList.remove('active');
-    });
-
-    const wordModalEl = document.getElementById('wordSettingsModal');
-    if (wordModalEl) {
-      wordModalEl.addEventListener('click', (e) => {
-        if (e.target === wordModalEl) wordModalEl.classList.remove('active');
-      });
-    }
-
-    // Modal Cài đặt Controls
-    const selDur = document.getElementById('cfgGameDuration');
-    if (selDur) {
-      selDur.addEventListener('change', (e) => {
-        const durMap = { '60': '1 phút', '120': '2 phút', '180': '3 phút', '300': '5 phút', '600': '10 phút', '0': 'Không giới hạn' };
-        document.getElementById('dispGameDuration').textContent = durMap[e.target.value] || `${e.target.value}s`;
-      });
-    }
-    document.getElementById('cfgFallDuration').addEventListener('input', (e) => {
-      document.getElementById('dispFallDuration').textContent = `${e.target.value} giây`;
-    });
-    document.getElementById('cfgFontSize').addEventListener('input', (e) => {
-      document.getElementById('dispFontSize').textContent = `${e.target.value} px`;
-    });
-    document.getElementById('cfgVoiceRate').addEventListener('input', (e) => {
-      document.getElementById('dispVoiceRate').textContent = `${e.target.value}x`;
-    });
-
-    // Chọn màu nền game
-    document.querySelectorAll('#bgThemePresets .color-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('#bgThemePresets .color-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        const bg = chip.getAttribute('data-bg');
-        applyAppBgTheme(bg);
-      });
-    });
-
-    // Chọn màu chữ rơi
-    document.querySelectorAll('#fontColorPresets .color-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('#fontColorPresets .color-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        cfg.fontColor = chip.getAttribute('data-color');
-      });
-    });
-
-    const btnTestAudio = document.getElementById('btnTestAudio');
-    if (btnTestAudio) {
-      btnTestAudio.addEventListener('click', () => {
-        cfg.soundEnabled = true;
-        document.getElementById('cfgSoundEnabled').checked = true;
-        sound.restartAudio(true);
-        btnTestAudio.innerHTML = '<span>✅</span> Đã kích hoạt & phát âm thử!';
-        setTimeout(() => {
-          btnTestAudio.innerHTML = '<span>🔊</span> Khởi động lại & Thử âm thanh ngay';
-        }, 1800);
-      });
-    }
-
-    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-      cfg.charMode = document.getElementById('cfgCharMode').value;
-      if (document.getElementById('cfgGameDuration')) {
-        cfg.gameDuration = parseInt(document.getElementById('cfgGameDuration').value, 10);
-      }
-      cfg.fallDuration = parseFloat(document.getElementById('cfgFallDuration').value);
-      cfg.fontSize = parseInt(document.getElementById('cfgFontSize').value, 10);
-      cfg.voiceEnabled = document.getElementById('cfgVoiceEnabled').checked;
-      cfg.voiceRate = parseFloat(document.getElementById('cfgVoiceRate').value);
-      cfg.soundEnabled = document.getElementById('cfgSoundEnabled').checked;
-
-      if (cfg.soundEnabled) {
-        sound.restartAudio(false);
-      }
-
-      saveConfigToStorage(cfg);
-      game2.applyVoiceRate();
-      document.getElementById('settingsModal').classList.remove('active');
-      game1.start();
-    });
-
-    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-      document.getElementById('settingsModal').classList.remove('active');
-      game1.isPaused = false;
-    });
-
-    // Summary Modal
-    document.getElementById('playAgainBtn').addEventListener('click', () => {
-      document.getElementById('summaryModal').classList.remove('active');
-      game1.start();
-    });
-    document.getElementById('openSettingsFromSummaryBtn').addEventListener('click', () => {
-      document.getElementById('summaryModal').classList.remove('active');
-      openSettings();
-    });
-
-    // Khởi tạo toàn bộ ứng dụng
-    
-    /* =====================================================================
-       GAME 5: GAME VẼ HÌNH & TÔ MÀU DÀNH CHO BÉ (DRAW & COLORING)
+       VIEW 5: GAME VẼ HÌNH & TÔ MÀU DÀNH CHO BÉ (DRAW & COLORING)
        ===================================================================== */
     class DrawingGame {
       constructor() {
@@ -6220,7 +5831,7 @@
           const swatch = document.createElement('div');
           swatch.className = 'draw-color-swatch' + (idx === 0 ? ' active' : '');
           swatch.style.background = color;
-          swatch.dataset.color = color;
+          swatch.setAttribute('data-color', color);
           swatch.title = `Màu: ${color}`;
           swatch.addEventListener('click', () => {
             document.querySelectorAll('.draw-color-swatch').forEach(s => s.classList.remove('active'));
@@ -6645,21 +6256,406 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      applyAppBgTheme(cfg.gameBgColor);
-      kbManager.render();
-      game1.init();
-      game2.init();
-      clockTeacher.initDial();
+    /* =====================================================================
+       KHỞI TẠO CÁC GAME & SỰ KIỆN TOÀN CỤC
+       ===================================================================== */
+    const game1 = new FreeFallingGame();
+    const game2 = new WordPracticeGame();
+    const sampleManager = new SampleLessonManager(game2);
+    window.sampleManager = sampleManager;
+    const clockTeacher = new ClockTeacher();
+    const mathGame = new MathPracticeGame();
+    // mathGame.init() moved to DOMContentLoaded
+      window.drawGame = new DrawingGame();
+      // drawGame.init() moved to DOMContentLoaded
 
-      // Mở ngay tab Game 2 "Luyện từ của thầy" (hoặc tab người dùng vừa chọn gần nhất)
-      const initialTab = localStorage.getItem('game_active_tab') || 'words';
-      switchTab(initialTab);
+    // Hook lặp lại giọng nói Game 1
+    const btnRepeatFalling = document.getElementById('btnRepeatFallingSummaryVoice');
+    if (btnRepeatFalling) {
+      btnRepeatFalling.addEventListener('click', () => {
+        if (game1.lastSummarySpeech) {
+          voiceEngine.speak(game1.lastSummarySpeech, true);
+        }
+      });
+    }
+
+    // Hook lặp lại giọng nói & đóng modal Game 2
+    const btnRepeatWord = document.getElementById('btnRepeatWordVoice');
+    if (btnRepeatWord) {
+      btnRepeatWord.addEventListener('click', () => {
+        if (game2.lastWordSpeech && wordCfg.voiceEnabled) {
+          voiceEngine.speak(game2.lastWordSpeech, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
+        }
+      });
+    }
+    const btnRestartWord = document.getElementById('btnRestartWordFromModal');
+    if (btnRestartWord) {
+      btnRestartWord.addEventListener('click', () => {
+        const modal = document.getElementById('wordCompleteModal');
+        if (modal) modal.classList.remove('active');
+        game2.startTeaching();
+      });
+    }
+    const btnCloseWord = document.getElementById('btnCloseWordModal');
+    if (btnCloseWord) {
+      btnCloseWord.addEventListener('click', () => {
+        const modal = document.getElementById('wordCompleteModal');
+        if (modal) modal.classList.remove('active');
+      });
+    }
+
+    // Điều hướng Tab
+    const tabTyping = document.getElementById('tabTyping');
+    const tabWords = document.getElementById('tabWords');
+    const tabClock = document.getElementById('tabClock');
+    const tabMath = document.getElementById('tabMath');
+
+    const typingView = document.getElementById('typingView');
+    const wordsView = document.getElementById('wordsPracticeView');
+    const clockView = document.getElementById('clockView');
+    const mathView = document.getElementById('mathView');
+    const tabDraw = document.getElementById('tabDraw');
+    const drawView = document.getElementById('drawView');
+    const kbContainer = document.getElementById('keyboardContainer');
+    const kbWrapper = document.getElementById('keyboardWrapper');
+
+    function switchTab(target) {
+      sound.unlock();
+      localStorage.setItem('game_active_tab', target);
+      const allTabs = [tabTyping, tabWords, tabClock, tabMath, tabDraw];
+      const allViews = [typingView, wordsView, clockView, mathView, drawView];
+      allTabs.forEach(t => { if (t) t.classList.remove('active'); });
+      allViews.forEach(v => { if (v) v.classList.remove('active'); });
+
+      const tabMap = { 'typing': tabTyping, 'words': tabWords, 'clock': tabClock, 'math': tabMath, 'draw': tabDraw };
+      const curTab = tabMap[target];
+      if (curTab && typeof curTab.scrollIntoView === 'function') {
+        curTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+
+      if (target === 'typing') {
+        tabTyping.classList.add('active');
+        typingView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'block';
+        game1.isPaused = false;
+        game1.updateHints();
+      } else if (target === 'words') {
+        tabWords.classList.add('active');
+        wordsView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'block';
+        game1.isPaused = true;
+        game2.updateCurrentTarget();
+      } else if (target === 'clock') {
+        tabClock.classList.add('active');
+        clockView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'none';
+        game1.isPaused = true;
+        clockTeacher.initDial();
+      } else if (target === 'math') {
+        tabMath.classList.add('active');
+        mathView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'block';
+        game1.isPaused = true;
+        if (typeof mathGame !== 'undefined') mathGame.onTabActivated();
+      } else if (target === 'draw') {
+        if (tabDraw) tabDraw.classList.add('active');
+        if (drawView) drawView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'none';
+        game1.isPaused = true;
+        if (window.drawGame) window.drawGame.resize();
+      }
+    }
+
+    tabTyping.addEventListener('click', () => switchTab('typing'));
+    tabWords.addEventListener('click', () => switchTab('words'));
+    tabClock.addEventListener('click', () => switchTab('clock'));
+    if (tabMath) tabMath.addEventListener('click', () => switchTab('math'));
+      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
+      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
+
+    // Bắt sự kiện phím vật lý từ bàn phím máy tính / iPad
+    window.addEventListener('keydown', (e) => {
+      // Nếu đang focus vào ô gõ đề bài (input/textarea) thì để người dùng gõ tự nhiên
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
+        return;
+      }
+
+      // Nếu đang ở Tab Môn Toán: nhận phím số, xoá và Enter cho bài toán tuần tự
+      if (mathView && mathView.classList.contains('active')) {
+        if (typeof mathGame !== 'undefined' && mathGame) {
+          if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Enter' || e.key === '-') {
+            e.preventDefault();
+            mathGame.handleKey(e.key);
+            return;
+          }
+        }
+      }
+
+      if (e.key === 'Escape') {
+        if (typingView.classList.contains('active')) game1.togglePause();
+        return;
+      }
+
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        dispatchKeyInput('Backspace');
+        const delEl = document.querySelector('.key-delete');
+        if (delEl) {
+          delEl.classList.add('pressed');
+          setTimeout(() => delEl.classList.remove('pressed'), 120);
+        }
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        dispatchKeyInput('Enter');
+        const retEl = document.querySelector('.key-return');
+        if (retEl) {
+          retEl.classList.add('pressed');
+          setTimeout(() => retEl.classList.remove('pressed'), 120);
+        }
+        return;
+      }
+
+      if (e.key === ' ') {
+        e.preventDefault();
+        dispatchKeyInput(' ');
+        const spEl = document.querySelector('.key-space');
+        if (spEl) {
+          spEl.classList.add('pressed');
+          setTimeout(() => spEl.classList.remove('pressed'), 120);
+        }
+        return;
+      }
+
+      if (e.key && e.key.length === 1) {
+        dispatchKeyInput(e.key);
+        const keyEl = document.querySelector(`.kb-key[data-key="${e.key.toUpperCase()}"]`);
+        if (keyEl) {
+          keyEl.classList.add('pressed');
+          setTimeout(() => keyEl.classList.remove('pressed'), 120);
+        }
+      }
     });
-  
 
-  
+    // Nút Header Game 1
+    document.getElementById('pauseBtn').addEventListener('click', () => game1.togglePause());
+    document.getElementById('repeatVoiceBtn').addEventListener('click', () => {
+      sound.init();
+      if (game1.activeChars.length > 0) {
+        let lowest = game1.activeChars[0];
+        let maxTop = parseFloat(lowest.el.style.top || '0');
+        for (let i = 1; i < game1.activeChars.length; i++) {
+          const top = parseFloat(game1.activeChars[i].el.style.top || '0');
+          if (top > maxTop) { maxTop = top; lowest = game1.activeChars[i]; }
+        }
+        voiceEngine.speak(getCharPronounceOnly(lowest.char), true);
+      } else {
+        voiceEngine.speak('Chưa có chữ nào rơi', true);
+      }
+    });
 
+    // Nút Header Game 2
+    document.getElementById('wordRepeatVoiceBtn').addEventListener('click', () => {
+      sound.init();
+      game2.updateCurrentTarget();
+    });
+
+    // Nút mở Modal Cài đặt
+    const openSettings = () => {
+      game1.isPaused = true;
+      document.getElementById('cfgCharMode').value = cfg.charMode;
+      if (document.getElementById('cfgGameDuration')) {
+        document.getElementById('cfgGameDuration').value = cfg.gameDuration !== undefined ? cfg.gameDuration : 180;
+        const durMap = { '60': '1 phút', '120': '2 phút', '180': '3 phút', '300': '5 phút', '600': '10 phút', '0': 'Không giới hạn' };
+        document.getElementById('dispGameDuration').textContent = durMap[cfg.gameDuration] || `${cfg.gameDuration}s`;
+      }
+      document.getElementById('cfgFallDuration').value = cfg.fallDuration;
+      document.getElementById('dispFallDuration').textContent = `${cfg.fallDuration} giây`;
+      document.getElementById('cfgFontSize').value = cfg.fontSize;
+      document.getElementById('dispFontSize').textContent = `${cfg.fontSize} px`;
+      document.getElementById('cfgVoiceEnabled').checked = cfg.voiceEnabled;
+      document.getElementById('cfgVoiceRate').value = cfg.voiceRate;
+      document.getElementById('dispVoiceRate').textContent = `${cfg.voiceRate}x`;
+      document.getElementById('cfgSoundEnabled').checked = cfg.soundEnabled;
+
+      // Active chips
+      document.querySelectorAll('#bgThemePresets .color-chip').forEach(c => {
+        if (c.getAttribute('data-bg') === cfg.gameBgColor) c.classList.add('active');
+        else c.classList.remove('active');
+      });
+      document.querySelectorAll('#fontColorPresets .color-chip').forEach(c => {
+        if (c.getAttribute('data-color') === cfg.fontColor) c.classList.add('active');
+        else c.classList.remove('active');
+      });
+
+      document.getElementById('settingsModal').classList.add('active');
+    };
+
+    document.getElementById('settingsBtn').addEventListener('click', openSettings);
+
+    // =========================================================================
+    // MODAL CÀI ĐẶT RIÊNG: GAME LUYỆN TỪ CỦA THẦY
+    // =========================================================================
+    const openWordSettings = () => {
+      document.getElementById('cfgWordVoiceEnabled').checked = wordCfg.voiceEnabled !== false;
+      document.getElementById('cfgWordVoiceRate').value = wordCfg.voiceRate || 1.0;
+      document.getElementById('dispWordVoiceRate').textContent = `${(wordCfg.voiceRate || 1.0).toFixed(1)}x`;
+      document.getElementById('cfgWordFontSize').value = wordCfg.boardFontSize || 28;
+      document.getElementById('dispWordFontSizeModal').textContent = `${wordCfg.boardFontSize || 28} px`;
+      document.getElementById('cfgWordSpellingGrade1').checked = wordCfg.spellingGrade1 !== false;
+      document.getElementById('cfgWordSoundEnabled').checked = wordCfg.soundEnabled !== false;
+
+      document.getElementById('wordSettingsModal').classList.add('active');
+    };
+
+    document.getElementById('btnWordsSettings').addEventListener('click', openWordSettings);
+
+    const rangeWordRate = document.getElementById('cfgWordVoiceRate');
+    if (rangeWordRate) {
+      rangeWordRate.addEventListener('input', (e) => {
+        document.getElementById('dispWordVoiceRate').textContent = `${parseFloat(e.target.value).toFixed(1)}x`;
+      });
+    }
+
+    const rangeWordFont = document.getElementById('cfgWordFontSize');
+    if (rangeWordFont) {
+      rangeWordFont.addEventListener('input', (e) => {
+        document.getElementById('dispWordFontSizeModal').textContent = `${e.target.value} px`;
+      });
+    }
+
+    document.getElementById('saveWordSettingsBtn').addEventListener('click', () => {
+      wordCfg.voiceEnabled = document.getElementById('cfgWordVoiceEnabled').checked;
+      wordCfg.voiceRate = parseFloat(document.getElementById('cfgWordVoiceRate').value);
+      wordCfg.boardFontSize = parseInt(document.getElementById('cfgWordFontSize').value, 10);
+      wordCfg.spellingGrade1 = document.getElementById('cfgWordSpellingGrade1').checked;
+      wordCfg.soundEnabled = document.getElementById('cfgWordSoundEnabled').checked;
+
+      saveWordConfigToStorage(wordCfg);
+
+      game2.boardFontSize = wordCfg.boardFontSize;
+      game2.isSpellingGrade1 = wordCfg.spellingGrade1;
+      if (game2.chkSpellingGrade1) game2.chkSpellingGrade1.checked = wordCfg.spellingGrade1;
+      game2.applyFontSize();
+      game2.applyVoiceRate();
+      game2.renderTeacherTracker();
+      game2.renderStudentNotebook();
+
+      document.getElementById('wordSettingsModal').classList.remove('active');
+    });
+
+    document.getElementById('closeWordSettingsBtn').addEventListener('click', () => {
+      document.getElementById('wordSettingsModal').classList.remove('active');
+    });
+
+    const wordModalEl = document.getElementById('wordSettingsModal');
+    if (wordModalEl) {
+      wordModalEl.addEventListener('click', (e) => {
+        if (e.target === wordModalEl) wordModalEl.classList.remove('active');
+      });
+    }
+
+    // Modal Cài đặt Controls
+    const selDur = document.getElementById('cfgGameDuration');
+    if (selDur) {
+      selDur.addEventListener('change', (e) => {
+        const durMap = { '60': '1 phút', '120': '2 phút', '180': '3 phút', '300': '5 phút', '600': '10 phút', '0': 'Không giới hạn' };
+        document.getElementById('dispGameDuration').textContent = durMap[e.target.value] || `${e.target.value}s`;
+      });
+    }
+    document.getElementById('cfgFallDuration').addEventListener('input', (e) => {
+      document.getElementById('dispFallDuration').textContent = `${e.target.value} giây`;
+    });
+    document.getElementById('cfgFontSize').addEventListener('input', (e) => {
+      document.getElementById('dispFontSize').textContent = `${e.target.value} px`;
+    });
+    document.getElementById('cfgVoiceRate').addEventListener('input', (e) => {
+      document.getElementById('dispVoiceRate').textContent = `${e.target.value}x`;
+    });
+
+    // Chọn màu nền game
+    document.querySelectorAll('#bgThemePresets .color-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#bgThemePresets .color-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const bg = chip.getAttribute('data-bg');
+        applyAppBgTheme(bg);
+      });
+    });
+
+    // Chọn màu chữ rơi
+    document.querySelectorAll('#fontColorPresets .color-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#fontColorPresets .color-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        cfg.fontColor = chip.getAttribute('data-color');
+      });
+    });
+
+    const btnTestAudio = document.getElementById('btnTestAudio');
+    if (btnTestAudio) {
+      btnTestAudio.addEventListener('click', () => {
+        cfg.soundEnabled = true;
+        document.getElementById('cfgSoundEnabled').checked = true;
+        sound.restartAudio(true);
+        btnTestAudio.innerHTML = '<span>✅</span> Đã kích hoạt & phát âm thử!';
+        setTimeout(() => {
+          btnTestAudio.innerHTML = '<span>🔊</span> Khởi động lại & Thử âm thanh ngay';
+        }, 1800);
+      });
+    }
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      cfg.charMode = document.getElementById('cfgCharMode').value;
+      if (document.getElementById('cfgGameDuration')) {
+        cfg.gameDuration = parseInt(document.getElementById('cfgGameDuration').value, 10);
+      }
+      cfg.fallDuration = parseFloat(document.getElementById('cfgFallDuration').value);
+      cfg.fontSize = parseInt(document.getElementById('cfgFontSize').value, 10);
+      cfg.voiceEnabled = document.getElementById('cfgVoiceEnabled').checked;
+      cfg.voiceRate = parseFloat(document.getElementById('cfgVoiceRate').value);
+      cfg.soundEnabled = document.getElementById('cfgSoundEnabled').checked;
+
+      if (cfg.soundEnabled) {
+        sound.restartAudio(false);
+      }
+
+      saveConfigToStorage(cfg);
+      game2.applyVoiceRate();
+      document.getElementById('settingsModal').classList.remove('active');
+      game1.start();
+    });
+
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+      document.getElementById('settingsModal').classList.remove('active');
+      game1.isPaused = false;
+    });
+
+    // Summary Modal
+    document.getElementById('playAgainBtn').addEventListener('click', () => {
+      document.getElementById('summaryModal').classList.remove('active');
+      game1.start();
+    });
+    document.getElementById('openSettingsFromSummaryBtn').addEventListener('click', () => {
+      document.getElementById('summaryModal').classList.remove('active');
+      openSettings();
+    });
+
+    // Khởi tạo toàn bộ ứng dụng
+    window.addEventListener('DOMContentLoaded', () => {
+      try { applyAppBgTheme(cfg.gameBgColor); } catch (e) { console.error('applyAppBgTheme err:', e); }
+      try { kbManager.render(); } catch (e) { console.error('kbManager err:', e); }
+      try { game1.init(); } catch (e) { console.error('game1 err:', e); }
+      try { game2.init(); } catch (e) { console.error('game2 err:', e); }
+      try { clockTeacher.initDial(); } catch (e) { console.error('clockTeacher err:', e); }
+      try { if (typeof mathGame !== 'undefined' && mathGame) mathGame.init(); } catch (e) { console.error('mathGame err:', e); }
+      try { if (window.drawGame) window.drawGame.init(); } catch (e) { console.error('drawGame err:', e); }
+
+      const initialTab = localStorage.getItem('game_active_tab') || 'typing';
+      try { switchTab(initialTab); } catch (e) { console.error('switchTab err:', e); }
+    });
   </script>
 
 </body>
