@@ -67,39 +67,64 @@
       pointer-events: none;
     }
 
-    /* TOP TAB BAR (CHUYỂN ĐỔI 3 GAME) */
+    /* TOP TAB BAR (CHUYỂN ĐỔI 4 GAME) - HỖ TRỢ HOÀN TOÀN MOBILE RESPONSIVE & CUỘN NGANG */
     .app-nav {
       position: relative;
       z-index: 20;
       display: flex;
+      align-items: center;
       background: rgba(14, 18, 28, 0.95);
       border-bottom: 1px solid var(--surface-border);
-      padding: env(safe-area-inset-top, 6px) 10px 6px 10px;
-      gap: 6px;
+      padding: max(env(safe-area-inset-top, 6px), 6px) 10px 6px 10px;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+      scrollbar-width: thin;
+      flex-shrink: 0;
+    }
+
+    .app-nav::-webkit-scrollbar {
+      height: 3px;
+    }
+    .app-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
     }
 
     .nav-tab {
-      flex: 1;
-      display: flex;
+      flex: 0 0 auto; /* Đảm bảo không bị co rúm trên màn hình điện thoại */
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      padding: 8px 8px;
+      gap: 6px;
+      padding: 8px 14px;
       border-radius: 12px;
       font-size: 13px;
       font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid transparent;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       transition: all 0.2s;
       white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .nav-tab:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
     }
 
     .nav-tab.active {
       color: #FFFFFF;
-      background: rgba(10, 132, 255, 0.25);
+      background: rgba(10, 132, 255, 0.28);
       border-color: rgba(10, 132, 255, 0.6);
+      box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3);
     }
 
     /* VIEW CONTAINERS */
@@ -1438,6 +1463,8 @@
     #mathView .game-header {
       background: #E2EBF5;
       border-bottom: 1.5px solid #CBDCEE;
+      overflow-x: auto;
+      flex-shrink: 0;
     }
 
     #mathView .stat-pill {
@@ -1454,214 +1481,359 @@
       color: #0284C7;
     }
 
-    .math-two-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 8px 12px;
-      flex: 1;
-      align-items: stretch;
-    }
-
-    @media (max-width: 768px) {
-      .math-two-box {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .math-box-card {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      height: 100%;
-    }
-
-    .math-teacher-tools {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .btn-board-sm {
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      color: #FFFFFF;
-      border-radius: 8px;
-      padding: 5px 9px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s;
-    }
-
-    .btn-board-sm:hover, .btn-board-sm:active {
-      background: #FFFFFF;
-      color: #134B2F;
-    }
-
-    .math-preset-dropdown {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: #FFFFFF;
-      border: 1px solid #CBD5E1;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-      z-index: 50;
-      min-width: 220px;
-      padding: 6px 0;
-      display: none;
-    }
-
-    .math-preset-dropdown.show {
-      display: block;
-    }
-
-    .preset-item {
-      padding: 9px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #1E293B;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .preset-item:hover {
-      background: #F1F5F9;
-      color: #0284C7;
-    }
-
-    #teacherMathInput {
+    /* THANH CHỌN CẤP ĐỘ KHÓ */
+    .math-level-bar {
       width: 100%;
-      flex: 1;
-      min-height: 240px;
-      background: #134B2F !important;
-      color: #FFFFFF !important;
-      border: 2px dashed #FDE047 !important;
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-family: inherit;
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 1.6;
-      resize: none;
-      outline: none;
+      background: #E2EBF5;
+      padding: 6px 12px;
+      border-bottom: 1px solid #CBDCEE;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
       box-sizing: border-box;
     }
 
-    .student-math-sheet {
+    .math-level-tabs {
+      display: inline-flex;
+      gap: 8px;
+    }
+
+    .math-level-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .math-level-btn:hover {
+      background: #F1F5F9;
+      border-color: #94A3B8;
+    }
+
+    .math-level-btn.active {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0369A1;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    }
+
+    /* BẢNG THẦY TỰ SOẠN ĐỀ */
+    .math-custom-panel {
+      padding: 8px 12px;
+      max-width: 600px;
       width: 100%;
-      flex: 1;
-      min-height: 240px;
-      max-height: 520px;
-      overflow-y: auto;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    .custom-panel-card {
       background: #FFFFFF;
       border: 2px solid #BAE6FD;
       border-radius: 12px;
-      padding: 8px 10px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      box-sizing: border-box;
     }
 
-    .math-row {
+    .custom-panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      background: #F8FAFC;
-      border: 1.5px solid #E2E8F0;
+    }
+
+    #teacherMathInput {
+      width: 100%;
+      min-height: 120px;
+      max-height: 180px;
+      background: #134B2F !important;
+      color: #FFFFFF !important;
+      border: 2px dashed #FDE047 !important;
       border-radius: 10px;
-      padding: 6px 10px;
-      transition: all 0.2s;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
     }
 
-    .math-row:focus-within {
-      background: #EFF6FF;
-      border-color: #3B82F6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    /* KHUNG CHƠI TOÁN TUẦN TỰ */
+    .math-quiz-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      max-width: 540px;
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
     }
 
-    .math-row.correct {
-      background: #ECFDF5;
-      border-color: #10B981;
-    }
-
-    .math-row.incorrect {
-      background: #FEF2F2;
-      border-color: #EF4444;
-    }
-
-    .math-row-left {
+    /* VẠCH TIẾN ĐỘ 10 BƯỚC */
+    .math-steps-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      font-size: 16px;
-      color: #0F172A;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+      padding: 4px 0;
     }
 
-    .math-row-num {
+    .math-step-dot {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: #CBD5E1;
+      transition: all 0.25s ease;
+    }
+
+    .math-step-dot.done {
+      background: #10B981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+    }
+
+    .math-step-dot.current {
+      background: #0284C7;
+      transform: scaleY(1.4);
+      box-shadow: 0 0 8px rgba(2, 132, 199, 0.6);
+    }
+
+    /* THẺ BÀI TOÁN HIỆN TẠI (LỚN & ĐẸP) */
+    .math-card {
+      width: 100%;
+      background: #FFFFFF;
+      border: 3px solid #0284C7;
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.12);
+      transition: all 0.25s ease;
+      box-sizing: border-box;
+    }
+
+    .math-card.correct-flash {
+      border-color: #10B981 !important;
+      background: #ECFDF5 !important;
+      transform: scale(1.02);
+    }
+
+    .math-card.wrong-shake {
+      border-color: #EF4444 !important;
+      background: #FEF2F2 !important;
+      animation: alertShake 0.35s ease-in-out;
+    }
+
+    .math-card-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid #E2E8F0;
+      padding-bottom: 8px;
+    }
+
+    .math-card-step-badge {
       background: #0284C7;
       color: #FFFFFF;
-      border-radius: 6px;
-      padding: 2px 7px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .math-input-box {
-      width: 85px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 2px solid #CBD5E1;
-      font-size: 17px;
-      font-weight: 800;
-      text-align: center;
-      color: #0F172A;
-      outline: none;
-      background: #FFFFFF;
-      transition: border-color 0.2s;
-    }
-
-    .math-input-box:focus {
-      border-color: #0284C7;
-      box-shadow: 0 0 6px rgba(2, 132, 199, 0.35);
-    }
-
-    .math-row-status {
       font-size: 12px;
       font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      min-width: 80px;
-      justify-content: flex-end;
+      padding: 3px 10px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
     }
 
-    .math-row-status.ok {
-      color: #059669;
+    .math-card-hint {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748B;
     }
 
-    .math-row-status.err {
-      color: #DC2626;
-    }
-
-    .math-empty-tip {
+    .math-expression-wrap {
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 100%;
+      padding: 8px 0;
+    }
+
+    .math-expr-text {
+      font-size: 38px;
+      font-weight: 900;
+      color: #0F172A;
+      font-family: inherit;
+      letter-spacing: 1px;
+    }
+
+    .math-input-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .math-main-input {
+      width: 110px;
+      height: 52px;
+      font-size: 30px;
+      font-weight: 900;
       text-align: center;
-      height: 100%;
-      color: #64748B;
+      color: #0284C7;
+      background: #F8FAFC;
+      border: 3px solid #0284C7;
+      border-radius: 12px;
+      outline: none;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+    }
+
+    .math-main-input:focus {
+      background: #FFFFFF;
+      border-color: #0369A1;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-math-submit {
+      height: 52px;
+      padding: 0 16px;
+      background: #10B981;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-math-submit:hover, .btn-math-submit:active {
+      background: #059669;
+      transform: translateY(1px);
+    }
+
+    .math-feedback-notice {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       font-size: 13px;
-      font-style: italic;
-      padding: 30px 15px;
+      font-weight: 700;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .math-feedback-notice.ok {
+      background: #DCFCE7;
+      border: 1.5px solid #10B981;
+      color: #15803D;
+    }
+
+    .math-feedback-notice.err {
+      background: #FEE2E2;
+      border: 1.5px solid #EF4444;
+      color: #B91C1C;
+    }
+
+    /* BÀN PHÍM SỐ CẢM ỨNG DI ĐỘNG */
+    .math-numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 320px;
+      background: #FFFFFF;
+      border: 2px solid #BAE6FD;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.08);
+      box-sizing: border-box;
+    }
+
+    .math-np-btn {
+      height: 48px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #0F172A;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .math-np-btn:active {
+      transform: scale(0.94);
+      background: #E2E8F0;
+    }
+
+    .math-np-btn.np-action {
+      background: #FEE2E2;
+      color: #DC2626;
+      border-color: #FECACA;
+      font-size: 14px;
+    }
+
+    .math-np-btn.np-enter {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0369A1;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    }
+
+    @media (max-width: 480px) {
+      .math-expr-text {
+        font-size: 30px;
+      }
+      .math-main-input {
+        width: 90px;
+        height: 48px;
+        font-size: 26px;
+      }
+      .btn-math-submit {
+        height: 48px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+      .math-np-btn {
+        height: 44px;
+        font-size: 18px;
+      }
     }
 
     /* Modal bài mẫu của Thầy */
@@ -2291,59 +2463,59 @@
   </section>
 
   <!-- =====================================================================
-       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MÔN TOÁN)
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (10 BÀI TUẦN TỰ)
        ===================================================================== -->
   <section class="game-view" id="mathView">
     <div class="game-header">
       <div class="stats-bar">
         <div class="stat-pill">
           <span class="label">Tiến Độ</span>
-          <span class="val highlight" id="mathProgressVal">0 / 10</span>
+          <span class="val highlight" id="mathProgressVal">1 / 10</span>
         </div>
         <div class="stat-pill">
           <span class="label">Thời Gian</span>
           <span class="val" style="color:var(--accent-color)" id="mathTimerVal">00:00</span>
         </div>
         <div class="stat-pill">
-          <span class="label">Điểm Số</span>
-          <span class="val" style="color:#F59E0B" id="mathScoreVal">-- / 10</span>
+          <span class="label">Cấp Độ</span>
+          <span class="val" style="color:#F59E0B;font-size:11px;" id="mathCurrentLevelBadge">1 Chữ Số</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Nghe lại nhận xét và chấm điểm">
-          <span>🔊</span> Nghe chấm điểm
+        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Đọc to đề bài toán hiện tại">
+          <span>🔊</span> Đọc Đề
+        </button>
+        <button class="icon-btn" id="btnRestartMathGame" title="Làm lại 10 bài mới">🔄</button>
+      </div>
+    </div>
+
+    <!-- THANH CHỌN CẤP ĐỘ KHÓ (1 CHỮ SỐ, 2 CHỮ SỐ, BẢNG CỬU CHƯƠNG, THẦY RA ĐỀ) -->
+    <div class="math-level-bar">
+      <div class="math-level-tabs">
+        <button type="button" class="math-level-btn active" id="btnLvlSingle" data-level="single">
+          <span>🟢</span> 1 Chữ Số
+        </button>
+        <button type="button" class="math-level-btn" id="btnLvlDouble" data-level="double">
+          <span>🟡</span> 2 Chữ Số
+        </button>
+        <button type="button" class="math-level-btn" id="btnLvlTimes" data-level="times_table">
+          <span>🔴</span> Bảng Cửu Chương
+        </button>
+        <button type="button" class="math-level-btn" id="btnLvlCustom" data-level="custom">
+          <span>👨‍🏫</span> Thầy Tự Ra Đề
         </button>
       </div>
     </div>
 
-    <!-- 02 TEXTBOX: 1 CHO THẦY RA ĐỀ BÀI, 1 CHO HỌC TRÒ NHẬP KẾT QUẢ -->
-    <div class="two-box-container math-two-box">
-      <!-- KHUNG 1: ĐỀ BÀI CỦA THẦY (TEXTBOX 1 - 10 PHÉP TÍNH ĐƠN) -->
-      <div class="teacher-box-card math-box-card">
-        <div class="box-header">
-          <div class="box-title teacher-title">
-            <span>👨‍🏫</span> 1. BẢNG RA ĐỀ CỦA THẦY (10 PHÉP TÍNH)
-          </div>
-          <div class="math-teacher-tools">
-            <div style="position:relative;display:inline-block;">
-              <button class="btn-board-sm" id="btnAutoMathDropdown">🎲 Tạo Đề Tự Động ▾</button>
-              <div class="math-preset-dropdown" id="mathPresetDropdown">
-                <div class="preset-item" data-preset="add20">➕ Phép Cộng (Phạm vi 20)</div>
-                <div class="preset-item" data-preset="sub20">➖ Phép Trừ (Phạm vi 20)</div>
-                <div class="preset-item" data-preset="addsub100">➕➖ Cộng & Trừ (Phạm vi 100)</div>
-                <div class="preset-item" data-preset="mul">✖️ Bảng Nhân (2 đến 9)</div>
-                <div class="preset-item" data-preset="div">➗ Bảng Chia (2 đến 9)</div>
-                <div class="preset-item" data-preset="mix">🎲 Hỗn Hợp (+, -, ×, ÷)</div>
-              </div>
-            </div>
-            <button class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
-            <button class="btn-board-sm" id="btnClearMath">🧹 Xóa</button>
-          </div>
+    <!-- KHU VỰC THẦY TỰ SOẠN ĐỀ (CHỈ HIỆN KHI CHỌN "THẦY TỰ RA ĐỀ") -->
+    <div class="math-custom-panel" id="mathCustomPanel" style="display:none;">
+      <div class="custom-panel-card">
+        <div class="custom-panel-header">
+          <span style="font-weight:700;font-size:13px;color:#134B2F;">👨‍🏫 Thầy gõ 10 phép tính đơn vào đây:</span>
+          <button type="button" class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
         </div>
-
-        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 01 phép tính)...
-Ví dụ:
+        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 1 phép tính)...
 8 + 5 =
 15 - 7 =
 6 x 4 =
@@ -2354,34 +2526,56 @@ Ví dụ:
 45 / 5 =
 12 + 18 =
 50 - 25 ="></textarea>
+        <button type="button" class="btn-board start-btn" id="btnStartCustomMath" style="width:100%;margin-top:6px;">
+          ▶️ BẮT ĐẦU CHO TRÒ LÀM 10 BÀI TUẦN TỰ
+        </button>
+      </div>
+    </div>
 
-        <div class="board-actions-row">
-          <button class="btn-board start-btn" id="btnStartMathTest" style="width:100%;">
-            ▶️ BẮT ĐẦU CHO TRÒ LÀM BÀI
-          </button>
+    <!-- VÙNG CHƠI CHÍNH: 10 BÀI TÍNH HIỂN THỊ TUẦN TỰ -->
+    <div class="math-quiz-container" id="mathQuizContainer">
+      <!-- VẠCH TIẾN ĐỘ 10 BÀI (PROGRESS STEPS) -->
+      <div class="math-steps-bar" id="mathStepsBar">
+        <!-- JS generates 10 step pills -->
+      </div>
+
+      <!-- THẺ BÀI TOÁN HIỆN TẠI (SIÊU TO, DỄ NHÌN) -->
+      <div class="math-card" id="mathCard">
+        <div class="math-card-header">
+          <span class="math-card-step-badge" id="mathBadgeQNum">BÀI 1 TRÊN 10</span>
+          <span class="math-card-hint" id="mathCardHint">Gõ đúng kết quả để sang bài tiếp theo</span>
+        </div>
+
+        <!-- KHUNG PHÉP TÍNH TO -->
+        <div class="math-expression-wrap">
+          <span class="math-expr-text" id="mathExprText">7 × 8 =</span>
+          <div class="math-input-wrapper">
+            <input type="text" id="mathCurrentInput" class="math-main-input" inputmode="numeric" pattern="[0-9\-]*" autocomplete="off" placeholder="?">
+            <button type="button" class="btn-math-submit" id="btnMathCheck" title="Kiểm tra đáp án">↵ KIỂM TRA</button>
+          </div>
+        </div>
+
+        <!-- THÔNG BÁO PHẢN HỒI (ĐÚNG/SAI) -->
+        <div class="math-feedback-notice" id="mathFeedbackNotice" style="display:none;">
+          <span id="mathFeedbackIcon">⚠️</span>
+          <span id="mathFeedbackText">Chưa đúng rồi! Em hãy tính lại nhé!</span>
         </div>
       </div>
 
-      <!-- KHUNG 2: BÀI LÀM CỦA HỌC TRÒ (TEXTBOX 2 - NHẬP KẾT QUẢ) -->
-      <div class="student-box-card math-box-card">
-        <div class="box-header">
-          <div class="box-title student-title">
-            <span>✍️</span> 2. BÀI LÀM CỦA HỌC TRÒ (VỞ TẬP TÍNH)
-          </div>
-          <span id="studentMathStatus" style="font-size:12px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
-        </div>
-
-        <div class="student-math-sheet" id="studentMathSheet">
-          <div class="math-empty-tip">
-            Thầy hãy chuẩn bị 10 phép tính đơn ở Khung 1 rồi nhấn <strong>[BẮT ĐẦU CHO TRÒ LÀM BÀI]</strong> nhé!
-          </div>
-        </div>
-
-        <div class="board-actions-row">
-          <button class="btn-board start-btn" id="btnSubmitMathTest" style="width:100%;background:#30D158;display:none;">
-            ✅ NỘP BÀI & CHẤM ĐIỂM
-          </button>
-        </div>
+      <!-- BÀN PHÍM SỐ CẢM ỨNG DI ĐỘNG (DỄ BẤM TRÊN IPAD & ĐIỆN THOẠI) -->
+      <div class="math-numpad" id="mathNumpad">
+        <button type="button" class="math-np-btn" data-val="1">1</button>
+        <button type="button" class="math-np-btn" data-val="2">2</button>
+        <button type="button" class="math-np-btn" data-val="3">3</button>
+        <button type="button" class="math-np-btn" data-val="4">4</button>
+        <button type="button" class="math-np-btn" data-val="5">5</button>
+        <button type="button" class="math-np-btn" data-val="6">6</button>
+        <button type="button" class="math-np-btn" data-val="7">7</button>
+        <button type="button" class="math-np-btn" data-val="8">8</button>
+        <button type="button" class="math-np-btn" data-val="9">9</button>
+        <button type="button" class="math-np-btn np-action" data-val="del" title="Xoá một số">⌫ Xoá</button>
+        <button type="button" class="math-np-btn" data-val="0">0</button>
+        <button type="button" class="math-np-btn np-enter" data-val="enter" title="Kiểm tra đáp án">↵ Xong</button>
       </div>
     </div>
   </section>
@@ -2511,6 +2705,9 @@ Ví dụ:
             <span class="slider"></span>
           </label>
         </div>
+        <button type="button" class="btn-secondary" id="btnTestAudio" style="margin-top:8px;padding:6px 12px;font-size:12px;width:100%;background:rgba(10,132,255,0.15);border:1px solid rgba(10,132,255,0.5);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <span>🔊</span> Khởi động lại & Thử âm thanh ngay
+        </button>
       </div>
 
       <button class="btn-main" id="saveSettingsBtn">💾 Lưu Cài Đặt</button>
@@ -2802,25 +2999,71 @@ Ví dụ:
     const wordCfg = loadSavedWordConfig();
 
     /* =====================================================================
-       HỆ THỐNG ÂM THANH NATIVE (WEB AUDIO API)
+       HỆ THỐNG ÂM THANH NATIVE (WEB AUDIO API) - BẢO VỆ CHỐNG MẤT TIẾNG & TỰ PHỤC HỒI
        ===================================================================== */
     class SoundEngine {
       constructor() {
         this.ctx = null;
+        this.isUnlocked = false;
+        this.setupAutoUnlock();
       }
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (AudioContext) this.ctx = new AudioContext();
+
+      setupAutoUnlock() {
+        const unlock = () => {
+          this.unlock();
+        };
+        ['click', 'touchstart', 'touchend', 'keydown', 'pointerdown'].forEach(ev => {
+          window.addEventListener(ev, unlock, { passive: true, capture: true });
+        });
+      }
+
+      init(force = false) {
+        try {
+          if (!this.ctx || this.ctx.state === 'closed' || force) {
+            if (this.ctx && typeof this.ctx.close === 'function') {
+              try { this.ctx.close(); } catch (_) {}
+            }
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+              this.ctx = new AudioContext();
+            }
+          }
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+        } catch (e) {
+          console.warn('AudioContext init error:', e);
         }
-        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       }
+
+      unlock() {
+        this.init();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().then(() => {
+            this.isUnlocked = true;
+          }).catch(() => {});
+        }
+      }
+
+      // Khởi động lại âm thanh cưỡng bức (cho phần Cài đặt khi người dùng bật lại hoặc thử âm thanh)
+      restartAudio(playTestSound = true) {
+        this.init(true);
+        if (this.ctx) {
+          this.ctx.resume().then(() => {
+            if (playTestSound) this.playHit(false);
+          }).catch(() => {
+            if (playTestSound) this.playHit(false);
+          });
+        }
+      }
+
       playHit(isWordGame = false) {
         const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
         if (!soundOn) return;
         this.init();
         if (!this.ctx) return;
         try {
+          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'triangle';
@@ -2832,14 +3075,19 @@ Ví dụ:
           gain.connect(this.ctx.destination);
           osc.start();
           osc.stop(this.ctx.currentTime + 0.12);
-        } catch (e) {}
+        } catch (e) {
+          // Tự phục hồi: khởi tạo lại AudioContext nếu bị hỏng/đóng
+          this.init(true);
+        }
       }
+
       playMiss(isWordGame = false) {
         const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
         if (!soundOn) return;
         this.init();
         if (!this.ctx) return;
         try {
+          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sawtooth';
@@ -2851,13 +3099,17 @@ Ví dụ:
           gain.connect(this.ctx.destination);
           osc.start();
           osc.stop(this.ctx.currentTime + 0.22);
-        } catch (e) {}
+        } catch (e) {
+          this.init(true);
+        }
       }
+
       playSuccessWord() {
-        if (!wordCfg.soundEnabled) return;
+        if (!wordCfg.soundEnabled && !cfg.soundEnabled) return;
         this.init();
         if (!this.ctx) return;
         try {
+          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
           const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
           notes.forEach((freq, i) => {
             const osc = this.ctx.createOscillator();
@@ -2871,12 +3123,16 @@ Ví dụ:
             osc.start(this.ctx.currentTime + i * 0.08);
             osc.stop(this.ctx.currentTime + i * 0.08 + 0.2);
           });
-        } catch (e) {}
+        } catch (e) {
+          this.init(true);
+        }
       }
+
       playClockTick() {
         this.init();
         if (!this.ctx) return;
         try {
+          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sine';
@@ -2887,7 +3143,9 @@ Ví dụ:
           gain.connect(this.ctx.destination);
           osc.start();
           osc.stop(this.ctx.currentTime + 0.03);
-        } catch (e) {}
+        } catch (e) {
+          this.init(true);
+        }
       }
     }
     const sound = new SoundEngine();
@@ -4896,51 +5154,70 @@ Ví dụ:
     }
 
     /* =====================================================================
-       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MATH GAME)
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (10 BÀI TUẦN TỰ)
        ===================================================================== */
     class MathPracticeGame {
       constructor() {
+        this.currentLevel = 'single'; // 'single' | 'double' | 'times_table' | 'custom'
         this.questions = [];
-        this.studentAnswers = [];
-        this.isTesting = false;
+        this.currentQIndex = 0;
+        this.isPlaying = false;
         this.startTime = null;
         this.timerInterval = null;
         this.elapsedSeconds = 0;
+        this.retriesCount = 0;
         this.lastGradingSpeech = '';
 
-        this.teacherInput = document.getElementById('teacherMathInput');
-        this.studentSheet = document.getElementById('studentMathSheet');
-        this.studentStatus = document.getElementById('studentMathStatus');
-        this.btnStart = document.getElementById('btnStartMathTest');
-        this.btnSubmit = document.getElementById('btnSubmitMathTest');
-        this.btnClear = document.getElementById('btnClearMath');
-        this.btnSample = document.getElementById('btnMathSample');
-        this.btnAutoDropdown = document.getElementById('btnAutoMathDropdown');
-        this.presetDropdown = document.getElementById('mathPresetDropdown');
-        this.btnVoiceRepeat = document.getElementById('btnMathVoiceRepeat');
-
-        this.timerVal = document.getElementById('mathTimerVal');
+        // DOM elements
         this.progressVal = document.getElementById('mathProgressVal');
-        this.scoreVal = document.getElementById('mathScoreVal');
+        this.timerVal = document.getElementById('mathTimerVal');
+        this.levelBadge = document.getElementById('mathCurrentLevelBadge');
+        this.btnVoiceRepeat = document.getElementById('btnMathVoiceRepeat');
+        this.btnRestart = document.getElementById('btnRestartMathGame');
+
+        this.stepsBar = document.getElementById('mathStepsBar');
+        this.card = document.getElementById('mathCard');
+        this.badgeQNum = document.getElementById('mathBadgeQNum');
+        this.cardHint = document.getElementById('mathCardHint');
+        this.exprText = document.getElementById('mathExprText');
+        this.input = document.getElementById('mathCurrentInput');
+        this.btnCheck = document.getElementById('btnMathCheck');
+        this.feedbackNotice = document.getElementById('mathFeedbackNotice');
+        this.feedbackIcon = document.getElementById('mathFeedbackIcon');
+        this.feedbackText = document.getElementById('mathFeedbackText');
+        this.numpad = document.getElementById('mathNumpad');
+
+        this.customPanel = document.getElementById('mathCustomPanel');
+        this.teacherInput = document.getElementById('teacherMathInput');
+        this.btnStartCustom = document.getElementById('btnStartCustomMath');
+        this.btnSample = document.getElementById('btnMathSample');
       }
 
       init() {
-        if (this.teacherInput && !this.teacherInput.value.trim()) {
-          this.loadPreset('add20');
-        }
         this.bindEvents();
+        // Mặc định khởi tạo cấp độ 1 chữ số
+        this.startRound('single', false);
       }
 
-      // Tự động phân tích và tính toán đáp án cho từng phép tính đơn (+, -, *, /)
+      onTabActivated() {
+        this.focusInput();
+      }
+
+      focusInput() {
+        if (this.input && !this.input.disabled) {
+          setTimeout(() => {
+            try { this.input.focus(); } catch (_) {}
+          }, 100);
+        }
+      }
+
+      // Phân tích cú pháp biểu thức toán đơn
       parseSingleMath(line) {
         if (!line || !line.trim()) return null;
         let raw = line.trim();
-        // Bỏ dấu = ở cuối nếu có
         let expr = raw.replace(/=/g, '').trim();
-        // Chuẩn hóa toán tử nhân chia
         let normalized = expr.replace(/[xX×.]/g, '*').replace(/[:÷]/g, '/');
 
-        // Khớp: số_1 toán_tử số_2
         const match = normalized.match(/^(-?\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(-?\d+(?:\.\d+)?)$/);
         if (!match) return null;
 
@@ -4959,6 +5236,7 @@ Ví dụ:
 
         result = Math.round(result * 100) / 100;
         const displayOp = op === '*' ? '×' : (op === '/' ? '÷' : op);
+        const spokenOp = op === '+' ? 'cộng' : (op === '-' ? 'trừ' : (op === '*' ? 'nhân' : 'chia'));
 
         return {
           original: raw,
@@ -4966,127 +5244,114 @@ Ví dụ:
           op: displayOp,
           num2: num2,
           displayExpr: `${num1} ${displayOp} ${num2} =`,
+          spokenExpr: `${num1} ${spokenOp} ${num2} bằng bao nhiêu?`,
           result: result
         };
       }
 
-      // Tạo tự động 10 bài tập đơn
-      loadPreset(presetType) {
-        let lines = [];
-        if (presetType === 'add20') {
-          // Phép cộng trong phạm vi 20
-          for (let i = 0; i < 10; i++) {
-            const a = Math.floor(Math.random() * 11) + 1; // 1..11
-            const b = Math.floor(Math.random() * (20 - a + 1));
-            lines.push(`${a} + ${b} =`);
-          }
-        } else if (presetType === 'sub20') {
-          // Phép trừ trong phạm vi 20
-          for (let i = 0; i < 10; i++) {
-            const a = Math.floor(Math.random() * 16) + 5; // 5..20
-            const b = Math.floor(Math.random() * (a + 1));
-            lines.push(`${a} - ${b} =`);
-          }
-        } else if (presetType === 'addsub100') {
-          // Cộng trừ trong phạm vi 100
-          for (let i = 0; i < 10; i++) {
-            const isAdd = Math.random() > 0.5;
-            if (isAdd) {
-              const a = Math.floor(Math.random() * 60) + 10;
-              const b = Math.floor(Math.random() * (99 - a)) + 1;
-              lines.push(`${a} + ${b} =`);
-            } else {
-              const a = Math.floor(Math.random() * 70) + 20;
-              const b = Math.floor(Math.random() * (a - 5)) + 1;
-              lines.push(`${a} - ${b} =`);
-            }
-          }
-        } else if (presetType === 'mul') {
-          // Bảng cửu chương nhân (2 đến 9)
-          for (let i = 0; i < 10; i++) {
-            const a = Math.floor(Math.random() * 8) + 2; // 2..9
+      // Tự động sinh 10 câu hỏi theo từng cấp độ khó
+      generateQuestions(level) {
+        const list = [];
+        if (level === 'single') {
+          // CẤP ĐỘ 1: PHÉP TÍNH 01 CHỮ SỐ (Cộng, trừ, nhân trong phạm vi 1 chữ số)
+          // 5 phép cộng 1 chữ số
+          for (let i = 0; i < 5; i++) {
+            const a = Math.floor(Math.random() * 9) + 1; // 1..9
             const b = Math.floor(Math.random() * 9) + 1; // 1..9
-            lines.push(`${a} x ${b} =`);
+            list.push(this.parseSingleMath(`${a} + ${b} =`));
           }
-        } else if (presetType === 'div') {
-          // Bảng chia hết (2 đến 9)
-          for (let i = 0; i < 10; i++) {
-            const b = Math.floor(Math.random() * 8) + 2; // số chia: 2..9
-            const res = Math.floor(Math.random() * 9) + 1; // thương: 1..9
-            const a = b * res;
-            lines.push(`${a} : ${b} =`);
+          // 3 phép trừ 1 chữ số
+          for (let i = 0; i < 3; i++) {
+            const a = Math.floor(Math.random() * 8) + 2; // 2..9
+            const b = Math.floor(Math.random() * (a - 1)) + 1; // 1..(a-1)
+            list.push(this.parseSingleMath(`${a} - ${b} =`));
           }
-        } else {
-          // Hỗn hợp 10 bài đơn
-          const ops = ['+', '-', 'x', ':'];
-          for (let i = 0; i < 10; i++) {
-            const op = ops[i % ops.length];
-            if (op === '+') {
-              const a = Math.floor(Math.random() * 15) + 3;
-              const b = Math.floor(Math.random() * 15) + 2;
-              lines.push(`${a} + ${b} =`);
-            } else if (op === '-') {
-              const a = Math.floor(Math.random() * 18) + 10;
-              const b = Math.floor(Math.random() * (a - 2)) + 1;
-              lines.push(`${a} - ${b} =`);
-            } else if (op === 'x') {
-              const a = Math.floor(Math.random() * 8) + 2;
-              const b = Math.floor(Math.random() * 8) + 2;
-              lines.push(`${a} x ${b} =`);
-            } else {
-              const b = Math.floor(Math.random() * 7) + 2;
-              const res = Math.floor(Math.random() * 8) + 2;
-              lines.push(`${b * res} : ${b} =`);
+          // 2 phép nhân 1 chữ số đơn giản
+          for (let i = 0; i < 2; i++) {
+            const a = Math.floor(Math.random() * 4) + 2; // 2..5
+            const b = Math.floor(Math.random() * 4) + 2; // 2..5
+            list.push(this.parseSingleMath(`${a} x ${b} =`));
+          }
+        } else if (level === 'double') {
+          // CẤP ĐỘ 2: PHÉP TÍNH 02 CHỮ SỐ (Cộng, trừ phạm vi 2 chữ số 10 đến 99)
+          // 5 phép cộng 2 chữ số
+          for (let i = 0; i < 5; i++) {
+            const a = Math.floor(Math.random() * 50) + 11; // 11..60
+            const b = Math.floor(Math.random() * (98 - a)) + 10; // 10..(98-a)
+            list.push(this.parseSingleMath(`${a} + ${b} =`));
+          }
+          // 5 phép trừ 2 chữ số
+          for (let i = 0; i < 5; i++) {
+            const a = Math.floor(Math.random() * 70) + 25; // 25..95
+            const b = Math.floor(Math.random() * (a - 15)) + 10; // 10..(a-15)
+            list.push(this.parseSingleMath(`${a} - ${b} =`));
+          }
+        } else if (level === 'times_table') {
+          // CẤP ĐỘ 3: ĐỐ BẢNG CỬU CHƯƠNG (Nhân chia trong bảng từ 2 đến 9)
+          // 6 phép nhân bảng cửu chương
+          for (let i = 0; i < 6; i++) {
+            const a = Math.floor(Math.random() * 8) + 2; // 2..9
+            const b = Math.floor(Math.random() * 8) + 2; // 2..9
+            list.push(this.parseSingleMath(`${a} x ${b} =`));
+          }
+          // 4 phép chia bảng cửu chương
+          for (let i = 0; i < 4; i++) {
+            const a = Math.floor(Math.random() * 8) + 2; // số chia: 2..9
+            const res = Math.floor(Math.random() * 8) + 2; // thương: 2..9
+            const product = a * res;
+            list.push(this.parseSingleMath(`${product} : ${a} =`));
+          }
+        } else if (level === 'custom') {
+          // CẤP ĐỘ 4: ĐỀ THẦY TỰ SOẠN
+          const rawLines = (this.teacherInput ? this.teacherInput.value : '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          rawLines.forEach(l => {
+            if (list.length < 10) {
+              const p = this.parseSingleMath(l);
+              if (p) list.push(p);
             }
+          });
+          // Nếu thiếu, bù cho đủ 10 bài
+          while (list.length < 10) {
+            const a = Math.floor(Math.random() * 9) + 1;
+            const b = Math.floor(Math.random() * 9) + 1;
+            list.push(this.parseSingleMath(`${a} + ${b} =`));
           }
         }
 
-        if (this.teacherInput) {
-          this.teacherInput.value = lines.join('\n');
-        }
+        // Xáo trộn ngẫu nhiên thứ tự các câu hỏi để mỗi lần chơi là một trải nghiệm mới
+        return list.sort(() => Math.random() - 0.5);
       }
 
-      startTest() {
-        if (!this.teacherInput) return;
-        const rawLines = this.teacherInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-        if (rawLines.length === 0) {
-          alert('Thầy hãy ra 10 bài tập phép tính đơn ở Khung 1 trước nhé!');
-          this.teacherInput.focus();
-          return;
+      // Khởi động 1 lượt chơi 10 bài tuần tự
+      startRound(level = null, speakIntro = true) {
+        if (level) this.currentLevel = level;
+
+        // Cập nhật nút cấp độ active
+        document.querySelectorAll('.math-level-btn').forEach(btn => {
+          if (btn.getAttribute('data-level') === this.currentLevel) btn.classList.add('active');
+          else btn.classList.remove('active');
+        });
+
+        const levelNames = {
+          'single': '1 Chữ Số',
+          'double': '2 Chữ Số',
+          'times_table': 'Cửu Chương',
+          'custom': 'Thầy Ra Đề'
+        };
+        if (this.levelBadge) {
+          this.levelBadge.textContent = levelNames[this.currentLevel] || 'Toán Học';
         }
 
-        // Phân tích và lọc lấy tối đa 10 bài tập đơn hợp lệ
-        this.questions = [];
-        for (let i = 0; i < rawLines.length && this.questions.length < 10; i++) {
-          const parsed = this.parseSingleMath(rawLines[i]);
-          if (parsed) {
-            this.questions.push(parsed);
-          }
+        // Hiện/Ẩn bảng soạn đề của Thầy
+        if (this.customPanel) {
+          this.customPanel.style.display = this.currentLevel === 'custom' ? 'block' : 'none';
         }
 
-        // Nếu thiếu bài tập, tự động bổ sung cho tròn 10 bài
-        if (this.questions.length < 10) {
-          const needed = 10 - this.questions.length;
-          for (let i = 0; i < needed; i++) {
-            const a = Math.floor(Math.random() * 10) + 1;
-            const b = Math.floor(Math.random() * 10) + 1;
-            this.questions.push(this.parseSingleMath(`${a} + ${b} =`));
-          }
-          this.teacherInput.value = this.questions.map(q => q.original).join('\n');
-        }
-
-        this.isTesting = true;
-        this.studentAnswers = new Array(10).fill('');
+        this.questions = this.generateQuestions(this.currentLevel);
+        this.currentQIndex = 0;
+        this.retriesCount = 0;
         this.elapsedSeconds = 0;
-        this.renderStudentSheet();
-
-        if (this.studentStatus) {
-          this.studentStatus.textContent = 'Đang làm bài...';
-          this.studentStatus.style.color = '#007AFF';
-        }
-        if (this.btnSubmit) this.btnSubmit.style.display = 'block';
-        if (this.scoreVal) this.scoreVal.textContent = '-- / 10';
-        if (this.progressVal) this.progressVal.textContent = '0 / 10';
+        this.isPlaying = true;
 
         // Bắt đầu bấm giờ
         if (this.timerInterval) clearInterval(this.timerInterval);
@@ -5097,14 +5362,17 @@ Ví dụ:
           this.updateTimerUI();
         }, 1000);
 
-        // Focus vào ô làm bài đầu tiên
-        setTimeout(() => {
-          const firstInput = document.getElementById('mathAns_0');
-          if (firstInput) firstInput.focus();
-        }, 150);
+        this.renderStepsBar();
+        this.renderCurrentQuestion();
 
-        if (cfg.voiceEnabled) {
-          voiceEngine.speak('Bắt đầu làm bài toán! Có mười bài tập đơn, hãy tính thật nhanh và nộp bài nhé!', true);
+        if (speakIntro && cfg.voiceEnabled) {
+          const introTexts = {
+            'single': 'Bắt đầu mười bài toán một chữ số! Hãy tính thật nhanh và chính xác nhé!',
+            'double': 'Bắt đầu mười bài toán hai chữ số! Hãy tập trung tính toán nhé!',
+            'times_table': 'Bắt đầu thử thách đố bảng cửu chương! Cùng trổ tài tính nhẩm nào!',
+            'custom': 'Bắt đầu làm mười bài tập của Thầy ra đề! Cố gắng đạt điểm mười nhé!'
+          };
+          voiceEngine.speak(introTexts[this.currentLevel] || 'Bắt đầu làm toán nào!', true);
         }
       }
 
@@ -5115,125 +5383,127 @@ Ví dụ:
         if (this.timerVal) this.timerVal.textContent = formatted;
       }
 
-      renderStudentSheet() {
-        if (!this.studentSheet) return;
-        this.studentSheet.innerHTML = '';
-
-        this.questions.forEach((q, idx) => {
-          const row = document.createElement('div');
-          row.className = 'math-row';
-          row.id = `mathRow_${idx}`;
-
-          const left = document.createElement('div');
-          left.className = 'math-row-left';
-
-          const numBadge = document.createElement('span');
-          numBadge.className = 'math-row-num';
-          numBadge.textContent = `Bài ${idx + 1}`;
-
-          const exprTxt = document.createElement('span');
-          exprTxt.textContent = q.displayExpr;
-
-          left.appendChild(numBadge);
-          left.appendChild(exprTxt);
-
-          const right = document.createElement('div');
-          right.style.display = 'flex';
-          right.style.alignItems = 'center';
-          right.style.gap = '8px';
-
-          const input = document.createElement('input');
-          input.type = 'number';
-          input.inputMode = 'numeric';
-          input.className = 'math-input-box';
-          input.id = `mathAns_${idx}`;
-          input.placeholder = '?';
-          input.value = this.studentAnswers[idx] || '';
-
-          // Tự động nhảy dòng khi nhấn Enter hoặc phím Xuống
-          input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === 'ArrowDown') {
-              e.preventDefault();
-              const next = document.getElementById(`mathAns_${idx + 1}`);
-              if (next) next.focus();
-              else if (idx === 9) {
-                this.submitTest();
-              }
-            } else if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              const prev = document.getElementById(`mathAns_${idx - 1}`);
-              if (prev) prev.focus();
-            }
-          });
-
-          input.addEventListener('input', (e) => {
-            this.studentAnswers[idx] = e.target.value.trim();
-            const filledCount = this.studentAnswers.filter(a => a !== '').length;
-            if (this.progressVal) this.progressVal.textContent = `${filledCount} / 10`;
-          });
-
-          const statusBadge = document.createElement('span');
-          statusBadge.className = 'math-row-status';
-          statusBadge.id = `mathStatus_${idx}`;
-
-          right.appendChild(input);
-          right.appendChild(statusBadge);
-
-          row.appendChild(left);
-          right.style.flex = '1';
-          right.style.justifyContent = 'flex-end';
-          row.appendChild(right);
-
-          this.studentSheet.appendChild(row);
-        });
+      renderStepsBar() {
+        if (!this.stepsBar) return;
+        this.stepsBar.innerHTML = '';
+        for (let i = 0; i < 10; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'math-step-dot';
+          if (i < this.currentQIndex) dot.classList.add('done');
+          else if (i === this.currentQIndex) dot.classList.add('current');
+          this.stepsBar.appendChild(dot);
+        }
       }
 
-      // Nộp bài và chấm điểm bằng giọng nói
-      submitTest() {
-        if (!this.isTesting) return;
-        this.isTesting = false;
-        clearInterval(this.timerInterval);
-
-        let correctCount = 0;
-        this.questions.forEach((q, idx) => {
-          const userAnsStr = this.studentAnswers[idx];
-          const userAns = parseFloat(userAnsStr);
-          const rowEl = document.getElementById(`mathRow_${idx}`);
-          const statusEl = document.getElementById(`mathStatus_${idx}`);
-          const inputEl = document.getElementById(`mathAns_${idx}`);
-
-          if (inputEl) inputEl.disabled = true;
-
-          const isMatch = (userAnsStr !== '' && !isNaN(userAns) && Math.abs(userAns - q.result) < 0.001);
-
-          if (isMatch) {
-            correctCount++;
-            if (rowEl) {
-              rowEl.classList.remove('incorrect');
-              rowEl.classList.add('correct');
-            }
-            if (statusEl) {
-              statusEl.className = 'math-row-status ok';
-              statusEl.textContent = '✅ Đúng';
-            }
-          } else {
-            if (rowEl) {
-              rowEl.classList.remove('correct');
-              rowEl.classList.add('incorrect');
-            }
-            if (statusEl) {
-              statusEl.className = 'math-row-status err';
-              statusEl.textContent = `❌ Đáp án: ${q.result}`;
-            }
-          }
-        });
-
-        const score = correctCount; // Thang điểm 10
-        if (this.scoreVal) this.scoreVal.textContent = `${score} / 10`;
-        if (this.studentStatus) {
-          this.studentStatus.textContent = `Đã chấm: ${score}/10 điểm`;
-          this.studentStatus.style.color = score >= 8 ? '#30D158' : (score >= 5 ? '#FF9F0A' : '#FF453A');
+      renderCurrentQuestion() {
+        if (this.currentQIndex >= 10) {
+          this.completeGame();
+          return;
         }
+
+        const q = this.questions[this.currentQIndex];
+        if (!q) return;
+
+        if (this.progressVal) this.progressVal.textContent = `${this.currentQIndex + 1} / 10`;
+        if (this.badgeQNum) this.badgeQNum.textContent = `BÀI ${this.currentQIndex + 1} TRÊN 10`;
+        if (this.exprText) this.exprText.textContent = q.displayExpr;
+
+        if (this.card) {
+          this.card.classList.remove('correct-flash', 'wrong-shake');
+        }
+
+        if (this.feedbackNotice) {
+          this.feedbackNotice.style.display = 'none';
+        }
+
+        if (this.input) {
+          this.input.value = '';
+          this.input.disabled = false;
+        }
+
+        this.renderStepsBar();
+        this.focusInput();
+      }
+
+      // Kiểm tra đáp án khi người chơi gõ xong
+      checkAnswer() {
+        if (!this.isPlaying || !this.input) return;
+        const raw = this.input.value.trim();
+        if (raw === '') {
+          this.showFeedback(false, 'Em hãy gõ đáp án vào ô vuông nhé!');
+          this.focusInput();
+          return;
+        }
+
+        const userAns = parseFloat(raw);
+        const q = this.questions[this.currentQIndex];
+        if (!q) return;
+
+        const isMatch = (!isNaN(userAns) && Math.abs(userAns - q.result) < 0.001);
+
+        if (isMatch) {
+          // ĐÁP ÁN ĐÚNG!
+          sound.playHit();
+          if (this.card) this.card.classList.add('correct-flash');
+          this.showFeedback(true, 'Chính xác! Giỏi lắm! 🎉');
+
+          // Đợi 350ms hiển thị hiệu ứng xanh rồi chuyển ngay sang bài tiếp theo
+          setTimeout(() => {
+            this.currentQIndex++;
+            this.renderCurrentQuestion();
+          }, 350);
+        } else {
+          // ĐÁP ÁN CHƯA ĐÚNG -> KHÔNG CHO SANG BÀI SAU
+          sound.playMiss();
+          this.retriesCount++;
+          if (this.card) {
+            this.card.classList.remove('wrong-shake');
+            void this.card.offsetWidth; // force reflow
+            this.card.classList.add('wrong-shake');
+          }
+          this.showFeedback(false, 'Chưa đúng rồi! Em hãy tính lại nhé! 💡');
+          this.input.select();
+        }
+      }
+
+      showFeedback(isOk, text) {
+        if (!this.feedbackNotice) return;
+        this.feedbackNotice.style.display = 'flex';
+        this.feedbackNotice.className = isOk ? 'math-feedback-notice ok' : 'math-feedback-notice err';
+        if (this.feedbackIcon) this.feedbackIcon.textContent = isOk ? '✅' : '❌';
+        if (this.feedbackText) this.feedbackText.textContent = text;
+      }
+
+      // Đọc to đề bài câu hỏi hiện tại
+      speakCurrentQuestion() {
+        const q = this.questions[this.currentQIndex];
+        if (q && q.spokenExpr) {
+          voiceEngine.speak(q.spokenExpr, true);
+        }
+      }
+
+      // Bắt phím vật lý từ bàn phím máy tính
+      handleKey(key) {
+        if (!this.isPlaying || !this.input) return;
+
+        if (key >= '0' && key <= '9') {
+          this.input.value += key;
+        } else if (key === 'Backspace') {
+          this.input.value = this.input.value.slice(0, -1);
+        } else if (key === 'Enter') {
+          this.checkAnswer();
+        } else if (key === '-') {
+          if (!this.input.value.includes('-')) {
+            this.input.value = '-' + this.input.value;
+          }
+        }
+      }
+
+      // Hoàn thành xuất sắc 10 bài toán
+      completeGame() {
+        this.isPlaying = false;
+        clearInterval(this.timerInterval);
+        sound.playSuccessWord();
 
         const elapsedSec = Math.max(1, this.elapsedSeconds);
         const m = Math.floor(elapsedSec / 60);
@@ -5242,51 +5512,45 @@ Ví dụ:
         const timeDigital = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
         const avgPace = (elapsedSec / 10).toFixed(1);
 
-        // ĐÁNH GIÁ CHẤM ĐIỂM BẰNG GIỌNG NÓI TRÊN CƠ SỞ THỜI GIAN VÀ SỐ KẾT QUẢ ĐÚNG
-        let speechAssessment = '';
+        const levelNames = {
+          'single': '1 Chữ Số',
+          'double': '2 Chữ Số',
+          'times_table': 'Bảng Cửu Chương',
+          'custom': 'Thầy Tự Ra Đề'
+        };
+        const levelName = levelNames[this.currentLevel] || 'Môn Toán';
+
+        // Lập nhận xét và đánh giá
+        let ratingTitle = 'Xuất sắc!';
+        let iconEmoji = '🏆';
         let commentText = '';
-        let iconEmoji = '🌟';
+        let speechText = '';
 
-        if (score === 10) {
-          iconEmoji = '🏆';
-          if (elapsedSec <= 30) {
-            speechAssessment = `Xuất sắc! Thần đồng toán học! Bạn đã làm đúng tuyệt đối mười trên mười bài tập chỉ trong ${elapsedSec} giây! Đạt điểm mười tuyệt đối! Tốc độ tính toán siêu nhanh và cực kỳ chính xác. Thầy khen bạn rất nhiều!`;
-            commentText = `🏆 ĐẲNG CẤP THẦN TỐC! Đúng 10/10 câu chỉ trong ${elapsedSec} giây (trung bình ${avgPace}s/câu). Đạt điểm 10 tuyệt đối!`;
-          } else if (elapsedSec <= 60) {
-            speechAssessment = `Tuyệt vời! Bạn đã làm đúng toàn bộ mười trên mười bài tập trong thời gian ${elapsedSec} giây. Đạt điểm mười hoàn hảo! Bạn tính toán rất cẩn thận và giỏi giang.`;
-            commentText = `🌟 TUYỆT VỜI! Đúng trọn vẹn 10/10 bài tập trong ${timeStr}. Bạn tính toán rất chuẩn xác!`;
-          } else {
-            speechAssessment = `Rất tốt! Bạn đã trả lời đúng toàn bộ mười trên mười câu hỏi trong ${timeStr}. Đạt điểm mười! Lần sau cố gắng tăng tốc thêm một chút nữa nhé!`;
-            commentText = `👏 RẤT TỐT! Đúng 10/10 câu trong ${timeStr}. Cố gắng tăng tốc độ hơn nữa nhé!`;
-          }
-        } else if (score >= 8) {
-          iconEmoji = '🥇';
-          if (elapsedSec <= 40) {
-            speechAssessment = `Rất giỏi! Bạn làm đúng ${score} trên mười bài tập trong thời gian rất nhanh là ${elapsedSec} giây. Đạt ${score} điểm! Hãy kiểm tra lại những câu chưa đúng để giành điểm mười nhé!`;
-            commentText = `🥇 RẤT GIỎI! Đạt ${score}/10 điểm trong ${elapsedSec} giây. Tốc độ rất tốt!`;
-          } else {
-            speechAssessment = `Khá giỏi! Bạn làm đúng ${score} trên mười bài tập trong ${timeStr}. Đạt ${score} điểm. Thầy khen tinh thần làm bài chăm chỉ của bạn!`;
-            commentText = `👍 KHÁ GIỎI! Đạt ${score}/10 điểm trong ${timeStr}. Hãy rèn thêm để đạt điểm 10 nhé!`;
-          }
-        } else if (score >= 5) {
-          iconEmoji = '📈';
-          speechAssessment = `Bạn đã hoàn thành mười bài tập trong ${timeStr}. Làm đúng ${score} trên mười câu, đạt ${score} điểm. Bạn hãy luyện tập thêm các phép tính để đạt điểm cao hơn nhé!`;
-          commentText = `📈 TIẾN BỘ! Đạt ${score}/10 điểm trong ${timeStr}. Cùng thầy ôn lại các phép tính chưa đúng nhé!`;
+        if (elapsedSec <= 40) {
+          ratingTitle = 'Thần Đồng Tính Nhẩm! ⚡';
+          iconEmoji = '⚡';
+          commentText = `⚡ ĐẲNG CẤP THẦN TỐC! Hoàn thành 10 bài (${levelName}) chỉ trong ${timeStr} (trung bình ${avgPace}s/câu), số lần sửa: ${this.retriesCount} lần.`;
+          speechText = `Xuất sắc! Bạn là một thần đồng tính nhẩm! Đã giải đúng hoàn toàn mười bài toán cấp độ ${levelName} chỉ trong ${timeStr}. Tốc độ tính toán siêu nhanh và chính xác! Thầy khen bạn rất nhiều!`;
+        } else if (elapsedSec <= 90) {
+          ratingTitle = 'Rất Giỏi & Chuẩn Xác! ⭐';
+          iconEmoji = '🌟';
+          commentText = `🌟 RẤT GIỎI! Hoàn thành 10 bài (${levelName}) trong ${timeStr} (trung bình ${avgPace}s/câu), số lần sửa: ${this.retriesCount} lần.`;
+          speechText = `Tuyệt vời! Bạn đã hoàn thành trọn vẹn mười bài toán trong thời gian ${timeStr}. Bạn tính toán rất cẩn thận và giỏi giang!`;
         } else {
-          iconEmoji = '💪';
-          speechAssessment = `Bạn đã hoàn thành bài làm trong ${timeStr}. Làm đúng ${score} trên mười câu, đạt ${score} điểm. Đừng nản lòng nhé, hãy ôn lại bảng tính và cùng thầy luyện tập nhiều hơn!`;
-          commentText = `💪 CỐ GẮNG LÊN! Đạt ${score}/10 điểm trong ${timeStr}. Đừng nản lòng, luyện tập thêm sẽ tiến bộ ngay!`;
+          ratingTitle = 'Chăm Chỉ & Kiên Trì! 👏';
+          iconEmoji = '👏';
+          commentText = `👏 KIÊN TRÌ! Hoàn thành 10 bài (${levelName}) trong ${timeStr}, số lần sửa: ${this.retriesCount} lần. Lần sau hãy cố gắng tăng tốc độ hơn nữa nhé!`;
+          speechText = `Rất tốt! Bạn đã kiên trì giải xong mười bài toán trong ${timeStr}. Cố gắng luyện tập thêm để nâng cao tốc độ tính toán hơn nữa nhé!`;
         }
 
-        this.lastGradingSpeech = speechAssessment;
-        if (cfg.voiceEnabled) {
-          voiceEngine.speak(speechAssessment, true);
-        }
+        this.lastGradingSpeech = speechText;
 
-        // Hiển thị modal chấm điểm
+        // Cập nhật thông số vào Modal
         const modal = document.getElementById('mathGradeModal');
         if (modal) {
           const iconEl = document.getElementById('mathGradeIcon');
+          const titleEl = document.getElementById('mathGradeTitle');
+          const subEl = document.getElementById('mathGradeSubtitle');
           const finalScoreEl = document.getElementById('mathFinalScore');
           const sumTimeEl = document.getElementById('mathSumTime');
           const sumCorrectEl = document.getElementById('mathSumCorrect');
@@ -5295,67 +5559,95 @@ Ví dụ:
           const commentEl = document.getElementById('mathGradeComment');
 
           if (iconEl) iconEl.textContent = iconEmoji;
-          if (finalScoreEl) finalScoreEl.textContent = score;
+          if (titleEl) titleEl.textContent = `XUẤT SẮC! HOÀN THÀNH 10 BÀI TOÁN!`;
+          if (subEl) subEl.textContent = `Cấp độ: ${levelName} | Đánh giá: ${ratingTitle}`;
+          if (finalScoreEl) finalScoreEl.textContent = '10';
           if (sumTimeEl) sumTimeEl.textContent = timeDigital;
-          if (sumCorrectEl) sumCorrectEl.textContent = `${score} / 10`;
-          if (sumWrongEl) sumWrongEl.textContent = `${10 - score} / 10`;
+          if (sumCorrectEl) sumCorrectEl.textContent = '10 / 10';
+          if (sumWrongEl) sumWrongEl.textContent = `${this.retriesCount} lần sửa`;
           if (sumPaceEl) sumPaceEl.textContent = `${avgPace} s/câu`;
           if (commentEl) commentEl.textContent = commentText;
+
           modal.classList.add('active');
         }
 
-        if (this.btnSubmit) this.btnSubmit.style.display = 'none';
+        if (cfg.voiceEnabled) {
+          voiceEngine.speak(speechText, true);
+        }
       }
 
       bindEvents() {
-        if (this.btnStart) this.btnStart.addEventListener('click', () => this.startTest());
-        if (this.btnSubmit) this.btnSubmit.addEventListener('click', () => this.submitTest());
+        // Nút chuyển cấp độ
+        document.querySelectorAll('.math-level-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const lvl = e.currentTarget.getAttribute('data-level');
+            this.startRound(lvl, true);
+          });
+        });
 
-        if (this.btnClear) {
-          this.btnClear.addEventListener('click', () => {
-            if (confirm('Thầy có chắc chắn muốn xóa bảng ra đề bài không?')) {
-              this.teacherInput.value = '';
-              this.studentSheet.innerHTML = '<div class="math-empty-tip">Thầy hãy chuẩn bị 10 phép tính đơn ở Khung 1 rồi nhấn <strong>[BẮT ĐẦU CHO TRÒ LÀM BÀI]</strong> nhé!</div>';
-              if (this.btnSubmit) this.btnSubmit.style.display = 'none';
+        // Bấm nút Kiểm Tra
+        if (this.btnCheck) {
+          this.btnCheck.addEventListener('click', () => this.checkAnswer());
+        }
+
+        // Bấm Enter trên ô input
+        if (this.input) {
+          this.input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              this.checkAnswer();
             }
           });
         }
 
-        if (this.btnSample) {
-          this.btnSample.addEventListener('click', () => {
-            this.loadPreset('mix');
-          });
-        }
-
-        if (this.btnAutoDropdown && this.presetDropdown) {
-          this.btnAutoDropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.presetDropdown.classList.toggle('show');
-          });
-
-          document.addEventListener('click', () => {
-            this.presetDropdown.classList.remove('show');
-          });
-
-          this.presetDropdown.querySelectorAll('.preset-item').forEach(item => {
-            item.addEventListener('click', () => {
-              const preset = item.getAttribute('data-preset');
-              this.loadPreset(preset);
-              this.presetDropdown.classList.remove('show');
+        // Bấm các nút số trên Bàn phím số ảo (Numpad)
+        if (this.numpad) {
+          this.numpad.querySelectorAll('.math-np-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const val = e.currentTarget.getAttribute('data-val');
+              if (val === 'enter') {
+                this.checkAnswer();
+              } else if (val === 'del') {
+                if (this.input) this.input.value = this.input.value.slice(0, -1);
+              } else if (val) {
+                if (this.input) this.input.value += val;
+              }
+              this.focusInput();
             });
           });
         }
 
+        // Bấm nút Khởi động lại / Chơi lại lượt mới
+        if (this.btnRestart) {
+          this.btnRestart.addEventListener('click', () => {
+            this.startRound(this.currentLevel, true);
+          });
+        }
+
+        // Bấm nút Đọc Đề
         if (this.btnVoiceRepeat) {
           this.btnVoiceRepeat.addEventListener('click', () => {
-            if (this.lastGradingSpeech) {
-              voiceEngine.speak(this.lastGradingSpeech, true);
-            } else {
-              voiceEngine.speak('Chưa có kết quả chấm điểm. Trò hãy nộp bài để nghe Thầy chấm điểm nhé!', true);
+            this.speakCurrentQuestion();
+          });
+        }
+
+        // Nút Bắt đầu cho trò làm bài Thầy tự soạn
+        if (this.btnStartCustom) {
+          this.btnStartCustom.addEventListener('click', () => {
+            this.startRound('custom', true);
+          });
+        }
+
+        // Đề mẫu cho Thầy
+        if (this.btnSample) {
+          this.btnSample.addEventListener('click', () => {
+            if (this.teacherInput) {
+              this.teacherInput.value = "8 + 5 =\n15 - 7 =\n6 x 4 =\n36 / 6 =\n9 + 9 =\n20 - 8 =\n7 x 3 =\n45 / 5 =\n12 + 18 =\n50 - 25 =";
             }
           });
         }
 
+        // Modal buttons
         const btnRepeatModal = document.getElementById('btnRepeatMathVoice');
         if (btnRepeatModal) {
           btnRepeatModal.addEventListener('click', () => {
@@ -5370,7 +5662,7 @@ Ví dụ:
           btnRetry.addEventListener('click', () => {
             const modal = document.getElementById('mathGradeModal');
             if (modal) modal.classList.remove('active');
-            this.startTest();
+            this.startRound(this.currentLevel, true);
           });
         }
 
@@ -5448,6 +5740,12 @@ Ví dụ:
       [tabTyping, tabWords, tabClock, tabMath].forEach(t => { if (t) t.classList.remove('active'); });
       [typingView, wordsView, clockView, mathView].forEach(v => { if (v) v.classList.remove('active'); });
 
+      const tabMap = { 'typing': tabTyping, 'words': tabWords, 'clock': tabClock, 'math': tabMath };
+      const curTab = tabMap[target];
+      if (curTab && typeof curTab.scrollIntoView === 'function') {
+        curTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+
       if (target === 'typing') {
         tabTyping.classList.add('active');
         typingView.classList.add('active');
@@ -5474,6 +5772,9 @@ Ví dụ:
         mathView.classList.add('active');
         if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím iPhone khi làm toán
         game1.isPaused = true;
+        if (typeof mathGame !== 'undefined' && mathGame) {
+          mathGame.onTabActivated();
+        }
       }
     }
 
@@ -5487,6 +5788,17 @@ Ví dụ:
       // Nếu đang focus vào ô gõ đề bài (input/textarea) thì để người dùng gõ tự nhiên
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
         return;
+      }
+
+      // Nếu đang ở Tab Môn Toán: nhận phím số, xoá và Enter cho bài toán tuần tự
+      if (mathView && mathView.classList.contains('active')) {
+        if (typeof mathGame !== 'undefined' && mathGame) {
+          if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Enter' || e.key === '-') {
+            e.preventDefault();
+            mathGame.handleKey(e.key);
+            return;
+          }
+        }
       }
 
       if (e.key === 'Escape') {
@@ -5692,6 +6004,19 @@ Ví dụ:
       });
     });
 
+    const btnTestAudio = document.getElementById('btnTestAudio');
+    if (btnTestAudio) {
+      btnTestAudio.addEventListener('click', () => {
+        cfg.soundEnabled = true;
+        document.getElementById('cfgSoundEnabled').checked = true;
+        sound.restartAudio(true);
+        btnTestAudio.innerHTML = '<span>✅</span> Đã kích hoạt & phát âm thử!';
+        setTimeout(() => {
+          btnTestAudio.innerHTML = '<span>🔊</span> Khởi động lại & Thử âm thanh ngay';
+        }, 1800);
+      });
+    }
+
     document.getElementById('saveSettingsBtn').addEventListener('click', () => {
       cfg.charMode = document.getElementById('cfgCharMode').value;
       if (document.getElementById('cfgGameDuration')) {
@@ -5702,6 +6027,10 @@ Ví dụ:
       cfg.voiceEnabled = document.getElementById('cfgVoiceEnabled').checked;
       cfg.voiceRate = parseFloat(document.getElementById('cfgVoiceRate').value);
       cfg.soundEnabled = document.getElementById('cfgSoundEnabled').checked;
+
+      if (cfg.soundEnabled) {
+        sound.restartAudio(false);
+      }
 
       saveConfigToStorage(cfg);
       game2.applyVoiceRate();
