@@ -2091,17 +2091,17 @@
       touch-action: none;
     }
   </style>
-</style>
 </head>
+
 <body>
   <div class="bg-glow"></div>
 
   <!-- NAVIGATION TABS (5 TRÒ CHƠI) -->
   <nav class="app-nav">
-    <div class="nav-tab" id="tabTyping">
+    <div class="nav-tab active" id="tabTyping">
       <span>⌨️</span> Gõ Rơi Tự Do
     </div>
-    <div class="nav-tab active" id="tabWords">
+    <div class="nav-tab" id="tabWords">
       <span>📝</span> Luyện Từ Của Thầy
     </div>
     <div class="nav-tab" id="tabClock">
@@ -2118,7 +2118,7 @@
   <!-- =====================================================================
        VIEW 1: GAME GÕ RƠI TỰ DO
        ===================================================================== -->
-  <section class="game-view" id="typingView">
+<section class="game-view active" id="typingView">
     <div class="game-header">
       <div class="stats-bar">
         <div class="stat-pill">
@@ -2156,402 +2156,9 @@
   </section>
 
   <!-- =====================================================================
-       VIEW 2: GAME TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY (BẢNG ĐEN)
+       VIEW 2: GAME LUYỆN TỪ CỦA THẦY
        ===================================================================== -->
-  <section class="game-view active" id="wordsPracticeView">
-    <div class="game-header">
-      <div class="stats-bar">
-        <div class="stat-pill">
-          <span class="label">Tiến Độ Ký Tự</span>
-          <span class="val highlight" id="wordProgressVal">0 / 0</span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Gõ Đúng</span>
-          <span class="val" style="color:var(--accent-color)" id="wordHitsVal">0</span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Cần Sửa</span>
-          <span class="val" style="color:var(--danger-color)" id="wordErrorsVal">0</span>
-        </div>
-      </div>
-
-      <div class="header-actions">
-        <button class="voice-badge-btn" id="wordRepeatVoiceBtn" title="Bấm để nghe lại chữ cái cần viết">
-          <span>🔊</span> Nghe lại
-        </button>
-        <button class="icon-btn" id="btnWordsSettings" title="Cài đặt & Màu nền">⚙️</button>
-      </div>
-    </div>
-
-    <!-- 02 TEXTBOX: 1 CHO THẦY RA ĐỀ BÀI, 1 CHO HỌC TRÒ VIẾT -->
-    <div class="two-box-container">
-      <!-- KHUNG 1: ĐỀ BÀI CỦA THẦY (TEXTBOX 1) -->
-      <div class="teacher-box-card">
-        <div class="box-header">
-          <div class="box-title teacher-title">
-            <span>👨‍🏫</span> 1. ĐỀ BÀI CỦA THẦY (BẢNG RA ĐỀ)
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <!-- Nút bật tắt chế độ Đánh vần Tiếng Việt Lớp 1 -->
-            <label class="spelling-toggle-card" title="Bật/Tắt chế độ đánh vần từng từ chuẩn Tiếng Việt Lớp 1">
-              <input type="checkbox" id="chkSpellingGrade1" checked>
-              <span class="spelling-toggle-text">📖 Đánh Vần Lớp 1</span>
-            </label>
-            <div style="display:flex;align-items:center;gap:3px;">
-              <span style="font-size:11px;color:#FEF08A;font-weight:700;">Cỡ chữ:</span>
-              <div class="board-stepper-box">
-                <button class="btn-step" id="btnBoardFontMinus" title="Thu nhỏ chữ">A-</button>
-                <span class="step-display" id="dispBoardFontSize">28px</span>
-                <button class="btn-step" id="btnBoardFontPlus" title="Phóng to chữ">A+</button>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:3px;">
-              <span style="font-size:11px;color:#FEF08A;font-weight:700;">Tốc độ:</span>
-              <div class="board-stepper-box">
-                <button class="btn-step" id="btnRateMinus" title="Đọc chậm hơn">🐢</button>
-                <span class="step-display" id="dispVoiceRateInline">1.0x</span>
-                <button class="btn-step" id="btnRatePlus" title="Đọc nhanh hơn">🐇</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Textbox 1: Của thầy để gõ đề bài (Hỗ trợ gõ tiếng Việt có dấu) -->
-        <textarea id="teacherBlackboardInput" lang="vi" spellcheck="false" autocomplete="off" autocapitalize="sentences" placeholder="Thầy gõ chữ hoặc bài học vào đây... (Ví dụ: Bố mẹ yêu con, Việt Nam vô địch, 123 456)"></textarea>
-
-        <!-- Dòng theo dõi ký tự trên đề bài (với highlight ký tự đang viết) -->
-        <div id="teacherPromptTracker"></div>
-
-        <!-- Hàng nút điều khiển của Thầy -->
-        <div class="board-actions-row">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn-board clear-btn" id="btnClearBoard" title="Xóa trắng đề bài">🧹 Xóa Bảng</button>
-            <button class="btn-board edit-btn" id="btnSampleLessons" title="Chọn bài mẫu có sẵn">📚 Bài Mẫu</button>
-            <button class="btn-board spell-btn" id="btnSpellNow" title="Bấm nghe đánh vần từ đang gõ theo chuẩn Lớp 1">🗣️ Đánh Vần Từ Này</button>
-          </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn-board start-btn" id="btnStartLesson">▶️ BẮT ĐẦU CHO TRÒ VIẾT</button>
-            <button class="btn-board edit-btn" id="btnRestartLesson" style="display:none;">🔄 Viết Lại</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- KHUNG 2: BÀI VIẾT CỦA HỌC TRÒ (TEXTBOX 2) -->
-      <div class="student-box-card">
-        <div class="box-header">
-          <div class="box-title student-title">
-            <span>✍️</span> 2. BÀI VIẾT CỦA HỌC TRÒ (VỞ TẬP VIẾT)
-          </div>
-          <span id="studentStatusBadge" style="font-size:11px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
-        </div>
-
-        <!-- THÔNG BÁO NHẮC XOÁ KHI VIẾT SAI (NỔI BẬT TRỰC QUAN) -->
-        <div id="wordErrorNotice" class="word-error-notice" style="display:none;">
-          <span class="notice-icon">⚠️</span>
-          <span id="wordErrorNoticeText" class="notice-text">Bạn đã viết sai! Hãy bấm phím XOÁ ⌫ (màu đỏ cạnh chữ M) để sửa lại nhé!</span>
-        </div>
-
-        <!-- Textbox 2: Của học trò, hiển thị chữ đã gõ, chữ đúng màu xanh, sai màu đỏ -->
-        <div id="studentNotebookDisplay">
-          <span class="student-placeholder">Chữ học trò gõ sẽ xuất hiện ở đây theo từng chữ máy đọc...</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================================
-       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO)
-       ===================================================================== -->
-    .rank-banner .rank-letter {
-      font-size: 50px;
-      font-weight: 900;
-      color: #FFD60A;
-      line-height: 1.1;
-      text-shadow: 0 0 20px rgba(255, 214, 10, 0.6);
-    }
-
-    #pauseBanner {
-      position: absolute;
-      top: 40%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid var(--surface-border);
-      padding: 18px 32px;
-      border-radius: 20px;
-      font-size: 22px;
-      font-weight: 700;
-      backdrop-filter: blur(10px);
-      z-index: 50;
-      display: none;
-      align-items: center;
-      gap: 12px;
-    }
-      /* =====================================================================
-       MOBILE RESPONSIVE CHO GAME HEADER
-       ===================================================================== */
-    @media (max-width: 600px) {
-      .game-header {
-        padding: 4px 6px;
-        gap: 5px;
-      }
-      .stat-pill {
-        padding: 2px 5px;
-        border-radius: 6px;
-      }
-      .stat-pill .label {
-        font-size: 8.5px;
-      }
-      .stat-pill .val {
-        font-size: 12px;
-      }
-      .icon-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
-        border-radius: 8px;
-      }
-      .voice-badge-btn {
-        padding: 4px 8px;
-        font-size: 11px;
-        height: 32px;
-        border-radius: 8px;
-      }
-    }
-
-    /* =====================================================================
-       VIEW 5: GAME VẼ HÌNH & TÔ MÀU (DRAW & COLORING)
-       ===================================================================== */
-    #drawView {
-      background: #0f172a;
-      display: none !important;
-      flex-direction: column;
-      overflow: hidden;
-      width: 100%;
-      height: calc(100% - 50px);
-      box-sizing: border-box;
-    }
-    #drawView.active {
-      display: flex !important;
-    }
-    .draw-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 6px 10px;
-      background: #1e293b;
-      border-bottom: 1.5px solid #334155;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      flex-shrink: 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-    }
-    .draw-toolbar::-webkit-scrollbar {
-      height: 3px;
-    }
-    .draw-toolbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-    }
-    .draw-tool-group, .draw-size-group, .draw-template-group, .draw-actions-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .draw-group-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: #94a3b8;
-      margin-right: 2px;
-    }
-    .draw-tool-btn, .draw-action-btn {
-      padding: 6px 12px;
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s;
-    }
-    .draw-tool-btn:hover, .draw-action-btn:hover {
-      background: #475569;
-    }
-    .draw-tool-btn.active {
-      background: #0284c7;
-      border-color: #38bdf8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-    }
-    .draw-size-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .draw-size-btn.active {
-      background: #0284c7;
-      border-color: #38bdf8;
-      color: #fff;
-    }
-    .draw-select {
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      outline: none;
-      cursor: pointer;
-    }
-    .draw-action-btn.praise-btn {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      border-color: #fbbf24;
-      color: #ffffff;
-    }
-    .draw-color-palette {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: #111827;
-      border-bottom: 1.5px solid #1f2937;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      flex-shrink: 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-    }
-    .draw-color-palette::-webkit-scrollbar {
-      height: 3px;
-    }
-    .draw-color-palette::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-    }
-    .draw-color-swatch {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      flex-shrink: 0;
-      transition: transform 0.15s, border-color 0.15s;
-      position: relative;
-    }
-    .draw-color-swatch:hover {
-      transform: scale(1.15);
-    }
-    .draw-color-swatch.active {
-      border: 3px solid #ffffff;
-      transform: scale(1.22);
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
-    }
-    .draw-canvas-container {
-      flex: 1;
-      width: 100%;
-      position: relative;
-      background: #ffffff;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: none;
-      cursor: crosshair;
-    }
-    #drawCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      touch-action: none;
-    }
-  </style>
-</style>
-</head>
-<body>
-  <div class="bg-glow"></div>
-
-  <!-- NAVIGATION TABS (5 TRÒ CHƠI) -->
-  <nav class="app-nav">
-    <div class="nav-tab" id="tabTyping">
-      <span>⌨️</span> Gõ Rơi Tự Do
-    </div>
-    <div class="nav-tab active" id="tabWords">
-      <span>📝</span> Luyện Từ Của Thầy
-    </div>
-    <div class="nav-tab" id="tabClock">
-      <span>⏰</span> Coi Giờ Đồng Hồ
-    </div>
-    <div class="nav-tab" id="tabMath">
-      <span>🧮</span> Luyện Phép Tính
-    </div>
-    <div class="nav-tab" id="tabDraw">
-      <span>🎨</span> Vẽ Hình & Tô Màu
-    </div>
-  </nav>
-
-  <!-- =====================================================================
-       VIEW 1: GAME GÕ RƠI TỰ DO
-       ===================================================================== -->
-  <section class="game-view" id="typingView">
-    <div class="game-header">
-      <div class="stats-bar">
-        <div class="stat-pill">
-          <span class="label">Điểm</span>
-          <span class="val highlight" id="scoreVal">0</span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Combo</span>
-          <span class="val" id="comboVal">0</span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Đúng / Trượt</span>
-          <span class="val"><span id="hitVal" style="color:var(--accent-color)">0</span> / <span id="missVal" style="color:var(--danger-color)">0</span></span>
-        </div>
-        <div class="stat-pill">
-          <span class="label">Còn lại</span>
-          <span class="val" id="timerVal">03:00</span>
-        </div>
-      </div>
-
-      <div class="header-actions">
-        <button class="voice-badge-btn" id="repeatVoiceBtn" title="Bấm để nghe lại tên chữ cái">
-          <span>🔊</span>
-          <span id="voiceStatusText">Nghe lại</span>
-        </button>
-        <button class="icon-btn" id="pauseBtn" title="Tạm dừng / Tiếp tục">⏸</button>
-        <button class="icon-btn" id="settingsBtn" title="Cài đặt tham số & Màu nền">⚙️</button>
-      </div>
-    </div>
-
-    <!-- KHU VỰC CHỮ RƠI -->
-    <main id="gameArea"></main>
-
-    <div id="pauseBanner">⏸ ĐANG TẠM DỪNG</div>
-  </section>
-
-  <!-- =====================================================================
-       VIEW 2: GAME TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY (BẢNG ĐEN)
-       ===================================================================== -->
-  <section class="game-view active" id="wordsPracticeView">
+<section class="game-view" id="wordsPracticeView">
     <div class="game-header">
       <div class="stats-bar">
         <div class="stat-pill">
@@ -2655,7 +2262,26 @@
   <!-- =====================================================================
        VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ
        ===================================================================== -->
-  <section class="game-view" id="clockView">
+<section class="game-view" id="clockView">
+    <!-- KHỐI THANH ĐIỀU KHIỂN NHANH TRÊN CÙNG (TIẾT KIỆM DIỆN TÍCH TỐI ĐA) -->
+    <div class="clock-compact-header">
+      <div class="digital-time-compact" id="digitalTimeBox" title="Thời gian điện tử">
+        <span class="h-val" id="dispClockH">10</span>:<span class="m-val" id="dispClockM">15</span>:<span class="s-val" id="dispClockS">00</span>
+      </div>
+      <div class="clock-quick-actions">
+        <button class="btn-action-pill primary" id="speakClockBtn" title="Phát âm đọc giờ tiếng Việt">
+          <span>🔊</span> Đọc giờ
+        </button>
+        <button class="btn-action-pill" id="toggleMaskBtn" title="Ẩn/Hiện giờ điện tử để đố học sinh">
+          <span id="maskIcon">👁️</span> <span id="maskText">Ẩn giờ</span>
+        </button>
+        <button class="btn-action-pill menu-btn" id="btnToggleClockDrawer" title="Mở bảng cài đặt & công cụ đồng hồ">
+          <span>⚙️</span> <span id="clockMenuToggleText">Tùy Chọn & Điều Khiển ▾</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MẶT ĐỒNG HỒ SIÊU TO TỐI ĐA TRÊN MÀN HÌNH -->
     <div class="clock-stage" id="clockStage">
       <svg id="clockSvg" viewBox="0 0 360 360">
         <g id="dialTicks"></g>
@@ -2677,145 +2303,325 @@
       </svg>
     </div>
 
-    <!-- TÙY CHỌN MÀU NỀN MẶT ĐỒNG HỒ -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:-2px;">
-      <span style="font-size:12px;color:var(--text-muted);font-weight:600;">Màu nền đồng hồ:</span>
-      <div style="display:flex;gap:8px;">
-        <button id="dialColorWhite" style="background:#F8F9FD;border:2px solid #0A84FF;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#000;cursor:pointer;">⚪ Trắng Sứ</button>
-        <button id="dialColorIvory" style="background:#FFF9E6;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#333;cursor:pointer;">🟡 Vàng Kem</button>
-        <button id="dialColorCyan" style="background:#E6F7FF;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#003A8C;cursor:pointer;">🔵 Xanh Băng</button>
-      </div>
-    </div>
-
-    <!-- KHỐI HIỂN THỊ GIỜ ĐIỆN TỬ & CÔNG CỤ ĐỌC GIỜ -->
-    <div class="time-display-card">
-      <div>
-        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">Thời gian hiện tại</div>
-        <div class="digital-time" id="digitalTimeBox">
-          <span class="h-val" id="dispClockH">10</span>:<span class="m-val" id="dispClockM">15</span>:<span class="s-val" id="dispClockS">00</span>
+    <!-- BẢNG MENU TÙY CHỌN ẨN HIỆN CỦA ĐỒNG HỒ (DRAWER OVERLAY) -->
+    <div class="clock-drawer-overlay" id="clockDrawerOverlay">
+      <div class="clock-drawer-card">
+        <div class="clock-drawer-header">
+          <h3><span>⚙️</span> Bảng Tùy Chọn & Điều Khiển Đồng Hồ</h3>
+          <button class="clock-drawer-close" id="btnCloseClockDrawer" title="Đóng bảng tùy chọn">✕</button>
         </div>
-      </div>
-      <div class="clock-actions-row">
-        <button class="btn-action-pill" id="toggleMaskBtn" title="Ẩn/Hiện giờ điện tử để đố học sinh">
-          <span id="maskIcon">👁️</span> <span id="maskText">Ẩn giờ</span>
-        </button>
-        <button class="btn-action-pill primary" id="speakClockBtn" title="Phát âm đọc giờ tiếng Việt">
-          <span>🔊</span> Đọc giờ
-        </button>
-      </div>
-    </div>
 
-    <!-- BẢNG TÙY CHỈNH 01 TRONG 03 KIM TÙY Ý -->
-    <div class="hand-controllers">
-      <div class="hand-card">
-        <div class="hand-card-header">
-          <div class="hand-tag">
-            <span class="dot-indicator" style="background:var(--clock-hour-color)"></span>
-            <span>Kim Giờ (Ngắn - Xanh)</span>
+        <!-- 1. Tùy chọn màu nền đồng hồ -->
+        <div class="drawer-setting-group">
+          <div class="drawer-group-title">🎨 Màu nền mặt đồng hồ:</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="dialColorWhite" style="background:#F8F9FD;border:2px solid #0A84FF;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#000;cursor:pointer;">⚪ Trắng Sứ</button>
+            <button id="dialColorIvory" style="background:#FFF9E6;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#333;cursor:pointer;">🟡 Vàng Kem</button>
+            <button id="dialColorCyan" style="background:#E6F7FF;border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:#003A8C;cursor:pointer;">🔵 Xanh Băng</button>
           </div>
-          <span style="color:var(--clock-hour-color)" id="ctrlHourVal">10 Giờ</span>
         </div>
-        <div class="hand-slider-row">
-          <button class="stepper-btn" id="btnHourMinus">-</button>
-          <input type="range" id="sliderHour" min="1" max="12" step="1" value="10">
-          <button class="stepper-btn" id="btnHourPlus">+</button>
+
+        <!-- 2. Công cụ dạy học & đố giờ -->
+        <div class="drawer-setting-group">
+          <div class="drawer-group-title">🛠️ Công cụ dạy học & đố giờ:</div>
+          <div class="teaching-tools" style="margin-top:0;">
+            <button class="tool-btn" id="btnRealtimeClock">
+              <span>⏱️</span> Giờ Thực Tế
+            </button>
+            <button class="tool-btn" id="btnRandomTime">
+              <span>🎲</span> Đố Giờ Ngẫu Nhiên
+            </button>
+            <button class="tool-btn" id="btnLockHands">
+              <span id="lockIcon">🔗</span> <span id="lockText">Kim Liên Hoàn</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Tùy chỉnh tự do 3 kim -->
+        <div class="drawer-setting-group">
+          <div class="drawer-group-title">🖐️ Tùy chỉnh vị trí 3 Kim tự do:</div>
+          <div class="hand-controllers">
+            <div class="hand-card">
+              <div class="hand-card-header">
+                <div class="hand-tag">
+                  <span class="dot-indicator" style="background:var(--clock-hour-color)"></span>
+                  <span>Kim Giờ (Ngắn - Xanh)</span>
+                </div>
+                <span style="color:var(--clock-hour-color)" id="ctrlHourVal">10 Giờ</span>
+              </div>
+              <div class="hand-slider-row">
+                <button class="stepper-btn" id="btnHourMinus">-</button>
+                <input type="range" id="sliderHour" min="1" max="12" step="1" value="10">
+                <button class="stepper-btn" id="btnHourPlus">+</button>
+              </div>
+            </div>
+
+            <div class="hand-card">
+              <div class="hand-card-header">
+                <div class="hand-tag">
+                  <span class="dot-indicator" style="background:var(--clock-min-color)"></span>
+                  <span>Kim Phút (Dài - Xanh lá)</span>
+                </div>
+                <span style="color:var(--clock-min-color)" id="ctrlMinVal">15 Phút</span>
+              </div>
+              <div class="hand-slider-row">
+                <button class="stepper-btn" id="btnMinMinus">-</button>
+                <input type="range" id="sliderMin" min="0" max="59" step="1" value="15">
+                <button class="stepper-btn" id="btnMinPlus">+</button>
+              </div>
+            </div>
+
+            <div class="hand-card">
+              <div class="hand-card-header">
+                <div class="hand-tag">
+                  <span class="dot-indicator" style="background:var(--clock-sec-color)"></span>
+                  <span>Kim Giây (Mảnh - Đỏ)</span>
+                </div>
+                <span style="color:var(--clock-sec-color)" id="ctrlSecVal">00 Giây</span>
+              </div>
+              <div class="hand-slider-row">
+                <button class="stepper-btn" id="btnSecMinus">-</button>
+                <input type="range" id="sliderSec" min="0" max="59" step="1" value="0">
+                <button class="stepper-btn" id="btnSecPlus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-main" id="btnApplyAndCloseClockDrawer" style="margin-top:6px;">✕ Đóng Bảng & Xem Đồng Hồ To</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 4: GAME LUYỆN PHÉP TÍNH
+       ===================================================================== -->
+<section class="game-view" id="mathView">
+    <div class="game-header">
+      <div class="stats-bar">
+        <div class="stat-pill">
+          <span class="label">Tiến Độ</span>
+          <span class="val highlight" id="mathProgressVal">1 / 10</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Thời Gian</span>
+          <span class="val" style="color:var(--accent-color)" id="mathTimerVal">00:00</span>
+        </div>
+        <div class="stat-pill">
+          <span class="label">Cấp Độ</span>
+          <span class="val" style="color:#F59E0B;font-size:11px;" id="mathCurrentLevelBadge">1 Chữ Số</span>
         </div>
       </div>
 
-      <div class="hand-card">
-        <div class="hand-card-header">
-          <div class="hand-tag">
-      color: #FFFFFF;
-      border-color: #0369A1;
-      font-size: 15px;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
-    }
+      <div class="header-actions">
+        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Đọc to đề bài toán hiện tại">
+          <span>🔊</span> Đọc Đề
+        </button>
+        <button class="icon-btn" id="btnRestartMathGame" title="Làm lại 10 bài mới">🔄</button>
+      </div>
+    </div>
 
-    @media (max-width: 480px) {
-      .math-expr-text {
-        font-size: 30px;
-      }
-      .math-main-input {
-        width: 90px;
-        height: 48px;
-        font-size: 26px;
-      }
-      .btn-math-submit {
-        height: 48px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
-      .math-np-btn {
-        height: 44px;
-        font-size: 18px;
-      }
-    }
+    <!-- THANH CHỌN CẤP ĐỘ KHÓ (1 CHỮ SỐ, 2 CHỮ SỐ, BẢNG CỬU CHƯƠNG, THẦY RA ĐỀ) -->
+    <div class="math-level-bar">
+      <div class="math-level-tabs">
+        <button type="button" class="math-level-btn active" id="btnLvlSingle" data-level="single">
+          <span>🟢</span> 1 Chữ Số
+        </button>
+        <button type="button" class="math-level-btn" id="btnLvlDouble" data-level="double">
+          <span>🟡</span> 2 Chữ Số
+        </button>
+        <button type="button" class="math-level-btn" id="btnLvlTimes" data-level="times_table">
+          <span>🔴</span> Bảng Cửu Chương
+        </button>
+        <button type="button" class="math-level-btn" id="btnLvlCustom" data-level="custom">
+          <span>👨‍🏫</span> Thầy Tự Ra Đề
+        </button>
+      </div>
+    </div>
 
-    @media (max-width: 480px) {
-      .math-expr-text {
-        font-size: 30px;
-      }
-      #mathView input.math-main-input,
-      #mathCurrentInput,
-      .math-main-input {
-        width: 90px !important;
-        height: 48px !important;
-        font-size: 26px !important;
-        color: #0F172A !important;
-        -webkit-text-fill-color: #0F172A !important;
-      }
-      .btn-math-submit {
-        height: 48px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
-      .math-np-btn {
-        height: 44px;
-        font-size: 18px;
-      }
-    }
+    <!-- KHU VỰC THẦY TỰ SOẠN ĐỀ (CHỈ HIỆN KHI CHỌN "THẦY TỰ RA ĐỀ") -->
+    <div class="math-custom-panel" id="mathCustomPanel" style="display:none;">
+      <div class="custom-panel-card">
+        <div class="custom-panel-header">
+          <span style="font-weight:700;font-size:13px;color:#134B2F;">👨‍🏫 Thầy gõ 10 phép tính đơn vào đây:</span>
+          <button type="button" class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
+        </div>
+        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 1 phép tính)...
+8 + 5 =
+15 - 7 =
+6 x 4 =
+36 / 6 =
+9 + 9 =
+20 - 8 =
+7 x 3 =
+45 / 5 =
+12 + 18 =
+50 - 25 ="></textarea>
+        <button type="button" class="btn-board start-btn" id="btnStartCustomMath" style="width:100%;margin-top:6px;">
+          ▶️ BẮT ĐẦU CHO TRÒ LÀM 10 BÀI TUẦN TỰ
+        </button>
+      </div>
+    </div>
 
-    /* Modal bài mẫu của Thầy */
-    .sample-item-card {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
+    <!-- VÙNG CHƠI CHÍNH: 10 BÀI TÍNH HIỂN THỊ TUẦN TỰ -->
+    <div class="math-quiz-container" id="mathQuizContainer">
+      <!-- VẠCH TIẾN ĐỘ 10 BÀI (PROGRESS STEPS) -->
+      <div class="math-steps-bar" id="mathStepsBar">
+        <!-- JS generates 10 step pills -->
+      </div>
 
-    .sample-item-text {
-      font-size: 13px;
-      font-weight: 700;
-      color: #FFFFFF;
-      flex: 1;
-      word-break: break-word;
-    }
+      <!-- THẺ BÀI TOÁN HIỆN TẠI (SIÊU TO, DỄ NHÌN) -->
+      <div class="math-card" id="mathCard">
+        <div class="math-card-header">
+          <span class="math-card-step-badge" id="mathBadgeQNum">BÀI 1 TRÊN 10</span>
+          <span class="math-card-hint" id="mathCardHint">Gõ đúng kết quả để sang bài tiếp theo</span>
+        </div>
 
-    .sample-item-actions {
-      display: flex;
-      gap: 4px;
-    }
+        <!-- KHUNG PHÉP TÍNH TO -->
+        <div class="math-expression-wrap">
+          <span class="math-expr-text" id="mathExprText">7 × 8 =</span>
+          <div class="math-input-wrapper">
+            <input type="text" id="mathCurrentInput" class="math-main-input" inputmode="numeric" pattern="[0-9\-]*" autocomplete="off" placeholder="?" style="color:#0F172A !important; -webkit-text-fill-color:#0F172A !important; background:#FFFFFF !important; caret-color:#0284C7 !important;">
+            <button type="button" class="btn-math-submit" id="btnMathCheck" title="Kiểm tra đáp án">↵ KIỂM TRA</button>
+          </div>
+        </div>
 
-    .btn-sample-action {
-      background: rgba(255, 255, 255, 0.12);
-      border: none;
-      color: #FFFFFF;
-      border-radius: 8px;
-      padding: 5px 8px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+        <!-- THÔNG BÁO PHẢN HỒI (ĐÚNG/SAI) -->
+        <div class="math-feedback-notice" id="mathFeedbackNotice" style="display:none;">
+          <span id="mathFeedbackIcon">⚠️</span>
+          <span id="mathFeedbackText">Chưa đúng rồi! Em hãy tính lại nhé!</span>
+        </div>
+      </div>
 
-    .btn-sample-action.apply {
-      background: #0A84FF;
-    }
+      <!-- BÀN PHÍM SỐ CẢM ỨNG DI ĐỘNG (DỄ BẤM TRÊN IPAD & ĐIỆN THOẠI) -->
+      <div class="math-numpad" id="mathNumpad">
+        <button type="button" class="math-np-btn" data-val="1">1</button>
+        <button type="button" class="math-np-btn" data-val="2">2</button>
+        <button type="button" class="math-np-btn" data-val="3">3</button>
+        <button type="button" class="math-np-btn" data-val="4">4</button>
+        <button type="button" class="math-np-btn" data-val="5">5</button>
+        <button type="button" class="math-np-btn" data-val="6">6</button>
+        <button type="button" class="math-np-btn" data-val="7">7</button>
+        <button type="button" class="math-np-btn" data-val="8">8</button>
+        <button type="button" class="math-np-btn" data-val="9">9</button>
+        <button type="button" class="math-np-btn np-action" data-val="del" title="Xoá một số">⌫ Xoá</button>
+        <button type="button" class="math-np-btn" data-val="0">0</button>
+        <button type="button" class="math-np-btn np-enter" data-val="enter" title="Kiểm tra đáp án">↵ Xong</button>
+      </div>
+    </div>
+  </section>
 
+  <!-- =====================================================================
+       VIEW 5: GAME VẼ HÌNH & TÔ MÀU (DRAW & COLORING)
+       ===================================================================== -->
+<section class="game-view" id="drawView">
+    <!-- THANH CÔNG CỤ TRÊN CÙNG -->
+    <div class="draw-toolbar">
+      <!-- Bộ công cụ vẽ -->
+      <div class="draw-tool-group">
+        <button type="button" class="draw-tool-btn active" id="toolBrush" title="Bút vẽ tự do nét mượt">
+          <span>🖌️</span> Bút Vẽ
+        </button>
+        <button type="button" class="draw-tool-btn" id="toolBucket" title="Tô màu kín hình (Đổ màu)">
+          <span>🪣</span> Đổ Màu
+        </button>
+        <button type="button" class="draw-tool-btn" id="toolEraser" title="Cục tẩy trắng">
+          <span>🧼</span> Tẩy
+        </button>
+      </div>
+
+      <!-- Cỡ nét vẽ -->
+      <div class="draw-size-group">
+        <span class="draw-group-label">Nét:</span>
+        <button type="button" class="draw-size-btn" data-size="4" title="Nét nhỏ 4px">4</button>
+        <button type="button" class="draw-size-btn active" data-size="10" title="Nét vừa 10px">10</button>
+        <button type="button" class="draw-size-btn" data-size="22" title="Nét to 22px">22</button>
+        <button type="button" class="draw-size-btn" data-size="38" title="Nét khổng lồ 38px">38</button>
+      </div>
+
+      <!-- Chọn tranh mẫu -->
+      <div class="draw-template-group">
+        <span class="draw-group-label">Tranh mẫu:</span>
+        <select id="drawTemplateSelect" class="draw-select" title="Chọn hình mẫu tô màu cho bé">
+          <option value="cat">🐱 Chú Mèo Con</option>
+          <option value="flower">🌸 Bông Hoa 5 Cánh</option>
+          <option value="car">🚗 Chiếc Ô Tô</option>
+          <option value="apple">🍎 Quả Táo Ngọt</option>
+          <option value="house">🏠 Ngôi Nhà Mơ Ước</option>
+          <option value="sun">☀️ Mặt Trời & Mây</option>
+          <option value="blank">📄 Trang Giấy Trắng</option>
+        </select>
+      </div>
+
+      <!-- Nút thao tác nhanh -->
+      <div class="draw-actions-group">
+        <button type="button" class="draw-action-btn" id="btnDrawClear" title="Xóa trắng để vẽ lại">
+          <span>🧹</span> Xóa Hết
+        </button>
+        <button type="button" class="draw-action-btn" id="btnDrawDownload" title="Tải bức tranh về máy">
+          <span>💾</span> Tải Về
+        </button>
+        <button type="button" class="draw-action-btn praise-btn" id="btnDrawPraise" title="Bấm nghe lời khen ngợi tranh vẽ">
+          <span>🔊</span> Khen Ngợi
+        </button>
+      </div>
+    </div>
+
+    <!-- BẢNG MÀU SẮC DÀNH CHO BÉ -->
+    <div class="draw-color-palette" id="drawColorPalette"></div>
+
+    <!-- KHU VỰC KHUNG TRANH CANVAS -->
+    <div class="draw-canvas-container" id="drawCanvasContainer">
+      <canvas id="drawCanvas"></canvas>
+    </div>
+  </section>
+
+  <!-- BÀN PHÍM IPHONE CHUẨN IOS - NỀN XANH NHẠT GỢN MÂY -->
+  <div id="keyboardWrapper">
+    <div id="virtualKeyboard"></div>
+  </div>
+
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <h2>⚙️ Cài Đặt Tham Số</h2>
+
+      <!-- MÀU NỀN CỦA GAME (TÙY CHỌN NỀN SÁNG / TỐI) -->
+      <div class="setting-group">
+        <label>
+          <span>Màu nền màn hình game</span>
+        </label>
+        <div class="color-presets" id="bgThemePresets">
+          <div class="color-chip active" style="background:#0b0f19;border:1px solid #fff;" data-bg="#0b0f19" title="Tối Huyền Bí"></div>
+          <div class="color-chip" style="background:#F2F2F7" data-bg="#F2F2F7" title="Sáng Dịu Apple"></div>
+          <div class="color-chip" style="background:#E3EEF9" data-bg="#E3EEF9" title="Xanh Nhạt Mát Mắt"></div>
+          <div class="color-chip" style="background:#E8F5E9" data-bg="#E8F5E9" title="Xanh Mint Dịu Mắt"></div>
+          <div class="color-chip" style="background:#FAF3E0" data-bg="#FAF3E0" title="Vàng Kem Nhẹ Nhàng"></div>
+        </div>
+        <div class="hint">Chọn màu nền sáng hoặc tối để mắt nhìn dễ chịu nhất</div>
+      </div>
+
+      <!-- Kiểu ký tự (Game 1) -->
+      <div class="setting-group">
+        <label>
+          <span>Kiểu ký tự rơi (Game Rơi Tự Do)</span>
+        </label>
+        <select id="cfgCharMode">
+          <option value="lowercase">Chữ thường (a - z)</option>
+          <option value="uppercase">Chữ hoa (A - Z)</option>
+          <option value="both_case">Chữ hoa & Chữ thường (A - z)</option>
+          <option value="numbers">Chỉ số (0 - 9)</option>
+          <option value="letters_and_numbers">Hỗn hợp (Chữ & Số ngẫu nhiên)</option>
+        </select>
+      </div>
+
+      <!-- Giọng nói hướng dẫn -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
+            <div class="hint">Đọc tên chữ cái khi rơi</div>
+          </div>
+          <label class="switch">
             <input type="checkbox" id="cfgVoiceEnabled" checked>
             <span class="slider"></span>
           </label>
@@ -2828,6 +2634,23 @@
           <span class="value-display" id="dispVoiceRate">1.0x</span>
         </label>
         <input type="range" id="cfgVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
+      </div>
+
+      <!-- Thời gian game rơi -->
+      <div class="setting-group">
+        <label>
+          <span>Thời gian chơi (Game Rơi Tự Do)</span>
+          <span class="value-display" id="dispGameDuration">3 phút (180s)</span>
+        </label>
+        <select id="cfgGameDuration">
+          <option value="60">1 phút (60 giây)</option>
+          <option value="120">2 phút (120 giây)</option>
+          <option value="180" selected>3 phút (180 giây) - Mặc định</option>
+          <option value="300">5 phút (300 giây)</option>
+          <option value="600">10 phút (600 giây)</option>
+          <option value="0">Không giới hạn (Chơi tự do)</option>
+        </select>
+        <div class="hint">Chọn thời lượng mỗi ván gõ chữ rơi tự do</div>
       </div>
 
       <!-- Thời gian rơi -->
@@ -2875,32 +2698,103 @@
             <span class="slider"></span>
           </label>
         </div>
+        <button type="button" class="btn-secondary" id="btnTestAudio" style="margin-top:8px;padding:6px 12px;font-size:12px;width:100%;background:rgba(10,132,255,0.15);border:1px solid rgba(10,132,255,0.5);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <span>🔊</span> Khởi động lại & Thử âm thanh ngay
+        </button>
+      </div>
 
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--primary-color);
-      height: 6px;
-      background: #3A3A3C;
-      border-radius: 3px;
-      outline: none;
-      margin: 8px 0;
-    }
+      <button class="btn-main" id="saveSettingsBtn">💾 Lưu Cài Đặt</button>
+      <button class="btn-secondary" id="closeSettingsBtn">Đóng</button>
+    </div>
+  </div>
 
-    select, textarea, input[type="text"] {
-      width: 100%;
-      background: #2C2C2E;
-      color: #fff;
-      border: 1px solid var(--surface-border);
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 500;
-      outline: none;
-      font-family: inherit;
-    }
+<div class="modal-overlay" id="wordSettingsModal">
+    <div class="modal-card">
+      <h2>⚙️ Cài Đặt Game Luyện Từ Của Thầy</h2>
 
-    .toggle-row {
-      display: flex;
+      <!-- Giọng nói hướng dẫn Game 2 -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Gợi ý & Hướng dẫn bằng Giọng nói</div>
+            <div class="hint">Đọc tên chữ cái và phát âm cả từ khi viết đúng</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgWordVoiceEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Tốc độ đọc Game 2 -->
+      <div class="setting-group">
+        <label>
+          <span>Tốc độ đọc giọng nói</span>
+          <span class="value-display" id="dispWordVoiceRate">1.0x</span>
+        </label>
+        <input type="range" id="cfgWordVoiceRate" min="0.75" max="1.3" step="0.05" value="1.0">
+      </div>
+
+      <!-- Cỡ chữ trên bảng và vở -->
+      <div class="setting-group">
+        <label>
+          <span>Kích thước chữ (Bảng đề bài & Vở tập viết)</span>
+          <span class="value-display" id="dispWordFontSizeModal">28 px</span>
+        </label>
+        <input type="range" id="cfgWordFontSize" min="20" max="44" step="2" value="28">
+      </div>
+
+      <!-- Đánh vần chuẩn Lớp 1 -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Chế độ Đánh vần Tiếng Việt Lớp 1</div>
+            <div class="hint">Tự động phân tích và đánh vần từ mẫu (ví dụ: Bố -> bờ ô bô sắc bố)</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgWordSpellingGrade1" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Âm thanh hiệu ứng Game 2 -->
+      <div class="setting-group">
+        <div class="toggle-row">
+          <div>
+            <div style="font-weight:600;font-size:14px;">Âm thanh hiệu ứng</div>
+            <div class="hint">Tiếng gõ đúng và âm thanh hoàn thành bài viết</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="cfgWordSoundEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-main" id="saveWordSettingsBtn">💾 Lưu Cài Đặt</button>
+      <button class="btn-secondary" id="closeWordSettingsBtn">Đóng</button>
+    </div>
+  </div>
+
+<div class="modal-overlay" id="summaryModal">
+    <div class="modal-card">
+      <h2>🏆 TỔNG KẾT VÁN CHƠI</h2>
+
+      <div class="rank-banner">
+        <div class="rank-title">XẾP HẠNG KỸ NĂNG</div>
+        <div class="rank-letter" id="sumRank">S</div>
+        <div id="sumComment" style="font-size:13px;color:#fff;margin-top:4px;">Xuất sắc! Bạn phản xạ rất chuẩn xác.</div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="s-lbl">Tổng Điểm</div>
+          <div class="s-val" style="color:var(--accent-color)" id="sumScore">0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Độ Chính Xác</div>
+          <div class="s-val" style="color:#FFD60A" id="sumAccuracy">100%</div>
         </div>
         <div class="summary-box">
           <div class="s-lbl">Gõ Đúng / Trượt</div>
@@ -2913,11 +2807,16 @@
       </div>
 
       <button class="btn-main" id="playAgainBtn">🔄 Chơi Lại Ngay</button>
+      <button class="btn-main" id="btnRepeatFallingSummaryVoice" style="background:#0A84FF;">🔊 Nghe Lại Tổng Kết</button>
       <button class="btn-secondary" id="openSettingsFromSummaryBtn">⚙️ Đổi Cài Đặt</button>
     </div>
   </div>
 
-    <script>
+  <script>
+
+
+
+
     /* =====================================================================
        CẤU HÌNH & GHI NHỚ LOCALSTORAGE
        ===================================================================== */
@@ -3123,8 +3022,7 @@
         let playedWebAudio = false;
         try {
           this.init();
-          if (this.ctx && this.ctx.state !== 'closed') {
-            if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+          if (this.ctx && this.ctx.state === 'running') {
             const now = this.ctx.currentTime + 0.005;
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
@@ -3138,14 +3036,84 @@
             osc.start(now);
             osc.stop(now + 0.14);
             playedWebAudio = true;
+          } else if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
           }
         } catch (e) {
           playedWebAudio = false;
         }
 
-        // Nếu Web Audio chưa chạy hoặc bị chặn, phát âm thanh dự phòng qua HTML5 Audio
+        // Nếu Web Audio chưa chạy (ví dụ iOS/Chrome đang suspended), phát ngay lập tức qua HTML5 Audio độc lập!
         if (!playedWebAudio) {
           this.playHtmlAudio(this.hitWav);
+        }
+      }
+
+      playMiss(isWordGame = false, forcePlay = false) {
+        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
+        if (!soundOn && !forcePlay) return;
+
+        let playedWebAudio = false;
+        try {
+          this.init();
+          if (this.ctx && this.ctx.state === 'running') {
+            const now = this.ctx.currentTime + 0.005;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(240, now);
+            osc.frequency.linearRampToValueAtTime(140, now + 0.18);
+            gain.gain.setValueAtTime(0.65, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.18);
+            playedWebAudio = true;
+          } else if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+        } catch (e) {
+          playedWebAudio = false;
+        }
+
+        // Phát dự phòng HTML5 Audio ngay
+        if (!playedWebAudio) {
+          this.playHtmlAudio(this.missWav);
+        }
+      }
+
+      playMiss(isWordGame = false, forcePlay = false) {
+        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
+        if (!soundOn && !forcePlay) return;
+
+        let playedWebAudio = false;
+        try {
+          this.init();
+          if (this.ctx && this.ctx.state === 'running') {
+            const now = this.ctx.currentTime + 0.005;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(240, now);
+            osc.frequency.linearRampToValueAtTime(140, now + 0.18);
+            gain.gain.setValueAtTime(0.65, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.18);
+            playedWebAudio = true;
+          } else if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+        } catch (e) {
+          playedWebAudio = false;
+        }
+
+        // Phát dự phòng HTML5 Audio ngay
+        if (!playedWebAudio) {
+          this.playHtmlAudio(this.missWav);
         }
       }
 
@@ -3854,10 +3822,16 @@
           el.style.top = `0px`;
           el.innerHTML = `<span class="char-text">${char}</span>`;
 
-          el.addEventListener('touchstart', (e) => {
-            e.preventDefault();
+          const onCharTap = (e) => {
+            if (e) {
+              try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
+            }
+            sound.unlock();
             this.handleInput(char);
-          }, { passive: false });
+          };
+          el.addEventListener('pointerdown', onCharTap);
+          el.addEventListener('touchstart', onCharTap, { passive: false });
+          el.addEventListener('click', onCharTap);
 
           this.gameArea.appendChild(el);
 
@@ -4122,13 +4096,14 @@
 
       // Phát âm thanh đánh vần từ hiện tại theo yêu cầu
       spellCurrentWordNow() {
+        sound.unlock();
         if (!this.isTeachingMode) {
           const text = this.teacherInput.value.trim();
           if (text) {
             const firstWord = text.split(/\s+/)[0];
             const sp = spellVietnameseWord(firstWord);
-            if (sp && wordCfg.voiceEnabled) {
-              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
+            if (sp) {
+              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true, wordCfg.voiceRate || 1.0, 'wordRepeatVoiceBtn');
             }
           }
           return;
@@ -4136,13 +4111,12 @@
 
         const wordInfo = this.getCurrentWordInfo();
         if (wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
-          if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'flex';
-          if (this.guideSpellingText) this.guideSpellingText.textContent = wordInfo.spelling.display;
-          if (wordCfg.voiceEnabled) {
-            voiceEngine.speak(`Đánh vần từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
+          voiceEngine.speak(`Đánh vần từ ${wordInfo.word}: ${wordInfo.spelling.speech}`, true, wordCfg.voiceRate || 1.0, 'wordRepeatVoiceBtn');
+        } else if (wordInfo && !wordInfo.isSeparator) {
+          const sp = spellVietnameseWord(wordInfo.word);
+          if (sp) {
+            voiceEngine.speak(`Đánh vần từ ${wordInfo.word}: ${sp.speech}`, true, wordCfg.voiceRate || 1.0, 'wordRepeatVoiceBtn');
           }
-        } else {
-          this.repeatPrompt();
         }
       }
 
@@ -5767,6 +5741,8 @@
     const clockTeacher = new ClockTeacher();
     const mathGame = new MathPracticeGame();
     mathGame.init();
+      window.drawGame = new DrawingGame();
+      window.drawGame.init();
 
     // Hook lặp lại giọng nói Game 1
     const btnRepeatFalling = document.getElementById('btnRepeatFallingSummaryVoice');
@@ -5813,15 +5789,20 @@
     const wordsView = document.getElementById('wordsPracticeView');
     const clockView = document.getElementById('clockView');
     const mathView = document.getElementById('mathView');
+    const tabDraw = document.getElementById('tabDraw');
+    const drawView = document.getElementById('drawView');
     const kbContainer = document.getElementById('keyboardContainer');
     const kbWrapper = document.getElementById('keyboardWrapper');
 
     function switchTab(target) {
+      sound.unlock();
       localStorage.setItem('game_active_tab', target);
-      [tabTyping, tabWords, tabClock, tabMath].forEach(t => { if (t) t.classList.remove('active'); });
-      [typingView, wordsView, clockView, mathView].forEach(v => { if (v) v.classList.remove('active'); });
+      const allTabs = [tabTyping, tabWords, tabClock, tabMath, tabDraw];
+      const allViews = [typingView, wordsView, clockView, mathView, drawView];
+      allTabs.forEach(t => { if (t) t.classList.remove('active'); });
+      allViews.forEach(v => { if (v) v.classList.remove('active'); });
 
-      const tabMap = { 'typing': tabTyping, 'words': tabWords, 'clock': tabClock, 'math': tabMath };
+      const tabMap = { 'typing': tabTyping, 'words': tabWords, 'clock': tabClock, 'math': tabMath, 'draw': tabDraw };
       const curTab = tabMap[target];
       if (curTab && typeof curTab.scrollIntoView === 'function') {
         curTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -5842,20 +5823,21 @@
       } else if (target === 'clock') {
         tabClock.classList.add('active');
         clockView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím khi coi đồng hồ
+        if (kbWrapper) kbWrapper.style.display = 'none';
         game1.isPaused = true;
         clockTeacher.initDial();
-        if (!clockTeacher.isRealtimeRunning) {
-          clockTeacher.startRealtime();
-        }
       } else if (target === 'math') {
         tabMath.classList.add('active');
         mathView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím iPhone khi làm toán
+        if (kbWrapper) kbWrapper.style.display = 'block';
         game1.isPaused = true;
-        if (typeof mathGame !== 'undefined' && mathGame) {
-          mathGame.onTabActivated();
-        }
+        if (typeof mathGame !== 'undefined') mathGame.onTabActivated();
+      } else if (target === 'draw') {
+        if (tabDraw) tabDraw.classList.add('active');
+        if (drawView) drawView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'none';
+        game1.isPaused = true;
+        if (window.drawGame) window.drawGame.resize();
       }
     }
 
@@ -5863,6 +5845,8 @@
     tabWords.addEventListener('click', () => switchTab('words'));
     tabClock.addEventListener('click', () => switchTab('clock'));
     if (tabMath) tabMath.addEventListener('click', () => switchTab('math'));
+      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
+      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
 
     // Bắt sự kiện phím vật lý từ bàn phím máy tính / iPad
     window.addEventListener('keydown', (e) => {
@@ -6135,6 +6119,508 @@
     });
 
     // Khởi tạo toàn bộ ứng dụng
+    
+    /* =====================================================================
+       GAME 5: GAME VẼ HÌNH & TÔ MÀU DÀNH CHO BÉ (DRAW & COLORING)
+       ===================================================================== */
+    class DrawingGame {
+      constructor() {
+        this.canvas = document.getElementById('drawCanvas');
+        this.ctx = null;
+        this.currentTool = 'brush'; // 'brush', 'bucket', 'eraser'
+        this.currentColor = '#FF3B30';
+        this.brushSize = 10;
+        this.isDrawing = false;
+        this.lastX = 0;
+        this.lastY = 0;
+        this.template = 'cat';
+        this.paletteColors = [
+          '#FF3B30', '#FF9500', '#FFCC00', '#34C759', 
+          '#00C7BE', '#007AFF', '#5856D6', '#AF52DE', 
+          '#FF2D55', '#A2845E', '#000000', '#8E8E93'
+        ];
+      }
+
+      init() {
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+        this.setupPalette();
+        this.setupTools();
+        this.setupCanvasEvents();
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.loadTemplate(this.template);
+      }
+
+      resize() {
+        if (!this.canvas || !this.canvas.parentElement) return;
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        const w = Math.floor(rect.width);
+        const h = Math.floor(rect.height);
+        if (w <= 0 || h <= 0) return;
+
+        let imgData = null;
+        if (this.canvas.width > 0 && this.canvas.height > 0) {
+          try {
+            imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+          } catch (_) {}
+        }
+
+        this.canvas.width = w;
+        this.canvas.height = h;
+
+        if (imgData) {
+          this.ctx.fillStyle = '#FFFFFF';
+          this.ctx.fillRect(0, 0, w, h);
+          this.ctx.putImageData(imgData, 0, 0);
+        } else {
+          this.clearCanvas(false);
+          this.drawTemplateOutline(this.template);
+        }
+      }
+
+      clearCanvas(redrawTemplate = true) {
+        if (!this.ctx) return;
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        if (redrawTemplate) {
+          this.drawTemplateOutline(this.template);
+        }
+      }
+
+      setupPalette() {
+        const palette = document.getElementById('drawColorPalette');
+        if (!palette) return;
+        palette.innerHTML = '';
+        this.paletteColors.forEach((color, idx) => {
+          const swatch = document.createElement('div');
+          swatch.className = 'draw-color-swatch' + (idx === 0 ? ' active' : '');
+          swatch.style.background = color;
+          swatch.dataset.color = color;
+          swatch.title = `Màu: ${color}`;
+          swatch.addEventListener('click', () => {
+            document.querySelectorAll('.draw-color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            this.currentColor = color;
+            if (this.currentTool === 'eraser') {
+              this.setTool('brush');
+            }
+          });
+          palette.appendChild(swatch);
+        });
+      }
+
+      setTool(tool) {
+        this.currentTool = tool;
+        document.querySelectorAll('.draw-tool-btn').forEach(btn => btn.classList.remove('active'));
+        if (tool === 'brush') {
+          const b = document.getElementById('toolBrush');
+          if (b) b.classList.add('active');
+        } else if (tool === 'bucket') {
+          const b = document.getElementById('toolBucket');
+          if (b) b.classList.add('active');
+        } else if (tool === 'eraser') {
+          const b = document.getElementById('toolEraser');
+          if (b) b.classList.add('active');
+        }
+      }
+
+      setupTools() {
+        const bBrush = document.getElementById('toolBrush');
+        const bBucket = document.getElementById('toolBucket');
+        const bEraser = document.getElementById('toolEraser');
+        if (bBrush) bBrush.onclick = () => this.setTool('brush');
+        if (bBucket) bBucket.onclick = () => this.setTool('bucket');
+        if (bEraser) bEraser.onclick = () => this.setTool('eraser');
+
+        document.querySelectorAll('.draw-size-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.draw-size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            this.brushSize = parseInt(btn.dataset.size, 10) || 10;
+          });
+        });
+
+        const sel = document.getElementById('drawTemplateSelect');
+        if (sel) {
+          sel.addEventListener('change', (e) => {
+            this.template = e.target.value;
+            this.loadTemplate(this.template);
+          });
+        }
+
+        const bClear = document.getElementById('btnDrawClear');
+        if (bClear) bClear.onclick = () => {
+          this.clearCanvas(true);
+          sound.playHit(false, true);
+        };
+
+        const bDownload = document.getElementById('btnDrawDownload');
+        if (bDownload) bDownload.onclick = () => this.downloadImage();
+
+        const bPraise = document.getElementById('btnDrawPraise');
+        if (bPraise) bPraise.onclick = () => this.speakPraise();
+      }
+
+      getPos(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+        return {
+          x: Math.round(clientX - rect.left),
+          y: Math.round(clientY - rect.top)
+        };
+      }
+
+      setupCanvasEvents() {
+        const onDown = (e) => {
+          e.preventDefault();
+          sound.unlock();
+          const pos = this.getPos(e);
+          if (this.currentTool === 'bucket') {
+            this.floodFill(pos.x, pos.y, this.currentColor);
+            return;
+          }
+          this.isDrawing = true;
+          this.lastX = pos.x;
+          this.lastY = pos.y;
+          this.drawDot(pos.x, pos.y);
+        };
+
+        const onMove = (e) => {
+          if (!this.isDrawing) return;
+          e.preventDefault();
+          const pos = this.getPos(e);
+          this.drawLine(this.lastX, this.lastY, pos.x, pos.y);
+          this.lastX = pos.x;
+          this.lastY = pos.y;
+        };
+
+        const onUp = (e) => {
+          if (this.isDrawing) {
+            this.isDrawing = false;
+          }
+        };
+
+        this.canvas.addEventListener('pointerdown', onDown);
+        this.canvas.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+
+        this.canvas.addEventListener('touchstart', onDown, { passive: false });
+        this.canvas.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+      }
+
+      drawDot(x, y) {
+        if (!this.ctx) return;
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, this.brushSize / 2, 0, Math.PI * 2);
+        this.ctx.fillStyle = this.currentTool === 'eraser' ? '#FFFFFF' : this.currentColor;
+        this.ctx.fill();
+      }
+
+      drawLine(x1, y1, x2, y2) {
+        if (!this.ctx) return;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x1, y1);
+        this.ctx.lineTo(x2, y2);
+        this.ctx.strokeStyle = this.currentTool === 'eraser' ? '#FFFFFF' : this.currentColor;
+        this.ctx.lineWidth = this.brushSize;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.stroke();
+      }
+
+      floodFill(startX, startY, fillHex) {
+        if (!this.ctx) return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        if (startX < 0 || startX >= w || startY < 0 || startY >= h) return;
+
+        const imgData = this.ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+
+        const targetIdx = (startY * w + startX) * 4;
+        const tR = data[targetIdx];
+        const tG = data[targetIdx + 1];
+        const tB = data[targetIdx + 2];
+        const tA = data[targetIdx + 3];
+
+        const fillR = parseInt(fillHex.slice(1, 3), 16);
+        const fillG = parseInt(fillHex.slice(3, 5), 16);
+        const fillB = parseInt(fillHex.slice(5, 7), 16);
+        const fillA = 255;
+
+        if (Math.abs(tR - fillR) < 10 && Math.abs(tG - fillG) < 10 && Math.abs(tB - fillB) < 10 && Math.abs(tA - fillA) < 10) return;
+
+        const match = (idx) => {
+          const dr = Math.abs(data[idx] - tR);
+          const dg = Math.abs(data[idx + 1] - tG);
+          const db = Math.abs(data[idx + 2] - tB);
+          const da = Math.abs(data[idx + 3] - tA);
+          return (dr + dg + db + da) < 45;
+        };
+
+        const queue = [startX, startY];
+        const visited = new Uint8Array(w * h);
+        visited[startY * w + startX] = 1;
+
+        while (queue.length > 0) {
+          const cy = queue.pop();
+          const cx = queue.pop();
+          const idx = (cy * w + cx) * 4;
+
+          data[idx] = fillR;
+          data[idx + 1] = fillG;
+          data[idx + 2] = fillB;
+          data[idx + 3] = fillA;
+
+          const neighbors = [
+            [cx + 1, cy], [cx - 1, cy],
+            [cx, cy + 1], [cx, cy - 1]
+          ];
+
+          for (let i = 0; i < 4; i++) {
+            const nx = neighbors[i][0];
+            const ny = neighbors[i][1];
+            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+              const pos = ny * w + nx;
+              if (!visited[pos]) {
+                visited[pos] = 1;
+                if (match(pos * 4)) {
+                  queue.push(nx, ny);
+                }
+              }
+            }
+          }
+        }
+
+        this.ctx.putImageData(imgData, 0, 0);
+        sound.playHit(false, true);
+      }
+
+      loadTemplate(templateKey) {
+        this.clearCanvas(false);
+        this.drawTemplateOutline(templateKey);
+      }
+
+      drawTemplateOutline(key) {
+        if (!this.ctx || key === 'blank') return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const cx = w / 2;
+        const cy = h / 2;
+        const s = Math.min(w, h) * 0.75;
+
+        this.ctx.save();
+        this.ctx.strokeStyle = '#1E293B';
+        this.ctx.lineWidth = 4;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+
+        if (key === 'cat') {
+          this.ctx.beginPath();
+          this.ctx.ellipse(cx, cy + s * 0.05, s * 0.35, s * 0.3, 0, 0, Math.PI * 2);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx - s * 0.28, cy - s * 0.12);
+          this.ctx.lineTo(cx - s * 0.35, cy - s * 0.35);
+          this.ctx.lineTo(cx - s * 0.1, cy - s * 0.22);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx + s * 0.28, cy - s * 0.12);
+          this.ctx.lineTo(cx + s * 0.35, cy - s * 0.35);
+          this.ctx.lineTo(cx + s * 0.1, cy - s * 0.22);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.arc(cx - s * 0.14, cy, s * 0.04, 0, Math.PI * 2);
+          this.ctx.arc(cx + s * 0.14, cy, s * 0.04, 0, Math.PI * 2);
+          this.ctx.fillStyle = '#1E293B';
+          this.ctx.fill();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx, cy + s * 0.06);
+          this.ctx.lineTo(cx - s * 0.04, cy + s * 0.03);
+          this.ctx.lineTo(cx + s * 0.04, cy + s * 0.03);
+          this.ctx.closePath();
+          this.ctx.fill();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx, cy + s * 0.06);
+          this.ctx.lineTo(cx, cy + s * 0.11);
+          this.ctx.moveTo(cx - s * 0.07, cy + s * 0.14);
+          this.ctx.quadraticCurveTo(cx - s * 0.03, cy + s * 0.16, cx, cy + s * 0.11);
+          this.ctx.quadraticCurveTo(cx + s * 0.03, cy + s * 0.16, cx + s * 0.07, cy + s * 0.14);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx - s * 0.2, cy + s * 0.06); this.ctx.lineTo(cx - s * 0.38, cy + s * 0.02);
+          this.ctx.moveTo(cx - s * 0.2, cy + s * 0.1); this.ctx.lineTo(cx - s * 0.38, cy + s * 0.12);
+          this.ctx.moveTo(cx + s * 0.2, cy + s * 0.06); this.ctx.lineTo(cx + s * 0.38, cy + s * 0.02);
+          this.ctx.moveTo(cx + s * 0.2, cy + s * 0.1); this.ctx.lineTo(cx + s * 0.38, cy + s * 0.12);
+          this.ctx.stroke();
+        } else if (key === 'flower') {
+          const rCenter = s * 0.1;
+          const rPetal = s * 0.14;
+          for (let i = 0; i < 5; i++) {
+            const angle = (i * 72) * Math.PI / 180;
+            const px = cx + Math.cos(angle) * (rCenter + rPetal * 0.7);
+            const py = cy - s * 0.05 + Math.sin(angle) * (rCenter + rPetal * 0.7);
+            this.ctx.beginPath();
+            this.ctx.arc(px, py, rPetal, 0, Math.PI * 2);
+            this.ctx.stroke();
+          }
+          this.ctx.beginPath();
+          this.ctx.arc(cx, cy - s * 0.05, rCenter, 0, Math.PI * 2);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx, cy + rCenter + s * 0.05);
+          this.ctx.quadraticCurveTo(cx - s * 0.05, cy + s * 0.25, cx, cy + s * 0.4);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx - s * 0.02, cy + s * 0.22);
+          this.ctx.quadraticCurveTo(cx - s * 0.25, cy + s * 0.15, cx - s * 0.18, cy + s * 0.3);
+          this.ctx.quadraticCurveTo(cx - s * 0.08, cy + s * 0.28, cx, cy + s * 0.25);
+          this.ctx.stroke();
+        } else if (key === 'car') {
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx - s * 0.4, cy + s * 0.1);
+          this.ctx.lineTo(cx + s * 0.4, cy + s * 0.1);
+          this.ctx.lineTo(cx + s * 0.38, cy - s * 0.04);
+          this.ctx.lineTo(cx + s * 0.22, cy - s * 0.05);
+          this.ctx.lineTo(cx + s * 0.1, cy - s * 0.22);
+          this.ctx.lineTo(cx - s * 0.18, cy - s * 0.22);
+          this.ctx.lineTo(cx - s * 0.28, cy - s * 0.05);
+          this.ctx.lineTo(cx - s * 0.4, cy - s * 0.04);
+          this.ctx.closePath();
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx - s * 0.16, cy - s * 0.2);
+          this.ctx.lineTo(cx - s * 0.02, cy - s * 0.2);
+          this.ctx.lineTo(cx - s * 0.02, cy - s * 0.07);
+          this.ctx.lineTo(cx - s * 0.24, cy - s * 0.07);
+          this.ctx.closePath();
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx + s * 0.02, cy - s * 0.2);
+          this.ctx.lineTo(cx + s * 0.08, cy - s * 0.2);
+          this.ctx.lineTo(cx + s * 0.18, cy - s * 0.07);
+          this.ctx.lineTo(cx + s * 0.02, cy - s * 0.07);
+          this.ctx.closePath();
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.arc(cx - s * 0.22, cy + s * 0.12, s * 0.08, 0, Math.PI * 2);
+          this.ctx.stroke();
+          this.ctx.beginPath();
+          this.ctx.arc(cx - s * 0.22, cy + s * 0.12, s * 0.03, 0, Math.PI * 2);
+          this.ctx.fill();
+
+          this.ctx.beginPath();
+          this.ctx.arc(cx + s * 0.22, cy + s * 0.12, s * 0.08, 0, Math.PI * 2);
+          this.ctx.stroke();
+          this.ctx.beginPath();
+          this.ctx.arc(cx + s * 0.22, cy + s * 0.12, s * 0.03, 0, Math.PI * 2);
+          this.ctx.fill();
+        } else if (key === 'apple') {
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx, cy - s * 0.18);
+          this.ctx.bezierCurveTo(cx - s * 0.35, cy - s * 0.35, cx - s * 0.45, cy + s * 0.2, cx, cy + s * 0.35);
+          this.ctx.bezierCurveTo(cx + s * 0.45, cy + s * 0.2, cx + s * 0.35, cy - s * 0.35, cx, cy - s * 0.18);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx, cy - s * 0.18);
+          this.ctx.quadraticCurveTo(cx + s * 0.05, cy - s * 0.3, cx + s * 0.1, cy - s * 0.35);
+          this.ctx.lineWidth = 5;
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx + s * 0.05, cy - s * 0.28);
+          this.ctx.quadraticCurveTo(cx + s * 0.2, cy - s * 0.36, cx + s * 0.24, cy - s * 0.26);
+          this.ctx.quadraticCurveTo(cx + s * 0.15, cy - s * 0.22, cx + s * 0.05, cy - s * 0.28);
+          this.ctx.lineWidth = 4;
+          this.ctx.stroke();
+        } else if (key === 'house') {
+          this.ctx.strokeRect(cx - s * 0.25, cy - s * 0.05, s * 0.5, s * 0.4);
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx - s * 0.32, cy - s * 0.05);
+          this.ctx.lineTo(cx, cy - s * 0.32);
+          this.ctx.lineTo(cx + s * 0.32, cy - s * 0.05);
+          this.ctx.closePath();
+          this.ctx.stroke();
+
+          this.ctx.strokeRect(cx - s * 0.07, cy + s * 0.15, s * 0.14, s * 0.2);
+
+          this.ctx.strokeRect(cx + s * 0.09, cy, s * 0.12, s * 0.12);
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx + s * 0.15, cy); this.ctx.lineTo(cx + s * 0.15, cy + s * 0.12);
+          this.ctx.moveTo(cx + s * 0.09, cy + s * 0.06); this.ctx.lineTo(cx + s * 0.21, cy + s * 0.06);
+          this.ctx.stroke();
+
+          this.ctx.beginPath();
+          this.ctx.moveTo(cx + s * 0.14, cy - s * 0.18);
+          this.ctx.lineTo(cx + s * 0.14, cy - s * 0.28);
+          this.ctx.lineTo(cx + s * 0.22, cy - s * 0.28);
+          this.ctx.lineTo(cx + s * 0.22, cy - s * 0.12);
+          this.ctx.stroke();
+        } else if (key === 'sun') {
+          this.ctx.beginPath();
+          this.ctx.arc(cx - s * 0.1, cy - s * 0.1, s * 0.18, 0, Math.PI * 2);
+          this.ctx.stroke();
+
+          for (let i = 0; i < 8; i++) {
+            const angle = (i * 45) * Math.PI / 180;
+            const r1 = s * 0.21;
+            const r2 = s * 0.28;
+            this.ctx.beginPath();
+            this.ctx.moveTo(cx - s * 0.1 + Math.cos(angle) * r1, cy - s * 0.1 + Math.sin(angle) * r1);
+            this.ctx.lineTo(cx - s * 0.1 + Math.cos(angle) * r2, cy - s * 0.1 + Math.sin(angle) * r2);
+            this.ctx.stroke();
+          }
+
+          const cloudY = cy + s * 0.18;
+          this.ctx.beginPath();
+          this.ctx.arc(cx + s * 0.05, cloudY, s * 0.1, Math.PI * 0.7, Math.PI * 1.8);
+          this.ctx.arc(cx + s * 0.18, cloudY - s * 0.05, s * 0.12, Math.PI * 1.1, Math.PI * 2.1);
+          this.ctx.arc(cx + s * 0.32, cloudY, s * 0.09, Math.PI * 1.4, Math.PI * 0.3);
+          this.ctx.lineTo(cx + s * 0.05, cloudY + s * 0.08);
+          this.ctx.closePath();
+          this.ctx.stroke();
+        }
+
+        this.ctx.restore();
+      }
+
+      downloadImage() {
+        if (!this.canvas) return;
+        const link = document.createElement('a');
+        link.download = `tranh-ve-cua-be-${Date.now()}.png`;
+        link.href = this.canvas.toDataURL('image/png');
+        link.click();
+        sound.playHit(false, true);
+      }
+
+      speakPraise() {
+        const praises = [
+          "Bức tranh của con vẽ đẹp quá! Màu sắc rất tươi sáng, con giỏi lắm!",
+          "Tuyệt vời quá! Bé vẽ rất khéo tay và đáng yêu!",
+          "Bức tranh thật sáng tạo! Bố mẹ và thầy cô rất tự hào về con!",
+          "Hoan hô bé yêu! Con tô màu rất cẩn thận và rực rỡ!"
+        ];
+        const msg = praises[Math.floor(Math.random() * praises.length)];
+        voiceEngine.speak(msg, true);
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       applyAppBgTheme(cfg.gameBgColor);
       kbManager.render();
@@ -6146,6 +6632,12 @@
       const initialTab = localStorage.getItem('game_active_tab') || 'words';
       switchTab(initialTab);
     });
+  
+
+  
+
   </script>
+
 </body>
+
 </html>
