@@ -961,11 +961,12 @@
     /* MẶT ĐỒNG HỒ TO TỐI ĐA - LUÔN LÀ HÌNH TRÒN HOÀN HẢO */
     .clock-stage {
       position: relative;
-      width: min(76vh, 85vw, 680px);
-      height: min(76vh, 85vw, 680px);
+      width: min(60vh, 86vw, 460px);
+      height: min(60vh, 86vw, 460px);
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: auto;
     }
 
     .center-pin {
@@ -2114,6 +2115,361 @@
       display: block;
       touch-action: none;
     }
+  
+
+    /* KIM ĐỒNG HỒ - NÉT RÕ, MÀU SẮC ĐẬM ĐÀ, TÂM XOAY 180px 180px */
+    .hand {
+      cursor: grab;
+      transform-origin: 180px 180px !important;
+      -webkit-transform-origin: 180px 180px !important;
+    }
+    .hand:active {
+      cursor: grabbing;
+    }
+
+    #handHour {
+      stroke: #0284C7 !important;
+      stroke-width: 10 !important;
+      stroke-linecap: round !important;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+      transform-origin: 180px 180px !important;
+      -webkit-transform-origin: 180px 180px !important;
+    }
+
+    #handMin {
+      stroke: #10B981 !important;
+      stroke-width: 6.5 !important;
+      stroke-linecap: round !important;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+      transform-origin: 180px 180px !important;
+      -webkit-transform-origin: 180px 180px !important;
+    }
+
+    #handSec, #secGroup line {
+      stroke: #EF4444 !important;
+      stroke-width: 3 !important;
+      stroke-linecap: round !important;
+      transform-origin: 180px 180px !important;
+      -webkit-transform-origin: 180px 180px !important;
+    }
+
+    #secGroup {
+      transform-origin: 180px 180px !important;
+      -webkit-transform-origin: 180px 180px !important;
+    }
+
+    .center-pin {
+      fill: #0F141E !important;
+      stroke: #FFFFFF !important;
+      stroke-width: 3.5 !important;
+    }
+
+    .center-pin-sec {
+      fill: #EF4444 !important;
+    }
+
+  
+
+    /* =====================================================================
+       CHẾ ĐỘ 10 BÀI TOÁN TUẦN TỰ (MATH QUIZ) - CÂN ĐỐI, ĐẸP MẮT TRÊN MỌI MÀN HÌNH
+       ===================================================================== */
+    .math-level-bar {
+      width: 100%;
+      background: #E2EBF5;
+      padding: 6px 10px;
+      border-bottom: 1px solid #CBDCEE;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+    .math-level-tabs {
+      display: inline-flex;
+      gap: 6px;
+      justify-content: center;
+      min-width: 100%;
+    }
+    .math-level-btn {
+      padding: 6px 12px;
+      background: #FFFFFF;
+      color: #334155;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .math-level-btn.active {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0369A1;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+    }
+
+    .math-quiz-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 480px;
+      margin: 8px auto 0 auto;
+      padding: 6px 12px;
+      box-sizing: border-box;
+      flex: 1;
+    }
+
+    .math-steps-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      margin-bottom: 10px;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+
+    .math-step-pill {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #E2E8F0;
+      color: #64748B;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #CBD5E1;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .math-step-pill.current {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0369A1;
+      transform: scale(1.15);
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.45);
+    }
+
+    .math-step-pill.done {
+      background: #10B981;
+      color: #FFFFFF;
+      border-color: #059669;
+    }
+
+    .math-card {
+      background: #FFFFFF;
+      border: 2px solid #BFD7EF;
+      border-radius: 18px;
+      padding: 14px 18px;
+      box-shadow: 0 8px 24px rgba(10, 80, 160, 0.1);
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .math-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #E2E8F0;
+      padding-bottom: 6px;
+    }
+
+    .math-card-step-badge {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0284C7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .math-card-hint {
+      font-size: 11.5px;
+      color: #64748B;
+      font-weight: 600;
+    }
+
+    .math-expression-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+
+    .math-expr-text {
+      font-size: 38px;
+      font-weight: 900;
+      color: #0F172A;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 2px;
+    }
+
+    .math-input-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .math-main-input {
+      width: 100px !important;
+      height: 52px !important;
+      border: 3px solid #0284C7 !important;
+      border-radius: 12px !important;
+      background: #FFFFFF !important;
+      color: #0F172A !important;
+      -webkit-text-fill-color: #0F172A !important;
+      font-size: 30px !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+      outline: none !important;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.18) !important;
+      box-sizing: border-box;
+    }
+
+    .btn-math-submit {
+      height: 52px;
+      padding: 0 16px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+      transition: all 0.15s;
+    }
+    .btn-math-submit:hover, .btn-math-submit:active {
+      transform: scale(0.96);
+      filter: brightness(1.1);
+    }
+
+    .math-feedback-notice {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    .math-feedback-notice.err {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: 1px solid #FECACA;
+    }
+    .math-feedback-notice.ok {
+      background: #D1FAE5;
+      color: #059669;
+      border: 1px solid #A7F3D0;
+    }
+
+    .math-numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    .math-np-btn {
+      height: 50px;
+      background: #FFFFFF;
+      color: #0F172A;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+      transition: all 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .math-np-btn:hover {
+      background: #F1F5F9;
+      border-color: #94A3B8;
+    }
+    .math-np-btn:active {
+      transform: scale(0.93);
+      background: #E2E8F0;
+    }
+    .math-np-btn.np-action {
+      background: #FEE2E2;
+      color: #DC2626;
+      border-color: #FECACA;
+      font-size: 15px;
+    }
+    .math-np-btn.np-enter {
+      background: linear-gradient(135deg, #0284C7, #0369A1);
+      color: #FFFFFF;
+      border-color: #0284C7;
+      font-size: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .math-expr-text {
+        font-size: 28px;
+      }
+      .math-main-input {
+        width: 80px !important;
+        height: 44px !important;
+        font-size: 24px !important;
+      }
+      .btn-math-submit {
+        height: 44px;
+        padding: 0 12px;
+        font-size: 12.5px;
+      }
+      .math-np-btn {
+        height: 44px;
+        font-size: 19px;
+      }
+    }
+
+  
+
+    /* PHÍM GỢI Ý MÀU VÀNG PHẢN XẠ - SÁNG NỔI BẬT ĐỂ NGƯỜI CHƠI NHÌN THẤY NGAY */
+    .kb-key.key-hint,
+    .kb-key.hint-highlight {
+      background: #FEF08A !important;
+      color: #0F172A !important;
+      outline: 3px solid #D97706 !important;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.95) !important;
+      animation: pulseKey 0.8s infinite alternate !important;
+      transform: scale(1.08) !important;
+      z-index: 10 !important;
+    }
+
+    @keyframes pulseKey {
+      from {
+        transform: scale(1);
+        background: #FEF08A !important;
+      }
+      to {
+        transform: scale(1.1);
+        background: #FDE047 !important;
+        box-shadow: 0 0 20px rgba(234, 179, 8, 1) !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -2311,14 +2667,14 @@
         <g id="dialTicks"></g>
         <g id="dialNumbers"></g>
 
-        <!-- KIM GIỜ (Hour Hand) -->
-        <line id="handHour" class="hand" x1="180" y1="180" x2="180" y2="105" />
-        <!-- KIM PHÚT (Minute Hand) -->
-        <line id="handMin" class="hand" x1="180" y1="180" x2="180" y2="65" />
-        <!-- KIM GIÂY (Second Hand) -->
+        <!-- KIM GIỜ (Hour Hand: Ngắn - Xanh dương) -->
+        <line id="handHour" class="hand" x1="180" y1="180" x2="180" y2="105" stroke="#0284C7" stroke-width="10" stroke-linecap="round" />
+        <!-- KIM PHÚT (Minute Hand: Dài - Xanh lá cây) -->
+        <line id="handMin" class="hand" x1="180" y1="180" x2="180" y2="65" stroke="#10B981" stroke-width="6.5" stroke-linecap="round" />
+        <!-- KIM GIÂY (Second Hand: Mảnh - Đỏ rực) -->
         <g id="secGroup" class="hand">
-          <line id="handSec" x1="180" y1="210" x2="180" y2="50" />
-          <circle cx="180" cy="50" r="4.5" class="center-pin-sec" />
+          <line id="handSec" x1="180" y1="210" x2="180" y2="45" stroke="#EF4444" stroke-width="3" stroke-linecap="round" />
+          <circle cx="180" cy="45" r="4.5" class="center-pin-sec" fill="#EF4444" />
         </g>
 
         <!-- Trục giữa đồng hồ -->
@@ -3641,20 +3997,29 @@
       }
 
       highlightKey(char) {
-        document.querySelectorAll('.kb-key.hint-highlight').forEach(el => el.classList.remove('hint-highlight'));
+        document.querySelectorAll('.kb-key.hint-highlight, .kb-key.key-hint').forEach(el => {
+          el.classList.remove('hint-highlight');
+          el.classList.remove('key-hint');
+        });
         this.highlightDeleteKey(false);
         if (!char) return;
         const target = char.toUpperCase();
 
         if (target === ' ') {
           const spEl = document.querySelector('.key-space');
-          if (spEl) spEl.classList.add('hint-highlight');
+          if (spEl) {
+            spEl.classList.add('hint-highlight');
+            spEl.classList.add('key-hint');
+          }
           return;
         }
 
         if (target === '\n' || target === 'ENTER') {
           const retEl = document.querySelector('.key-return');
-          if (retEl) retEl.classList.add('hint-highlight');
+          if (retEl) {
+            retEl.classList.add('hint-highlight');
+            retEl.classList.add('key-hint');
+          }
           return;
         }
         
@@ -3669,7 +4034,10 @@
         }
 
         const el = document.querySelector(`.kb-key[data-key="${target}"]`);
-        if (el) el.classList.add('hint-highlight');
+        if (el) {
+          el.classList.add('hint-highlight');
+          el.classList.add('key-hint');
+        }
       }
     }
     const kbManager = new IPhoneKeyboardManager();
@@ -4779,16 +5147,28 @@
       }
 
       updateClockUI() {
-        const secAngle = this.sec * 6;
-        this.secGroup.style.transform = `rotate(${secAngle}deg)`;
-
-        const minAngle = this.min * 6 + (this.isLockedRealistic ? (this.sec * 0.1) : 0);
-        this.handMin.style.transform = `rotate(${minAngle}deg)`;
-
+        const secAngle = (this.sec * 6) % 360;
+        const minAngle = (this.min * 6 + (this.isLockedRealistic ? (this.sec * 0.1) : 0)) % 360;
         const hourBase = (this.hour % 12) * 30;
         const hourOffset = this.isLockedRealistic ? (this.min * 0.5) : 0;
-        const hourAngle = hourBase + hourOffset;
-        this.handHour.style.transform = `rotate(${hourAngle}deg)`;
+        const hourAngle = (hourBase + hourOffset) % 360;
+
+        // Xoay chuẩn tâm (180, 180) theo chiều kim đồng hồ bằng cả SVG attribute và CSS transform
+        if (this.secGroup) {
+          this.secGroup.setAttribute('transform', `rotate(${secAngle} 180 180)`);
+          this.secGroup.style.transform = `rotate(${secAngle}deg)`;
+          this.secGroup.style.transformOrigin = '180px 180px';
+        }
+        if (this.handMin) {
+          this.handMin.setAttribute('transform', `rotate(${minAngle} 180 180)`);
+          this.handMin.style.transform = `rotate(${minAngle}deg)`;
+          this.handMin.style.transformOrigin = '180px 180px';
+        }
+        if (this.handHour) {
+          this.handHour.setAttribute('transform', `rotate(${hourAngle} 180 180)`);
+          this.handHour.style.transform = `rotate(${hourAngle}deg)`;
+          this.handHour.style.transformOrigin = '180px 180px';
+        }
 
         const fH = this.hour < 10 ? `0${this.hour}` : this.hour;
         const fM = this.min < 10 ? `0${this.min}` : this.min;
@@ -6354,7 +6734,7 @@
       } else if (target === 'math') {
         tabMath.classList.add('active');
         mathView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'block';
+        if (kbWrapper) kbWrapper.style.display = 'none';
         game1.isPaused = true;
         if (typeof mathGame !== 'undefined') mathGame.onTabActivated();
       } else if (target === 'draw') {
