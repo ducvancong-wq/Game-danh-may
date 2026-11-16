@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Học Tập iOS">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23007AFF'/><text x='50' y='65' font-size='48' font-family='sans-serif' text-anchor='middle' fill='white' font-weight='bold'>⌨</text></svg>">
   <style>
     :root {
       --app-bg: #0b0f19;
@@ -67,97 +68,207 @@
     }
 
     /* TOP TAB BAR (CHUYỂN ĐỔI 3 GAME) */
-        .app-nav {
+    .app-nav {
       position: relative;
       z-index: 20;
       display: flex;
-      align-items: center;
-      background: rgba(14, 18, 28, 0.96);
-      border-bottom: 1.5px solid var(--surface-border);
-      padding: env(safe-area-inset-top, 6px) 8px 6px 8px;
+      background: rgba(14, 18, 28, 0.95);
+      border-bottom: 1px solid var(--surface-border);
+      padding: env(safe-area-inset-top, 6px) 10px 6px 10px;
       gap: 6px;
-      flex-shrink: 0;
-      height: 50px;
-      box-sizing: border-box;
-      width: 100%;
-    }
-
-    /* Dropdown chọn game trên Mobile */
-    .mobile-nav-select-wrap {
-      display: none;
-      flex-shrink: 0;
-    }
-    .mobile-game-select {
-      background: linear-gradient(135deg, #1E293B, #0F172A);
-      color: #38BDF8;
-      border: 1.5px solid #0284C7;
-      border-radius: 10px;
-      padding: 6px 10px;
-      font-size: 13px;
-      font-weight: 800;
-      outline: none;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
-      max-width: 175px;
-    }
-
-    .nav-tabs-scroll {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      touch-action: pan-x;
-      flex: 1;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-      padding: 2px 0;
-    }
-    .nav-tabs-scroll::-webkit-scrollbar {
-      height: 3px;
-    }
-    .nav-tabs-scroll::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.25);
-      border-radius: 3px;
     }
 
     .nav-tab {
-      flex: 0 0 auto;
-      display: inline-flex;
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 7px 14px;
+      gap: 5px;
+      padding: 8px 8px;
       border-radius: 12px;
       font-size: 13px;
       font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--surface-border);
+      border: 1px solid transparent;
       transition: all 0.2s;
       white-space: nowrap;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     .nav-tab.active {
-      background: var(--primary-color);
-      color: #fff;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 16px rgba(0, 122, 255, 0.4);
+      color: #FFFFFF;
+      background: rgba(10, 132, 255, 0.25);
+      border-color: rgba(10, 132, 255, 0.6);
     }
 
-    @media (max-width: 680px) {
-      .mobile-nav-select-wrap {
-        display: block;
-      }
-      .nav-tab {
-        padding: 6px 10px;
-        font-size: 12px;
-      }
+    /* VIEW CONTAINERS */
+    .game-view {
+      flex: 1;
+      display: none !important;
+      flex-direction: column;
+      height: calc(100% - 50px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-view.active {
+      display: flex !important;
+    }
+
+    /* =====================================================================
+       HEADER CHUNG CỦA GAME GÕ PHÍM
+       ===================================================================== */
+    .game-header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: rgba(18, 22, 34, 0.85);
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 7px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-pill .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stat-pill .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-pill .val.highlight {
+      color: var(--accent-color);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--surface-border);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .voice-badge-btn {
+      background: rgba(10, 132, 255, 0.2);
+      border: 1px solid rgba(10, 132, 255, 0.5);
+      color: #64D2FF;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .voice-badge-btn.speaking {
+      animation: pulseVoice 0.6s infinite alternate;
+      border-color: #30D158;
+      color: #30D158;
+    }
+
+    @keyframes pulseVoice {
+      from { transform: scale(1); }
+      to { transform: scale(1.06); }
+    }
+
+    /* =====================================================================
+       VIEW 1: GAME GÕ RƠI TỰ DO
+       ===================================================================== */
+    #typingView {
+      background: var(--game-bg);
+      transition: background 0.3s;
+    }
+
+    #gameArea {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .falling-char {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      background: rgba(28, 34, 52, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transform: translate(-50%, 0);
+      will-change: transform, top;
+      cursor: pointer;
+    }
+
+    /* Khi nền game là màu sáng thì thẻ chữ rơi có phong cách nổi bật */
+    body.light-theme .falling-char {
+      background: #FFFFFF;
+      border-color: #0A84FF;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .falling-char .char-text {
+      line-height: 1;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    body.light-theme .falling-char .char-text {
+      text-shadow: none;
+    }
+
+    @keyframes hitPop {
+      0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+      50% { transform: translate(-50%, -25px) scale(1.4); opacity: 0.85; filter: brightness(1.8); }
+      100% { transform: translate(-50%, -50px) scale(0.2); opacity: 0; }
     }
 
     .hit-anim {
@@ -253,131 +364,54 @@
     }
 
     .box-title {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 800;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    .box-title.teacher-title {
-      color: #FEF08A;
-      font-size: 13.5px;
-      font-weight: 800;
+
+    .teacher-title {
+      color: #FEF08A !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
-    .box-title.student-title {
-      color: #0284C7;
-      font-size: 13.5px;
-      font-weight: 800;
+
+    .student-title {
+      color: #0284C7 !important;
     }
+
+    /* Toggle Đánh vần Tiếng Việt Lớp 1 */
     .spelling-toggle-card {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(254, 240, 138, 0.18);
-      border: 1px solid rgba(254, 240, 138, 0.4);
-      padding: 4px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .spelling-toggle-card input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
-      accent-color: #F59E0B;
-      cursor: pointer;
-    }
-    .spelling-toggle-text {
-      font-size: 11px;
-      font-weight: 700;
-      color: #FEF08A;
-    }
-    .board-stepper-box {
-      display: inline-flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .btn-step {
-      background: transparent;
-      border: none;
-      color: #FEF08A;
-      padding: 3px 7px;
-      font-size: 11px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-    .btn-step:hover {
       background: rgba(255, 255, 255, 0.2);
-    }
-    .step-display {
-      font-size: 11px;
-      font-weight: 700;
-      color: #FFFFFF;
-      padding: 0 4px;
-      min-width: 32px;
-      text-align: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 20px;
+      padding: 3px 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
     }
 
-    /* HÀNG NÚT THAO TÁC CỦA THẦY - ĐẦY ĐỦ MÀU SẮC, ĐẸP MẮT */
-    .board-actions-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
+    .spelling-toggle-card:hover {
+      background: rgba(255, 255, 255, 0.32);
     }
 
-    .btn-board {
-      padding: 6px 12px;
-      border-radius: 9px;
+    .spelling-toggle-card input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #FDE047;
+      cursor: pointer;
+    }
+
+    .spelling-toggle-text {
       font-size: 12px;
       font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border: 1.5px solid transparent;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      transition: all 0.15s;
-    }
-    .btn-board.clear-btn {
-      background: rgba(239, 68, 68, 0.22);
-      border-color: #EF4444;
-      color: #FECACA;
-    }
-    .btn-board.clear-btn:hover {
-      background: #EF4444;
-      color: #FFFFFF;
-    }
-    .btn-board.edit-btn {
-      background: rgba(59, 130, 246, 0.22);
-      border-color: #38BDF8;
-      color: #BAE6FD;
-    }
-    .btn-board.edit-btn:hover {
-      background: #0284C7;
-      color: #FFFFFF;
-    }
-    .btn-board.spell-btn {
-      background: rgba(245, 158, 11, 0.22);
-      border-color: #F59E0B;
       color: #FEF08A;
-    }
-    .btn-board.spell-btn:hover {
-      background: #F59E0B;
-      color: #0F172A;
-    }
-    .btn-board.start-btn {
-      background: linear-gradient(135deg, #10B981, #059669);
-      border-color: #34D399;
-      color: #FFFFFF;
-      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
-    }
-    .btn-board.start-btn:hover {
-      filter: brightness(1.1);
-      transform: scale(1.02);
+      letter-spacing: 0.3px;
     }
 
     /* Textbox 1: Của Thầy */
@@ -498,50 +532,48 @@
       color: #0284C7;
     }
 
-    /* Banner hướng dẫn (ẩn khi bắt đầu viết) */
-    .guide-banner {
-      display: none !important;
-      border-radius: 12px;
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .guide-main-row {
-      display: flex;
+    /* Thông báo nhắc xóa khi viết sai (Game 2 - Luyện từ của thầy) */
+    .word-error-notice {
+      display: none;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      font-size: 15px;
-      font-weight: 800;
+      padding: 8px 14px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+      border: 2px solid #EF4444;
+      border-radius: 10px;
+      color: #B91C1C;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+      animation: alertBounce 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .word-error-notice.shake {
+      animation: alertShake 0.35s ease-in-out;
+    }
+    .word-error-notice .notice-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .word-error-notice .notice-text {
+      flex: 1;
       text-align: center;
     }
-
-    .guide-banner.normal {
-      background: #FEF3C7 !important;
-      border: 2px solid #F59E0B !important;
-      color: #92400E !important;
+    @keyframes alertBounce {
+      0% { transform: scale(0.95); opacity: 0; }
+      60% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes alertShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
     }
 
-    .guide-banner.error-state {
-      background: #FEE2E2 !important;
-      border: 2px solid #EF4444 !important;
-      color: #B91C1C !important;
-      animation: pulseError 0.6s infinite alternate;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
-    }
-
-    @keyframes pulseError {
-      from { transform: scale(1); }
-      to { transform: scale(1.02); }
-    }
-
-    .guide-banner.success-state {
-      background: #DCFCE7 !important;
-      border: 2px solid #22C55E !important;
-      color: #15803D !important;
+    /* Banner hướng dẫn (đã ẩn hoàn toàn để tăng diện tích hiển thị) */
+    .guide-banner {
+      display: none !important;
     }
 
     /* Khung hiển thị đánh vần Tiếng Việt Lớp 1 trong banner */
@@ -594,6 +626,7 @@
     /* Nút highlight nhấp nháy đỏ khi cần xoá */
     .kb-key.delete-highlight {
       background: #EF4444 !important;
+      color: #FFFFFF !important;
       outline: 3px solid #FDE047 !important;
       box-shadow: 0 0 20px rgba(239, 68, 68, 0.9) !important;
       animation: pulseDeleteKey 0.5s infinite alternate !important;
@@ -643,180 +676,354 @@
       color: #30D158;
     }
 
-    /* THÔNG BÁO NHẮC XOÁ CHỮ SAI */
-    .word-error-notice {
-      display: none;
+    .track-char.current {
+      color: #000000 !important;
+      background: #FFD60A !important;
+      box-shadow: 0 0 10px rgba(255, 214, 10, 0.9);
+      transform: scale(1.15);
+      font-weight: 900;
+    }
+
+    .board-stepper-box {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: #FEF2F2;
-      border: 1.5px solid #F87171;
-      border-radius: 10px;
-      padding: 6px 12px;
-      margin-bottom: 8px;
-      color: #991B1B;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 1px 4px;
+      gap: 3px;
+    }
+
+    body.light-theme .board-stepper-box {
+      background: rgba(0, 0, 0, 0.06);
+      border-color: rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-step {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+
+    .btn-step:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .step-display {
       font-size: 12px;
       font-weight: 700;
+      min-width: 36px;
+      text-align: center;
+      color: #FFD60A;
     }
-    .word-error-notice.shake {
-      animation: shakeNotice 0.4s ease-in-out;
+
+    body.light-theme .step-display {
+      color: #007AFF;
     }
-    @keyframes shakeNotice {
+
+    .board-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.45);
+      transition: all 0.15s;
+    }
+
+    .board-char.space {
+      width: 18px;
+    }
+
+    .board-char.done {
+      color: #30D158;
+      text-shadow: 0 0 8px rgba(48, 209, 88, 0.6);
+    }
+
+    .board-char.current {
+      color: #FFD60A;
+      background: rgba(255, 214, 10, 0.25);
+      border: 2px solid #FFD60A;
+      transform: scale(1.15);
+      box-shadow: 0 0 14px rgba(255, 214, 10, 0.8);
+      animation: pulseBoardChar 0.8s infinite alternate;
+    }
+
+    @keyframes pulseBoardChar {
+      from { transform: scale(1.1); }
+      to { transform: scale(1.2); }
+    }
+
+    .board-char.error {
+      color: #FF453A;
+      background: rgba(255, 69, 58, 0.3);
+      border: 2px solid #FF453A;
+      animation: charShake 0.35s ease-in-out;
+    }
+
+    @keyframes charShake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
       40%, 80% { transform: translateX(6px); }
     }
-    .word-error-notice .notice-icon {
-      font-size: 18px;
-    }
-    .word-error-notice .notice-text {
-      flex: 1;
+
+    .board-actions-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    /* KHU VỰC CHỮ RƠI & BONG BÓNG */
-    #gameArea {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
-    .falling-char {
-      position: absolute;
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(8px);
+    .btn-board {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      font-weight: 800;
-      color: #FFFFFF;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-      transform: translate(-50%, 0);
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      z-index: 5;
+      gap: 5px;
+      border: 1px solid var(--surface-border);
+      transition: all 0.2s;
     }
-    .falling-char.hit-anim {
-      transform: translate(-50%, -20px) scale(1.3);
-      opacity: 0;
-      transition: transform 0.28s ease-out, opacity 0.28s ease-out;
+
+    .btn-board.start-btn {
+      background: var(--accent-color);
+      color: #000;
+      border-color: transparent;
+      font-size: 14px;
+    }
+
+    .btn-board.edit-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .btn-board.clear-btn {
+      background: rgba(255, 69, 58, 0.2);
+      color: #FF453A;
+      border-color: rgba(255, 69, 58, 0.4);
+    }
+
+    .btn-board:active {
+      transform: scale(0.96);
+    }
+
+    .word-typing-stage {
+      padding: 8px 14px 4px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lesson-hint-banner {
+      background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 10, 0.1));
+      border: 1.5px solid rgba(255, 214, 10, 0.6);
+      border-radius: 14px;
+      padding: 8px 16px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #FFD60A;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 214, 10, 0.25);
+      animation: pulseHint 1s infinite alternate;
+      text-align: center;
+    }
+
+    body.light-theme .lesson-hint-banner {
+      background: #FFF8E1;
+      border-color: #FFA000;
+      color: #E65100;
+    }
+
+    @keyframes pulseHint {
+      from { transform: scale(1); }
+      to { transform: scale(1.03); }
+    }
+
+    .error-guide-box {
+      background: rgba(255, 69, 58, 0.18);
+      border: 1px solid #FF453A;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #FF453A;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      animation: fadeIn 0.2s;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* =====================================================================
-       BÀN PHÍM IPHONE CHUẨN IOS (3 TẦNG: WRAPPER -> CONTAINER -> KEYS)
+       BÀN PHÍM IPHONE CHUẨN IOS - NỀN XUNG QUANH XANH BIỂN GỢN MÂY NỔI BẬT
        ===================================================================== */
     #keyboardWrapper {
       position: relative;
+      z-index: 10;
       width: 100%;
+      /* Nền xung quanh bàn phím: Xanh biển rực rỡ, phân tách rõ rệt với bàn phím và trang (KHÔNG DÙNG MÀU ĐEN) */
       background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%);
-      padding: 10px 6px max(env(safe-area-inset-bottom, 12px), 12px) 6px;
-      box-sizing: border-box;
-      flex-shrink: 0;
-      box-shadow: 0 -4px 16px rgba(2, 132, 199, 0.25);
+      border-top: 3px solid #7DD3FC;
+      box-shadow: 0 -8px 24px rgba(2, 132, 199, 0.28);
+      padding: 12px 6px calc(env(safe-area-inset-bottom, 8px) + 8px) 6px;
     }
+
+    /* Viền gợn mây bồng bềnh ở đỉnh bàn phím */
     #keyboardWrapper::before {
-      content: '';
+      content: "";
       position: absolute;
-      top: -6px;
+      top: -12px;
       left: 0;
       right: 0;
-      height: 8px;
-      background: radial-gradient(circle at 10px 0, transparent 8px, #38BDF8 9px) repeat-x;
-      background-size: 20px 8px;
+      height: 13px;
+      background: radial-gradient(circle at 7% 100%, #38BDF8 10px, transparent 11px),
+                  radial-gradient(circle at 21% 100%, #38BDF8 15px, transparent 16px),
+                  radial-gradient(circle at 35% 100%, #38BDF8 12px, transparent 13px),
+                  radial-gradient(circle at 50% 100%, #38BDF8 17px, transparent 18px),
+                  radial-gradient(circle at 65% 100%, #38BDF8 13px, transparent 14px),
+                  radial-gradient(circle at 79% 100%, #38BDF8 16px, transparent 17px),
+                  radial-gradient(circle at 93% 100%, #38BDF8 11px, transparent 12px);
+      pointer-events: none;
     }
+
+    /* Khay đỡ bàn phím (Chassis) - Nền xám bạc ánh băng, phân định rõ ràng giữa nền xung quanh và các phím */
     #keyboardContainer {
-      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      width: 100%;
+      max-width: 520px;
       margin: 0 auto;
-      background: #F1F5F9;
+      background: #F1F5F9; /* Khay đệm sáng màu, tạo khối hộp nổi bật */
+      border: 2px solid rgba(255, 255, 255, 0.9);
       border-radius: 14px;
-      padding: 6px 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      border: 2px solid #FFFFFF;
+      padding: 8px 6px;
+      box-shadow: 0 4px 14px rgba(3, 105, 161, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.8);
     }
+
     .kb-row {
       display: flex;
       justify-content: center;
-      gap: 4px;
-      margin-bottom: 5px;
-      touch-action: none;
+      gap: 5px;
+      width: 100%;
     }
-    .kb-row:last-child {
-      margin-bottom: 0;
-    }
+
     .kb-key {
       flex: 1;
-      max-width: 48px;
-      height: 46px;
-      background: #FFFFFF;
-      color: #0F172A;
+      height: 44px;
+      background: #FFFFFF !important; /* Phím chữ màu TRẮNG SÁNG TINH KHÔI */
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
+      font-size: 21px;
       font-weight: 700;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      box-shadow: 0 2px 0 #CBD5E1, 0 3px 4px rgba(0, 0, 0, 0.1);
+      color: #0F172A !important; /* Ký tự màu xanh đậm/đen sắc nét */
       border: 1px solid #E2E8F0;
-      transition: transform 0.08s, background 0.08s;
+      box-shadow: 0 2px 0 #CBD5E1, 0 3px 5px rgba(15, 23, 42, 0.12);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.1s, transform 0.06s;
+      -webkit-tap-highlight-color: transparent;
     }
+
     .kb-key:active, .kb-key.pressed {
+      background: #BAE6FD !important;
+      color: #0369A1 !important;
       transform: translateY(2px);
-      box-shadow: 0 0 0 #CBD5E1;
-      background: #E2E8F0;
+      box-shadow: 0 0 0 #CBD5E1, 0 1px 2px rgba(15, 23, 42, 0.1);
     }
+
     .kb-key.special-key {
-      background: #E2E8F0;
-      color: #334155;
+      background: #E2E8F0 !important; /* Phím chức năng phân biệt rõ với phím chữ trắng */
       font-size: 14px;
-      max-width: 62px;
+      font-weight: 700;
+      color: #334155 !important;
+      border: 1px solid #CBD5E1;
+      box-shadow: 0 2px 0 #94A3B8, 0 2px 4px rgba(15, 23, 42, 0.08);
     }
+
+    .kb-key.key-shift, .kb-key.key-delete {
+      flex: 1.45;
+      font-size: 18px;
+    }
+
     .kb-key.key-delete {
-      background: #FEE2E2;
-      color: #DC2626;
+      background: #FEE2E2 !important; /* Phím xoá phớt đỏ nhẹ dễ nhận biết */
+      color: #B91C1C !important;
       border-color: #FECACA;
+      box-shadow: 0 2px 0 #FCA5A5, 0 2px 4px rgba(185, 28, 28, 0.1);
     }
+
+    .kb-key.key-shift.shift-active {
+      background: #0284C7 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 0 #0369A1;
+    }
+
+    .kb-key.key-mode {
+      flex: 1.35;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .kb-key.key-globe {
+      flex: 1.1;
+      font-size: 17px;
+    }
+
     .kb-key.key-space {
-      max-width: 240px;
+      flex: 4.8;
       font-size: 14px;
-      font-weight: 600;
-      color: #64748B;
+      font-weight: 700;
+      color: #64748B !important;
+      background: #FFFFFF !important;
     }
+
     .kb-key.key-return {
-      background: #0284C7;
-      color: #FFFFFF;
+      flex: 2.2;
+      background: #0284C7 !important; /* Phím Nhập xanh Apple nổi bật */
       font-size: 14px;
-      max-width: 76px;
-      border-color: #0369A1;
+      font-weight: 700;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 0 #0369A1, 0 3px 6px rgba(2, 132, 199, 0.3);
     }
-    .kb-key.key-hint {
+
+    .kb-key.hint-highlight {
+      outline: 3px solid #D97706 !important;
       background: #FEF08A !important;
       color: #0F172A !important;
-      outline: 3px solid #D97706 !important;
       box-shadow: 0 0 16px rgba(245, 158, 11, 0.9) !important;
       animation: pulseKey 0.8s infinite alternate;
+      z-index: 5;
     }
-    .kb-key.delete-highlight {
-      background: #EF4444 !important;
-      color: #FFFFFF !important;
-      outline: 3px solid #FDE047 !important;
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.9) !important;
-      animation: pulseKey 0.6s infinite alternate;
-    }
+
     @keyframes pulseKey {
       from { transform: scale(1); }
       to { transform: scale(1.08); background: #FDE047 !important; }
     }
-
-
 
     /* =====================================================================
        VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO - MENU ẨN HIỆN)
@@ -885,12 +1092,168 @@
     /* MẶT ĐỒNG HỒ TO TỐI ĐA - LUÔN LÀ HÌNH TRÒN HOÀN HẢO */
     .clock-stage {
       position: relative;
-      width: min(60vh, 86vw, 460px);
-      height: min(60vh, 86vw, 460px);
+      width: min(76vh, 85vw, 680px);
+      height: min(76vh, 85vw, 680px);
+      aspect-ratio: 1 / 1;
+      margin: auto;
+      border-radius: 50%;
+      background: #F8F9FD;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 3px 12px rgba(0, 0, 0, 0.15), 0 0 0 12px #1F273D, 0 0 0 18px #3B4668;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: auto;
+      touch-action: none;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+
+    /* BẢNG MENU TÙY CHỌN ẨN HIỆN CỦA ĐỒNG HỒ */
+    .clock-drawer-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .clock-drawer-overlay.active {
+      display: flex;
+    }
+
+    .clock-drawer-card {
+      background: #171E30;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 18px 20px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: modalSlide 0.25s ease-out;
+    }
+
+    .clock-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding-bottom: 8px;
+    }
+
+    .clock-drawer-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .clock-drawer-close {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #FFFFFF;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .clock-drawer-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .drawer-setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-group-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #94A3B8;
+    }
+
+    #clockSvg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .dial-number {
+      font-size: 27px;
+      font-weight: 900;
+      fill: #0F141E;
+      text-anchor: middle;
+      dominant-baseline: central;
+      font-family: var(--font-family);
+    }
+
+    .dial-min-sub {
+      font-size: 11px;
+      font-weight: 800;
+      fill: #D9381E;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .tick-major {
+      stroke: #0F141E;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .tick-minor {
+      stroke: #8E8E93;
+      stroke-width: 2;
+    }
+
+    .hand {
+      transform-origin: 180px 180px;
+      transition: transform 0.05s ease-out;
+      cursor: grab;
+    }
+
+    .hand:active {
+      cursor: grabbing;
+    }
+
+    #handHour {
+      stroke: var(--clock-hour-color);
+      stroke-width: 10;
+      stroke-linecap: round;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    }
+
+    #handMin {
+      stroke: var(--clock-min-color);
+      stroke-width: 6.5;
+      stroke-linecap: round;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    }
+
+    #handSec {
+      stroke: var(--clock-sec-color);
+      stroke-width: 3;
+      stroke-linecap: round;
     }
 
     .center-pin {
@@ -1057,102 +1420,13 @@
       color: #FFD60A;
     }
 
-    /* MODAL OVERLAYS (Settings & Summary) */
-        /* MODAL OVERLAYS (Settings & Summary) */
-    .modal-overlay {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      background: rgba(0, 0, 0, 0.75) !important;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      z-index: 1000 !important;
-      display: none !important;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      box-sizing: border-box;
-    }
-
-    .modal-overlay.active {
-      display: flex !important;
-    }
-
-    .modal-card {
-      background: #1C2235;
-      border: 1px solid var(--surface-border);
-      border-radius: 24px;
-      width: 100%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      padding: 22px;
-      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes modalSlide {
-    }
-    .stepper-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--surface-border);
-      color: #FFF;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .stepper-btn:active {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    .hand-slider-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-    }
-    .hand-slider-row input[type="range"] {
-      flex: 1;
-      accent-color: #0A84FF;
-      cursor: pointer;
-    }
+    /* =====================================================================
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MÔN TOÁN)
        ===================================================================== */
     #mathView {
       background: #EEF4FB !important;
       flex-direction: column;
       overflow-y: auto;
-      padding-bottom: 12px;
-      transition: background 0.3s;
-    }
-
-    #mathView.active {
-      display: flex !important;
-    }
-
-    #mathView .game-header {
-      background: #E2EBF5;
-      border-bottom: 1.5px solid #CBDCEE;
-    }
-
-    #mathView .stat-pill {
-      background: #FFFFFF;
-      border: 1px solid #BFD7EF;
-      box-shadow: 0 2px 6px rgba(10, 80, 160, 0.08);
-    }
-
-    #mathView .stat-pill .label {
-      color: #475569;
-    }
-
-    #mathView .stat-pill .val {
-      color: #0284C7;
       padding-bottom: 12px;
       transition: background 0.3s;
     }
@@ -1390,147 +1664,6 @@
       padding: 30px 15px;
     }
 
-    .math-input-wrapper {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .math-main-input {
-      width: 110px;
-      height: 52px;
-      font-size: 30px;
-      font-weight: 900;
-      text-align: center;
-      color: #0284C7;
-      background: #F8FAFC;
-      border: 3px solid #0284C7;
-      border-radius: 12px;
-      outline: none;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-      transition: all 0.2s;
-    }
-
-    .math-main-input:focus {
-      background: #FFFFFF;
-      border-color: #0369A1;
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
-    }
-
-    .btn-math-submit {
-      height: 52px;
-      padding: 0 16px;
-      background: #10B981;
-      color: #FFFFFF;
-      border: none;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .btn-math-submit-blue {
-      height: 52px;
-      padding: 0 20px;
-      background: #0284C7;
-      color: #FFFFFF;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
-      transition: all 0.15s;
-    }
-    .btn-math-submit:active {
-      transform: scale(0.96);
-      background: #0369A1;
-    }
-    .math-feedback-notice {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 10px;
-      background: #FEF2F2;
-      border: 1.5px solid #F87171;
-      color: #991B1B;
-    }
-    .math-feedback-notice.correct {
-      background: #F0FDF4;
-      border-color: #4ADE80;
-      color: #166534;
-    }
-    .math-numpad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      max-width: 320px;
-      margin: 14px auto 0 auto;
-      width: 100%;
-    }
-    .math-np-btn {
-      height: 52px;
-      background: #FFFFFF;
-      color: #0F172A;
-      border: 1.5px solid #CBD5E1;
-      border-radius: 12px;
-      font-size: 22px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.1s;
-    }
-    .math-np-btn:active {
-      transform: scale(0.94);
-      background: #E2E8F0;
-    }
-    .math-np-btn.np-action {
-      background: #FEE2E2;
-      color: #DC2626;
-      border-color: #FECACA;
-      font-size: 15px;
-    }
-    .math-np-btn.np-enter {
-      background: #0284C7;
-      color: #FFFFFF;
-      border-color: #0369A1;
-      font-size: 15px;
-    }
-
-    @media (max-width: 480px) {
-      .math-expr-text {
-        font-size: 30px;
-      }
-      #mathView input.math-main-input,
-      #mathCurrentInput,
-      .math-main-input {
-        width: 90px !important;
-        height: 48px !important;
-        font-size: 26px !important;
-        color: #0F172A !important;
-        -webkit-text-fill-color: #0F172A !important;
-      }
-      .btn-math-submit {
-        height: 48px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
-      .math-np-btn {
-        height: 44px;
-        font-size: 18px;
-      }
-    }
-
     /* Modal bài mẫu của Thầy */
     .sample-item-card {
       background: rgba(255, 255, 255, 0.06);
@@ -1572,15 +1705,90 @@
       background: #0A84FF;
     }
 
+    .btn-sample-action.delete:hover {
+      background: #FF453A;
+    }
 
+    /* Gợi ý ẩn banner hướng dẫn khi viết */
+    #guideBanner.teaching-hidden {
+      display: none !important;
+    }
 
-      <!-- Thời gian rơi -->
+    /* MODAL OVERLAYS (Settings & Summary) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
 
-      <!-- Kích thước chữ rơi -->
+    .modal-overlay.active {
+      display: flex;
+    }
 
-      <!-- Màu chữ rơi -->
+    .modal-card {
+      background: #1C2235;
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      padding: 22px;
+      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-      <!-- Âm thanh -->
+    @keyframes modalSlide {
+      from { transform: translateY(30px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-card h2 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .setting-group {
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .setting-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #E5E5EA;
+    }
+
+    .setting-group .hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .setting-group .value-display {
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary-color);
@@ -1591,7 +1799,7 @@
       margin: 8px 0;
     }
 
-    select, textarea, input[type="text"]:not(.math-main-input) {
+    select, textarea, input[type="text"] {
       width: 100%;
       background: #2C2C2E;
       color: #fff;
@@ -1608,15 +1816,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 12px 0;
     }
 
     .switch {
       position: relative;
       display: inline-block;
-      width: 50px;
-      height: 30px;
-      flex-shrink: 0;
+      width: 48px;
+      height: 28px;
     }
 
     .switch input {
@@ -1628,56 +1834,38 @@
     .slider {
       position: absolute;
       cursor: pointer;
-      inset: 0;
-      background-color: #39393D;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #3A3A3C;
       transition: .3s;
-      border-radius: 30px;
+      border-radius: 28px;
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
-      left: 2px;
-      bottom: 2px;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
       background-color: white;
       transition: .3s;
       border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     input:checked + .slider {
-      background-color: #30D158;
+      background-color: var(--accent-color);
     }
 
     input:checked + .slider:before {
       transform: translateX(20px);
     }
 
-    .setting-group {
-      margin-bottom: 16px;
-    }
-
-    .setting-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 6px;
-    }
-
-    .setting-group .hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
     .color-presets {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      margin-top: 8px;
+      align-items: center;
       flex-wrap: wrap;
-      margin-top: 6px;
     }
 
     .color-chip {
@@ -1686,136 +1874,94 @@
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: all 0.2s;
+      transition: transform 0.15s;
     }
 
     .color-chip.active {
-      border-color: #fff;
+      border-color: #0A84FF;
       transform: scale(1.15);
-      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+      box-shadow: 0 0 10px rgba(10, 132, 255, 0.8);
     }
 
     .btn-main {
       width: 100%;
-      padding: 12px;
-      background: #0A84FF;
+      background: var(--primary-color);
       color: #fff;
       border: none;
-      border-radius: 12px;
+      padding: 13px;
+      border-radius: 14px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       margin-top: 10px;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.1s;
     }
 
     .btn-main:active {
+      transform: scale(0.98);
       background: #0071E3;
     }
 
     .btn-secondary {
       width: 100%;
-      padding: 10px;
-      background: transparent;
-      color: #8E8E93;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
       border: 1px solid var(--surface-border);
-      border-radius: 12px;
+      padding: 11px;
+      border-radius: 14px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       margin-top: 8px;
     }
 
-        /* MODAL OVERLAYS (Settings & Summary) */
-    .modal-overlay {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
-      background: rgba(0, 0, 0, 0.75) !important;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      z-index: 1000 !important;
-      display: none !important;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      box-sizing: border-box;
-    }
-
-    .modal-overlay.active {
-      display: flex !important;
-    }
-
-    .modal-card {
-      background: #1C1C1E;
-      border: 1px solid var(--surface-border);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes modalSlide {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .modal-card h2 {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-
+    /* SUMMARY REPORT CARD */
     .summary-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin: 16px 0;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0;
     }
 
     .summary-box {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--surface-border);
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
       padding: 12px;
       text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .summary-box .s-val {
+      font-size: 24px;
+      font-weight: 800;
+      margin-top: 4px;
     }
 
     .summary-box .s-lbl {
       font-size: 11px;
-      text-transform: uppercase;
       color: var(--text-muted);
+      text-transform: uppercase;
       font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .summary-box .s-val {
-      font-size: 20px;
-      font-weight: 800;
     }
 
     .rank-banner {
-      text-align: center;
-      padding: 16px;
-      background: rgba(255,214,10,0.1);
-      border: 1px solid rgba(255,214,10,0.3);
+      background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 10, 0.1));
+      border: 1px solid rgba(255, 214, 10, 0.4);
+      padding: 14px;
       border-radius: 16px;
-      margin-bottom: 16px;
+      text-align: center;
+      margin-bottom: 14px;
     }
 
     .rank-banner .rank-title {
-      font-size: 11px;
-      font-weight: 800;
+      font-size: 13px;
       color: #FFD60A;
+      font-weight: 700;
       letter-spacing: 1px;
-      text-transform: uppercase;
     }
 
     .rank-banner .rank-letter {
@@ -1843,595 +1989,31 @@
       align-items: center;
       gap: 12px;
     }
-      /* =====================================================================
-       MOBILE RESPONSIVE CHO GAME HEADER
-       ===================================================================== */
-    @media (max-width: 600px) {
-      .game-header {
-        padding: 4px 6px;
-        gap: 5px;
-      }
-      .stat-pill {
-        padding: 2px 5px;
-        border-radius: 6px;
-      }
-      .stat-pill .label {
-        font-size: 8.5px;
-      }
-      .stat-pill .val {
-        font-size: 12px;
-      }
-      .icon-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
-        border-radius: 8px;
-      }
-      .voice-badge-btn {
-        padding: 4px 8px;
-        font-size: 11px;
-        height: 32px;
-        border-radius: 8px;
-      }
-    }
-
-    /* =====================================================================
-       VIEW 5: GAME VẼ HÌNH & TÔ MÀU (DRAW & COLORING)
-       ===================================================================== */
-    #drawView {
-      background: #0f172a;
-      display: none !important;
-      flex-direction: column;
-      overflow: hidden;
-      width: 100%;
-      height: calc(100% - 50px);
-      box-sizing: border-box;
-    }
-    #drawView.active {
-      display: flex !important;
-    }
-    .draw-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 6px 10px;
-      background: #1e293b;
-      border-bottom: 1.5px solid #334155;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      flex-shrink: 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-    }
-    .draw-toolbar::-webkit-scrollbar {
-      height: 3px;
-    }
-    .draw-toolbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-    }
-    .draw-tool-group, .draw-size-group, .draw-template-group, .draw-actions-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .draw-group-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: #94a3b8;
-      margin-right: 2px;
-    }
-    .draw-tool-btn, .draw-action-btn {
-      padding: 6px 12px;
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s;
-    }
-    .draw-tool-btn:hover, .draw-action-btn:hover {
-      background: #475569;
-    }
-    .draw-tool-btn.active {
-      background: #0284c7;
-      border-color: #38bdf8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
-    }
-    .draw-size-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .draw-size-btn.active {
-      background: #0284c7;
-      border-color: #38bdf8;
-      color: #fff;
-    }
-    .draw-select {
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      outline: none;
-      cursor: pointer;
-    }
-    .draw-action-btn.praise-btn {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      border-color: #fbbf24;
-      color: #ffffff;
-    }
-    .draw-color-palette {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: #111827;
-      border-bottom: 1.5px solid #1f2937;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      flex-shrink: 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-    }
-    .draw-color-palette::-webkit-scrollbar {
-      height: 3px;
-    }
-    .draw-color-palette::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-    }
-    .draw-color-swatch {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      flex-shrink: 0;
-      transition: transform 0.15s, border-color 0.15s;
-      position: relative;
-    }
-    .draw-color-swatch:hover {
-      transform: scale(1.15);
-    }
-    .draw-color-swatch.active {
-      border: 3px solid #ffffff;
-      transform: scale(1.22);
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
-    }
-    .draw-canvas-container {
-      flex: 1;
-      width: 100%;
-      position: relative;
-      background: #ffffff;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: none;
-      cursor: crosshair;
-    }
-    #drawCanvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      touch-action: none;
-    }
-  
-
-    /* KIM ĐỒNG HỒ - NÉT RÕ, MÀU SẮC ĐẬM ĐÀ, TÂM XOAY 180px 180px */
-    .hand {
-      cursor: grab;
-      
-    }
-    .hand:active {
-      cursor: grabbing;
-    }
-
-    #handHour {
-      stroke: #0284C7 !important;
-      stroke-width: 10 !important;
-      stroke-linecap: round !important;
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-      
-    }
-
-    #handMin {
-      stroke: #10B981 !important;
-      stroke-width: 6.5 !important;
-      stroke-linecap: round !important;
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-      
-    }
-
-    #handSec, #secGroup line {
-      stroke: #EF4444 !important;
-      stroke-width: 3 !important;
-      stroke-linecap: round !important;
-      
-    }
-
-    #secGroup {
-      
-    }
-
-    .center-pin {
-      fill: #0F141E !important;
-      stroke: #FFFFFF !important;
-      stroke-width: 3.5 !important;
-    }
-
-    .center-pin-sec {
-      fill: #EF4444 !important;
-    }
-
-  
-
-    /* =====================================================================
-       CHẾ ĐỘ 10 BÀI TOÁN TUẦN TỰ (MATH QUIZ) - CÂN ĐỐI, ĐẸP MẮT TRÊN MỌI MÀN HÌNH
-       ===================================================================== */
-    .math-level-bar {
-      width: 100%;
-      background: #E2EBF5;
-      padding: 6px 10px;
-      border-bottom: 1px solid #CBDCEE;
-      overflow-x: auto;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      box-sizing: border-box;
-      flex-shrink: 0;
-    }
-    .math-level-tabs {
-      display: inline-flex;
-      gap: 6px;
-      justify-content: center;
-      min-width: 100%;
-    }
-    .math-level-btn {
-      padding: 6px 12px;
-      background: #FFFFFF;
-      color: #334155;
-      border: 1.5px solid #CBD5E1;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s;
-      flex-shrink: 0;
-    }
-    .math-level-btn.active {
-      background: #0284C7;
-      color: #FFFFFF;
-      border-color: #0369A1;
-      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
-    }
-
-    .math-quiz-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      width: 100%;
-      max-width: 480px;
-      margin: 8px auto 0 auto;
-      padding: 6px 12px;
-      box-sizing: border-box;
-      flex: 1;
-    }
-
-    .math-steps-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      width: 100%;
-      margin-bottom: 10px;
-      overflow-x: auto;
-      padding: 4px 0;
-    }
-
-    .math-step-pill {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: #E2E8F0;
-      color: #64748B;
-      font-size: 11px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1.5px solid #CBD5E1;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-
-    .math-step-pill.current {
-      background: #0284C7;
-      color: #FFFFFF;
-      border-color: #0369A1;
-      transform: scale(1.15);
-      box-shadow: 0 0 10px rgba(2, 132, 199, 0.45);
-    }
-
-    .math-step-pill.done {
-      background: #10B981;
-      color: #FFFFFF;
-      border-color: #059669;
-    }
-
-    .math-card {
-      background: #FFFFFF;
-      border: 2px solid #BFD7EF;
-      border-radius: 18px;
-      padding: 14px 18px;
-      box-shadow: 0 8px 24px rgba(10, 80, 160, 0.1);
-      width: 100%;
-      box-sizing: border-box;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-
-    .math-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      border-bottom: 1px dashed #E2E8F0;
-      padding-bottom: 6px;
-    }
-
-    .math-card-step-badge {
-      font-size: 13px;
-      font-weight: 800;
-      color: #0284C7;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .math-card-hint {
-      font-size: 11.5px;
-      color: #64748B;
-      font-weight: 600;
-    }
-
-    .math-expression-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin: 8px 0;
-    }
-
-    .math-expr-text {
-      font-size: 38px;
-      font-weight: 900;
-      color: #0F172A;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 2px;
-    }
-
-    .math-input-wrapper {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .math-main-input {
-      width: 100px !important;
-      height: 52px !important;
-      border: 3px solid #0284C7 !important;
-      border-radius: 12px !important;
-      background: #FFFFFF !important;
-      color: #0F172A !important;
-      -webkit-text-fill-color: #0F172A !important;
-      font-size: 30px !important;
-      font-weight: 900 !important;
-      text-align: center !important;
-      outline: none !important;
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.18) !important;
-      box-sizing: border-box;
-    }
-
-    .btn-math-submit {
-      height: 52px;
-      padding: 0 16px;
-      background: linear-gradient(135deg, #10B981, #059669);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
-      transition: all 0.15s;
-    }
-    .btn-math-submit:hover, .btn-math-submit:active {
-      transform: scale(0.96);
-      filter: brightness(1.1);
-    }
-
-    .math-feedback-notice {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      font-weight: 700;
-      margin-top: 6px;
-    }
-    .math-feedback-notice.err {
-      background: #FEE2E2;
-      color: #DC2626;
-      border: 1px solid #FECACA;
-    }
-    .math-feedback-notice.ok {
-      background: #D1FAE5;
-      color: #059669;
-      border: 1px solid #A7F3D0;
-    }
-
-    .math-numpad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      width: 100%;
-      max-width: 320px;
-      margin: 0 auto;
-    }
-
-    .math-np-btn {
-      height: 50px;
-      background: #FFFFFF;
-      color: #0F172A;
-      border: 1.5px solid #CBD5E1;
-      border-radius: 12px;
-      font-size: 22px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-      transition: all 0.1s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .math-np-btn:hover {
-      background: #F1F5F9;
-      border-color: #94A3B8;
-    }
-    .math-np-btn:active {
-      transform: scale(0.93);
-      background: #E2E8F0;
-    }
-    .math-np-btn.np-action {
-      background: #FEE2E2;
-      color: #DC2626;
-      border-color: #FECACA;
-      font-size: 15px;
-    }
-    .math-np-btn.np-enter {
-      background: linear-gradient(135deg, #0284C7, #0369A1);
-      color: #FFFFFF;
-      border-color: #0284C7;
-      font-size: 15px;
-    }
-
-    @media (max-width: 600px) {
-      .math-expr-text {
-        font-size: 28px;
-      }
-      .math-main-input {
-        width: 80px !important;
-        height: 44px !important;
-        font-size: 24px !important;
-      }
-      .btn-math-submit {
-        height: 44px;
-        padding: 0 12px;
-        font-size: 12.5px;
-      }
-      .math-np-btn {
-        height: 44px;
-        font-size: 19px;
-      }
-    }
-
-  
-
-    /* PHÍM GỢI Ý MÀU VÀNG PHẢN XẠ - SÁNG NỔI BẬT ĐỂ NGƯỜI CHƠI NHÌN THẤY NGAY */
-    .kb-key.key-hint,
-    .kb-key.hint-highlight {
-      background: #FEF08A !important;
-      color: #0F172A !important;
-      outline: 3px solid #D97706 !important;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.95) !important;
-      animation: pulseKey 0.8s infinite alternate !important;
-      transform: scale(1.08) !important;
-      z-index: 10 !important;
-    }
-
-    @keyframes pulseKey {
-      from {
-        transform: scale(1);
-        background: #FEF08A !important;
-      }
-      to {
-        transform: scale(1.1);
-        background: #FDE047 !important;
-        box-shadow: 0 0 20px rgba(234, 179, 8, 1) !important;
-      }
-    }
-
   </style>
 </head>
-
 <body>
   <div class="bg-glow"></div>
 
-  <!-- NAVIGATION TABS (5 TRÒ CHƠI) -->
+  <!-- NAVIGATION TABS (3 TRÒ CHƠI) -->
   <nav class="app-nav">
-    <!-- Menu chọn nhanh Game trên Mobile (1 chạm đổi game ngay, không bị tràn màn hình) -->
-    <div class="mobile-nav-select-wrap">
-      <select id="mobileGameSelect" class="mobile-game-select" aria-label="Chọn Trò Chơi">
-        <option value="typing">⌨️ Gõ Rơi Tự Do</option>
-        <option value="words">📝 Luyện Từ Của Thầy</option>
-        <option value="clock">⏰ Coi Giờ Đồng Hồ</option>
-        <option value="math">🧮 Luyện Phép Tính</option>
-        <option value="draw">🎨 Vẽ Hình & Tô Màu</option>
-      </select>
+    <div class="nav-tab" id="tabTyping">
+      <span>⌨️</span> Gõ Rơi Tự Do
     </div>
-
-    <!-- Thanh Tab cuộn ngang mượt mà, hỗ trợ touch vuốt trượt trên điện thoại -->
-    <div class="nav-tabs-scroll" id="navTabsScroll">
-      <div class="nav-tab active" id="tabTyping" data-tab="typing">
-        <span>⌨️</span> Gõ Rơi Tự Do
-      </div>
-      <div class="nav-tab" id="tabWords" data-tab="words">
-        <span>📝</span> Luyện Từ Của Thầy
-      </div>
-      <div class="nav-tab" id="tabClock" data-tab="clock">
-        <span>⏰</span> Coi Giờ Đồng Hồ
-      </div>
-      <div class="nav-tab" id="tabMath" data-tab="math">
-        <span>🧮</span> Luyện Phép Tính
-      </div>
-      <div class="nav-tab" id="tabDraw" data-tab="draw">
-        <span>🎨</span> Vẽ Hình & Tô Màu
-      </div>
+    <div class="nav-tab active" id="tabWords">
+      <span>📝</span> Luyện Từ Của Thầy
+    </div>
+    <div class="nav-tab" id="tabClock">
+      <span>⏰</span> Coi Giờ Đồng Hồ
+    </div>
+    <div class="nav-tab" id="tabMath">
+      <span>🧮</span> Luyện Phép Tính
     </div>
   </nav>
 
   <!-- =====================================================================
        VIEW 1: GAME GÕ RƠI TỰ DO
        ===================================================================== -->
-<section class="game-view active" id="typingView">
+  <section class="game-view" id="typingView">
     <div class="game-header">
       <div class="stats-bar">
         <div class="stat-pill">
@@ -2469,9 +2051,9 @@
   </section>
 
   <!-- =====================================================================
-       VIEW 2: GAME LUYỆN TỪ CỦA THẦY
+       VIEW 2: GAME TẬP GÕ TỪ THEO BÀI DẠY CỦA THẦY (BẢNG ĐEN)
        ===================================================================== -->
-<section class="game-view" id="wordsPracticeView">
+  <section class="game-view active" id="wordsPracticeView">
     <div class="game-header">
       <div class="stats-bar">
         <div class="stat-pill">
@@ -2532,6 +2114,8 @@
         <!-- Textbox 1: Của thầy để gõ đề bài (Hỗ trợ gõ tiếng Việt có dấu) -->
         <textarea id="teacherBlackboardInput" lang="vi" spellcheck="false" autocomplete="off" autocapitalize="sentences" placeholder="Thầy gõ chữ hoặc bài học vào đây... (Ví dụ: Bố mẹ yêu con, Việt Nam vô địch, 123 456)"></textarea>
 
+
+
         <!-- Dòng theo dõi ký tự trên đề bài (với highlight ký tự đang viết) -->
         <div id="teacherPromptTracker"></div>
 
@@ -2573,9 +2157,9 @@
   </section>
 
   <!-- =====================================================================
-       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ
+       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO)
        ===================================================================== -->
-<section class="game-view" id="clockView">
+  <section class="game-view" id="clockView">
     <!-- KHỐI THANH ĐIỀU KHIỂN NHANH TRÊN CÙNG (TIẾT KIỆM DIỆN TÍCH TỐI ĐA) -->
     <div class="clock-compact-header">
       <div class="digital-time-compact" id="digitalTimeBox" title="Thời gian điện tử">
@@ -2597,19 +2181,17 @@
     <!-- MẶT ĐỒNG HỒ SIÊU TO TỐI ĐA TRÊN MÀN HÌNH -->
     <div class="clock-stage" id="clockStage">
       <svg id="clockSvg" viewBox="0 0 360 360">
-        <!-- NỀN MẶT ĐỒNG HỒ TRÒN HOÀN HẢO -->
-        <circle id="clockFaceBg" cx="180" cy="180" r="172" fill="#F8F9FD" stroke="#334155" stroke-width="4" />
         <g id="dialTicks"></g>
         <g id="dialNumbers"></g>
 
-        <!-- KIM GIỜ (Hour Hand: Ngắn - Xanh dương) -->
-        <line id="handHour" class="hand" x1="180" y1="180" x2="180" y2="105" stroke="#0284C7" stroke-width="10" stroke-linecap="round" />
-        <!-- KIM PHÚT (Minute Hand: Dài - Xanh lá cây) -->
-        <line id="handMin" class="hand" x1="180" y1="180" x2="180" y2="65" stroke="#10B981" stroke-width="6.5" stroke-linecap="round" />
-        <!-- KIM GIÂY (Second Hand: Mảnh - Đỏ rực) -->
+        <!-- KIM GIỜ (Hour Hand) -->
+        <line id="handHour" class="hand" x1="180" y1="180" x2="180" y2="105" />
+        <!-- KIM PHÚT (Minute Hand) -->
+        <line id="handMin" class="hand" x1="180" y1="180" x2="180" y2="65" />
+        <!-- KIM GIÂY (Second Hand) -->
         <g id="secGroup" class="hand">
-          <line id="handSec" x1="180" y1="210" x2="180" y2="45" stroke="#EF4444" stroke-width="3" stroke-linecap="round" />
-          <circle cx="180" cy="45" r="4.5" class="center-pin-sec" fill="#EF4444" />
+          <line id="handSec" x1="180" y1="210" x2="180" y2="50" />
+          <circle cx="180" cy="50" r="4.5" class="center-pin-sec" />
         </g>
 
         <!-- Trục giữa đồng hồ -->
@@ -2709,59 +2291,59 @@
   </section>
 
   <!-- =====================================================================
-       VIEW 4: GAME LUYỆN PHÉP TÍNH
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MÔN TOÁN)
        ===================================================================== -->
-<section class="game-view" id="mathView">
+  <section class="game-view" id="mathView">
     <div class="game-header">
       <div class="stats-bar">
         <div class="stat-pill">
           <span class="label">Tiến Độ</span>
-          <span class="val highlight" id="mathProgressVal">1 / 10</span>
+          <span class="val highlight" id="mathProgressVal">0 / 10</span>
         </div>
         <div class="stat-pill">
           <span class="label">Thời Gian</span>
           <span class="val" style="color:var(--accent-color)" id="mathTimerVal">00:00</span>
         </div>
         <div class="stat-pill">
-          <span class="label">Cấp Độ</span>
-          <span class="val" style="color:#F59E0B;font-size:11px;" id="mathCurrentLevelBadge">1 Chữ Số</span>
+          <span class="label">Điểm Số</span>
+          <span class="val" style="color:#F59E0B" id="mathScoreVal">-- / 10</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Đọc to đề bài toán hiện tại">
-          <span>🔊</span> Đọc Đề
-        </button>
-        <button class="icon-btn" id="btnRestartMathGame" title="Làm lại 10 bài mới">🔄</button>
-      </div>
-    </div>
-
-    <!-- THANH CHỌN CẤP ĐỘ KHÓ (1 CHỮ SỐ, 2 CHỮ SỐ, BẢNG CỬU CHƯƠNG, THẦY RA ĐỀ) -->
-    <div class="math-level-bar">
-      <div class="math-level-tabs">
-        <button type="button" class="math-level-btn active" id="btnLvlSingle" data-level="single">
-          <span>🟢</span> 1 Chữ Số
-        </button>
-        <button type="button" class="math-level-btn" id="btnLvlDouble" data-level="double">
-          <span>🟡</span> 2 Chữ Số
-        </button>
-        <button type="button" class="math-level-btn" id="btnLvlTimes" data-level="times_table">
-          <span>🔴</span> Bảng Cửu Chương
-        </button>
-        <button type="button" class="math-level-btn" id="btnLvlCustom" data-level="custom">
-          <span>👨‍🏫</span> Thầy Tự Ra Đề
+        <button class="voice-badge-btn" id="btnMathVoiceRepeat" title="Nghe lại nhận xét và chấm điểm">
+          <span>🔊</span> Nghe chấm điểm
         </button>
       </div>
     </div>
 
-    <!-- KHU VỰC THẦY TỰ SOẠN ĐỀ (CHỈ HIỆN KHI CHỌN "THẦY TỰ RA ĐỀ") -->
-    <div class="math-custom-panel" id="mathCustomPanel" style="display:none;">
-      <div class="custom-panel-card">
-        <div class="custom-panel-header">
-          <span style="font-weight:700;font-size:13px;color:#134B2F;">👨‍🏫 Thầy gõ 10 phép tính đơn vào đây:</span>
-          <button type="button" class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
+    <!-- 02 TEXTBOX: 1 CHO THẦY RA ĐỀ BÀI, 1 CHO HỌC TRÒ NHẬP KẾT QUẢ -->
+    <div class="two-box-container math-two-box">
+      <!-- KHUNG 1: ĐỀ BÀI CỦA THẦY (TEXTBOX 1 - 10 PHÉP TÍNH ĐƠN) -->
+      <div class="teacher-box-card math-box-card">
+        <div class="box-header">
+          <div class="box-title teacher-title">
+            <span>👨‍🏫</span> 1. BẢNG RA ĐỀ CỦA THẦY (10 PHÉP TÍNH)
+          </div>
+          <div class="math-teacher-tools">
+            <div style="position:relative;display:inline-block;">
+              <button class="btn-board-sm" id="btnAutoMathDropdown">🎲 Tạo Đề Tự Động ▾</button>
+              <div class="math-preset-dropdown" id="mathPresetDropdown">
+                <div class="preset-item" data-preset="add20">➕ Phép Cộng (Phạm vi 20)</div>
+                <div class="preset-item" data-preset="sub20">➖ Phép Trừ (Phạm vi 20)</div>
+                <div class="preset-item" data-preset="addsub100">➕➖ Cộng & Trừ (Phạm vi 100)</div>
+                <div class="preset-item" data-preset="mul">✖️ Bảng Nhân (2 đến 9)</div>
+                <div class="preset-item" data-preset="div">➗ Bảng Chia (2 đến 9)</div>
+                <div class="preset-item" data-preset="mix">🎲 Hỗn Hợp (+, -, ×, ÷)</div>
+              </div>
+            </div>
+            <button class="btn-board-sm" id="btnMathSample">📚 Đề Mẫu</button>
+            <button class="btn-board-sm" id="btnClearMath">🧹 Xóa</button>
+          </div>
         </div>
-        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 1 phép tính)...
+
+        <textarea id="teacherMathInput" lang="vi" spellcheck="false" placeholder="Thầy gõ 10 phép tính đơn vào đây (mỗi dòng 01 phép tính)...
+Ví dụ:
 8 + 5 =
 15 - 7 =
 6 x 4 =
@@ -2772,131 +2354,47 @@
 45 / 5 =
 12 + 18 =
 50 - 25 ="></textarea>
-        <button type="button" class="btn-board start-btn" id="btnStartCustomMath" style="width:100%;margin-top:6px;">
-          ▶️ BẮT ĐẦU CHO TRÒ LÀM 10 BÀI TUẦN TỰ
-        </button>
-      </div>
-    </div>
 
-    <!-- VÙNG CHƠI CHÍNH: 10 BÀI TÍNH HIỂN THỊ TUẦN TỰ -->
-    <div class="math-quiz-container" id="mathQuizContainer">
-      <!-- VẠCH TIẾN ĐỘ 10 BÀI (PROGRESS STEPS) -->
-      <div class="math-steps-bar" id="mathStepsBar">
-        <!-- JS generates 10 step pills -->
+        <div class="board-actions-row">
+          <button class="btn-board start-btn" id="btnStartMathTest" style="width:100%;">
+            ▶️ BẮT ĐẦU CHO TRÒ LÀM BÀI
+          </button>
+        </div>
       </div>
 
-      <!-- THẺ BÀI TOÁN HIỆN TẠI (SIÊU TO, DỄ NHÌN) -->
-      <div class="math-card" id="mathCard">
-        <div class="math-card-header">
-          <span class="math-card-step-badge" id="mathBadgeQNum">BÀI 1 TRÊN 10</span>
-          <span class="math-card-hint" id="mathCardHint">Gõ đúng kết quả để sang bài tiếp theo</span>
+      <!-- KHUNG 2: BÀI LÀM CỦA HỌC TRÒ (TEXTBOX 2 - NHẬP KẾT QUẢ) -->
+      <div class="student-box-card math-box-card">
+        <div class="box-header">
+          <div class="box-title student-title">
+            <span>✍️</span> 2. BÀI LÀM CỦA HỌC TRÒ (VỞ TẬP TÍNH)
+          </div>
+          <span id="studentMathStatus" style="font-size:12px;font-weight:700;color:var(--text-muted);">Sẵn sàng</span>
         </div>
 
-        <!-- KHUNG PHÉP TÍNH TO -->
-        <div class="math-expression-wrap">
-          <span class="math-expr-text" id="mathExprText">7 × 8 =</span>
-          <div class="math-input-wrapper">
-            <input type="text" id="mathCurrentInput" class="math-main-input" inputmode="numeric" pattern="[0-9\-]*" autocomplete="off" placeholder="?" style="color:#0F172A !important; -webkit-text-fill-color:#0F172A !important; background:#FFFFFF !important; caret-color:#0284C7 !important;">
-            <button type="button" class="btn-math-submit" id="btnMathCheck" title="Kiểm tra đáp án">↵ KIỂM TRA</button>
+        <div class="student-math-sheet" id="studentMathSheet">
+          <div class="math-empty-tip">
+            Thầy hãy chuẩn bị 10 phép tính đơn ở Khung 1 rồi nhấn <strong>[BẮT ĐẦU CHO TRÒ LÀM BÀI]</strong> nhé!
           </div>
         </div>
 
-        <!-- THÔNG BÁO PHẢN HỒI (ĐÚNG/SAI) -->
-        <div class="math-feedback-notice" id="mathFeedbackNotice" style="display:none;">
-          <span id="mathFeedbackIcon">⚠️</span>
-          <span id="mathFeedbackText">Chưa đúng rồi! Em hãy tính lại nhé!</span>
+        <div class="board-actions-row">
+          <button class="btn-board start-btn" id="btnSubmitMathTest" style="width:100%;background:#30D158;display:none;">
+            ✅ NỘP BÀI & CHẤM ĐIỂM
+          </button>
         </div>
       </div>
-
-      <!-- BÀN PHÍM SỐ CẢM ỨNG DI ĐỘNG (DỄ BẤM TRÊN IPAD & ĐIỆN THOẠI) -->
-      <div class="math-numpad" id="mathNumpad">
-        <button type="button" class="math-np-btn" data-val="1">1</button>
-        <button type="button" class="math-np-btn" data-val="2">2</button>
-        <button type="button" class="math-np-btn" data-val="3">3</button>
-        <button type="button" class="math-np-btn" data-val="4">4</button>
-        <button type="button" class="math-np-btn" data-val="5">5</button>
-        <button type="button" class="math-np-btn" data-val="6">6</button>
-        <button type="button" class="math-np-btn" data-val="7">7</button>
-        <button type="button" class="math-np-btn" data-val="8">8</button>
-        <button type="button" class="math-np-btn" data-val="9">9</button>
-        <button type="button" class="math-np-btn np-action" data-val="del" title="Xoá một số">⌫ Xoá</button>
-        <button type="button" class="math-np-btn" data-val="0">0</button>
-        <button type="button" class="math-np-btn np-enter" data-val="enter" title="Kiểm tra đáp án">↵ Xong</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================================
-       VIEW 5: GAME VẼ HÌNH & TÔ MÀU (DRAW & COLORING)
-       ===================================================================== -->
-<section class="game-view" id="drawView">
-    <!-- THANH CÔNG CỤ TRÊN CÙNG -->
-    <div class="draw-toolbar">
-      <!-- Bộ công cụ vẽ -->
-      <div class="draw-tool-group">
-        <button type="button" class="draw-tool-btn active" id="toolBrush" title="Bút vẽ tự do nét mượt">
-          <span>🖌️</span> Bút Vẽ
-        </button>
-        <button type="button" class="draw-tool-btn" id="toolBucket" title="Tô màu kín hình (Đổ màu)">
-          <span>🪣</span> Đổ Màu
-        </button>
-        <button type="button" class="draw-tool-btn" id="toolEraser" title="Cục tẩy trắng">
-          <span>🧼</span> Tẩy
-        </button>
-      </div>
-
-      <!-- Cỡ nét vẽ -->
-      <div class="draw-size-group">
-        <span class="draw-group-label">Nét:</span>
-        <button type="button" class="draw-size-btn" data-size="4" title="Nét nhỏ 4px">4</button>
-        <button type="button" class="draw-size-btn active" data-size="10" title="Nét vừa 10px">10</button>
-        <button type="button" class="draw-size-btn" data-size="22" title="Nét to 22px">22</button>
-        <button type="button" class="draw-size-btn" data-size="38" title="Nét khổng lồ 38px">38</button>
-      </div>
-
-      <!-- Chọn tranh mẫu -->
-      <div class="draw-template-group">
-        <span class="draw-group-label">Tranh mẫu:</span>
-        <select id="drawTemplateSelect" class="draw-select" title="Chọn hình mẫu tô màu cho bé">
-          <option value="cat">🐱 Chú Mèo Con</option>
-          <option value="flower">🌸 Bông Hoa 5 Cánh</option>
-          <option value="car">🚗 Chiếc Ô Tô</option>
-          <option value="apple">🍎 Quả Táo Ngọt</option>
-          <option value="house">🏠 Ngôi Nhà Mơ Ước</option>
-          <option value="sun">☀️ Mặt Trời & Mây</option>
-          <option value="blank">📄 Trang Giấy Trắng</option>
-        </select>
-      </div>
-
-      <!-- Nút thao tác nhanh -->
-      <div class="draw-actions-group">
-        <button type="button" class="draw-action-btn" id="btnDrawClear" title="Xóa trắng để vẽ lại">
-          <span>🧹</span> Xóa Hết
-        </button>
-        <button type="button" class="draw-action-btn" id="btnDrawDownload" title="Tải bức tranh về máy">
-          <span>💾</span> Tải Về
-        </button>
-        <button type="button" class="draw-action-btn praise-btn" id="btnDrawPraise" title="Bấm nghe lời khen ngợi tranh vẽ">
-          <span>🔊</span> Khen Ngợi
-        </button>
-      </div>
-    </div>
-
-    <!-- BẢNG MÀU SẮC DÀNH CHO BÉ -->
-    <div class="draw-color-palette" id="drawColorPalette"></div>
-
-    <!-- KHU VỰC KHUNG TRANH CANVAS -->
-    <div class="draw-canvas-container" id="drawCanvasContainer">
-      <canvas id="drawCanvas"></canvas>
     </div>
   </section>
 
   <!-- BÀN PHÍM IPHONE CHUẨN IOS - NỀN XANH NHẠT GỢN MÂY -->
   <div id="keyboardWrapper">
-    <div id="virtualKeyboard"></div>
+    <div id="keyboardContainer">
+      <div id="virtualKeyboard"></div>
+    </div>
   </div>
 
-<div class="modal-overlay" id="settingsModal">
+  <!-- MODAL CÀI ĐẶT THAM SỐ CHUNG & MÀU NỀN -->
+  <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
       <h2>⚙️ Cài Đặt Tham Số</h2>
 
@@ -3013,9 +2511,6 @@
             <span class="slider"></span>
           </label>
         </div>
-        <button type="button" class="btn-secondary" id="btnTestAudio" style="margin-top:8px;padding:6px 12px;font-size:12px;width:100%;background:rgba(10,132,255,0.15);border:1px solid rgba(10,132,255,0.5);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:6px;">
-          <span>🔊</span> Khởi động lại & Thử âm thanh ngay
-        </button>
       </div>
 
       <button class="btn-main" id="saveSettingsBtn">💾 Lưu Cài Đặt</button>
@@ -3023,7 +2518,8 @@
     </div>
   </div>
 
-<div class="modal-overlay" id="wordSettingsModal">
+  <!-- MODAL CÀI ĐẶT RIÊNG: GAME LUYỆN TỪ CỦA THẦY -->
+  <div class="modal-overlay" id="wordSettingsModal">
     <div class="modal-card">
       <h2>⚙️ Cài Đặt Game Luyện Từ Của Thầy</h2>
 
@@ -3092,7 +2588,8 @@
     </div>
   </div>
 
-<div class="modal-overlay" id="summaryModal">
+  <!-- SUMMARY REPORT MODAL -->
+  <div class="modal-overlay" id="summaryModal">
     <div class="modal-card">
       <h2>🏆 TỔNG KẾT VÁN CHƠI</h2>
 
@@ -3127,11 +2624,116 @@
     </div>
   </div>
 
+  <!-- MODAL QUẢN LÝ VÀ CẬP NHẬT BÀI MẪU CỦA THẦY (GAME 2) -->
+  <div class="modal-overlay" id="sampleLessonsModal">
+    <div class="modal-card" style="max-width:560px;">
+      <h2>📚 Quản Lý & Cập Nhật Bài Mẫu</h2>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">
+        Thầy có thể chọn bài mẫu có sẵn, thêm câu mới hoặc chỉnh sửa danh sách theo ý muốn:
+      </div>
+
+      <!-- Ô nhập thêm bài mẫu mới -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <input type="text" id="newSampleInput" placeholder="Gõ câu bài mẫu mới vào đây..." style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--surface-border);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;outline:none;">
+        <button class="btn-main" id="btnAddSampleLesson" style="width:auto;padding:9px 14px;margin:0;font-size:13px;">➕ Thêm</button>
+      </div>
+
+      <!-- Danh sách bài mẫu có sẵn -->
+      <div id="sampleLessonsListContainer" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:12px;padding-right:4px;">
+        <!-- Render động qua JavaScript -->
+      </div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" id="btnResetDefaultSamples" style="flex:1;">🔄 Khôi phục mặc định</button>
+        <button class="btn-main" id="btnCloseSampleModal" style="flex:1;">✕ Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TỔNG KẾT BÀI VIẾT CỦA THẦY (GAME 2) -->
+  <div class="modal-overlay" id="wordCompleteModal">
+    <div class="modal-card" style="max-width:480px;text-align:center;">
+      <div style="font-size:46px;margin-bottom:4px;">🎉</div>
+      <h2 style="margin-bottom:6px;">XUẤT SẮC HOÀN THÀNH!</h2>
+      <div id="wordCompleteSubtitle" style="font-size:14px;color:var(--accent-color);font-weight:700;margin-bottom:12px;">
+        Học trò đã viết xong toàn bộ bài học của Thầy!
+      </div>
+
+      <div class="summary-grid" style="margin-bottom:14px;">
+        <div class="summary-box">
+          <div class="s-lbl">Tổng Ký Tự</div>
+          <div class="s-val" id="sumWordChars" style="color:#0A84FF">0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Thời Gian</div>
+          <div class="s-val" id="sumWordTime" style="color:#FFD60A">00:00</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Gõ Đúng</div>
+          <div class="s-val" id="sumWordHits" style="color:var(--accent-color)">0</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Lỗi Đã Sửa</div>
+          <div class="s-val" id="sumWordErrors" style="color:var(--danger-color)">0</div>
+        </div>
+      </div>
+
+      <div id="wordCompleteComment" style="font-size:13px;color:#fff;background:rgba(255,255,255,0.08);padding:10px 14px;border-radius:12px;margin-bottom:14px;line-height:1.45;">
+        Lời nhận xét của Thầy...
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-main" id="btnRepeatWordVoice" style="background:#0A84FF;">🔊 Nghe Lại Nhận Xét Của Thầy</button>
+        <button class="btn-secondary" id="btnRestartWordFromModal">🔄 Viết Lại Bài Này</button>
+        <button class="btn-secondary" id="btnCloseWordModal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHẤM ĐIỂM BÀI TOÁN (GAME 4) -->
+  <div class="modal-overlay" id="mathGradeModal">
+    <div class="modal-card" style="max-width:500px;text-align:center;">
+      <div id="mathGradeIcon" style="font-size:46px;margin-bottom:4px;">🌟</div>
+      <h2 id="mathGradeTitle" style="margin-bottom:4px;">KẾT QUẢ CHẤM ĐIỂM MÔN TOÁN</h2>
+      <div id="mathGradeSubtitle" style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">Đánh giá dựa trên độ chính xác & thời gian làm bài</div>
+
+      <div style="display:flex;justify-content:center;align-items:baseline;gap:6px;margin-bottom:14px;">
+        <span style="font-size:52px;font-weight:900;color:#F59E0B;" id="mathFinalScore">10</span>
+        <span style="font-size:22px;color:var(--text-muted);font-weight:700;">/ 10 ĐIỂM</span>
+      </div>
+
+      <div class="summary-grid" style="margin-bottom:14px;">
+        <div class="summary-box">
+          <div class="s-lbl">Thời Gian Làm</div>
+          <div class="s-val" id="mathSumTime" style="color:#0A84FF">00:00</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Số Câu Đúng</div>
+          <div class="s-val" id="mathSumCorrect" style="color:var(--accent-color)">0 / 10</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Số Câu Sai</div>
+          <div class="s-val" id="mathSumWrong" style="color:var(--danger-color)">0 / 10</div>
+        </div>
+        <div class="summary-box">
+          <div class="s-lbl">Tốc Độ Trung Bình</div>
+          <div class="s-val" id="mathSumPace" style="color:#FFD60A">-- s/câu</div>
+        </div>
+      </div>
+
+      <div id="mathGradeComment" style="font-size:13px;color:#fff;background:rgba(255,255,255,0.08);padding:10px 14px;border-radius:12px;margin-bottom:14px;line-height:1.45;">
+        Nhận xét đánh giá...
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-main" id="btnRepeatMathVoice" style="background:#0A84FF;">🔊 Nghe Lại Lời Chấm Điểm</button>
+        <button class="btn-secondary" id="btnRetryMathTest">🔄 Làm Lại Đề Này</button>
+        <button class="btn-secondary" id="btnCloseMathGradeModal">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-
-
-
-
     /* =====================================================================
        CẤU HÌNH & GHI NHỚ LOCALSTORAGE
        ===================================================================== */
@@ -3199,315 +2801,92 @@
     const cfg = loadSavedConfig();
     const wordCfg = loadSavedWordConfig();
 
-    /* Helper tạo file âm thanh PCM WAV base64 thuần JavaScript, chạy 100% offline mọi trình duyệt */
-    function createPcmWavDataUri(sampleRate, durationMs, waveFn) {
-      try {
-        const numSamples = Math.floor(sampleRate * (durationMs / 1000));
-        const dataSize = numSamples * 2;
-        const buffer = new ArrayBuffer(44 + dataSize);
-        const view = new DataView(buffer);
-        const writeString = (offset, str) => {
-          for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-        };
-        writeString(0, 'RIFF');
-        view.setUint32(4, 36 + dataSize, true);
-        writeString(8, 'WAVE');
-        writeString(12, 'fmt ');
-        view.setUint32(16, 16, true);
-        view.setUint16(20, 1, true); // PCM
-        view.setUint16(22, 1, true); // Mono
-        view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * 2, true);
-        view.setUint16(32, 2, true);
-        view.setUint16(34, 16, true); // 16-bit
-        writeString(36, 'data');
-        view.setUint32(40, dataSize, true);
-        for (let i = 0; i < numSamples; i++) {
-          const t = i / sampleRate;
-          const s = Math.max(-1, Math.min(1, waveFn(t, durationMs / 1000)));
-          const sample = Math.floor(s < 0 ? s * 0x8000 : s * 0x7FFF);
-          view.setInt16(44 + i * 2, sample, true);
-        }
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        const chunk = 8192;
-        for (let i = 0; i < bytes.length; i += chunk) {
-          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-        }
-        return 'data:audio/wav;base64,' + (typeof btoa === 'function' ? btoa(binary) : Buffer.from(binary, 'binary').toString('base64'));
-      } catch (e) {
-        return '';
-      }
-    }
-
     /* =====================================================================
-       HỆ THỐNG ÂM THANH DUAL-ENGINE (WEB AUDIO API + HTML5 AUDIO FALLBACK)
-       TUYỆT ĐỐI KHÔNG BỊ MẤT TIẾNG, TỰ ĐỘNG PHỤC HỒI KHI TRÌNH DUYỆT NGỦ
+       HỆ THỐNG ÂM THANH NATIVE (WEB AUDIO API)
        ===================================================================== */
     class SoundEngine {
       constructor() {
         this.ctx = null;
-        this.isUnlocked = false;
-
-        // Tạo sẵn âm thanh WAV dự phòng chất lượng cao chạy offline ngay trong bộ nhớ
-        this.hitWav = createPcmWavDataUri(16000, 130, (t, dur) => {
-          const freq = 520 + 440 * (t / dur);
-          const env = Math.exp(-t * 20);
-          return (Math.sin(2 * Math.PI * freq * t) + 0.3 * Math.sin(4 * Math.PI * freq * t)) * env * 0.85;
-        });
-
-        this.missWav = createPcmWavDataUri(16000, 180, (t, dur) => {
-          const freq = 240 - 120 * (t / dur);
-          const env = Math.exp(-t * 14);
-          return (Math.sin(2 * Math.PI * freq * t) + 0.4 * Math.sin(3 * Math.PI * freq * t)) * env * 0.75;
-        });
-
-        this.setupAutoUnlock();
       }
-
-      setupAutoUnlock() {
-        const unlock = () => {
-          this.unlock();
-        };
-        ['click', 'touchstart', 'touchend', 'keydown', 'pointerdown', 'mousedown'].forEach(ev => {
-          window.addEventListener(ev, unlock, { passive: true, capture: true });
-        });
-      }
-
-      init(force = false) {
-        try {
-          if (!this.ctx || this.ctx.state === 'closed' || force) {
-            if (this.ctx && typeof this.ctx.close === 'function') {
-              try { this.ctx.close(); } catch (_) {}
-            }
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) {
-              this.ctx = new AudioContext();
-            }
-          }
-          if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(() => {});
-          }
-        } catch (e) {
-          console.warn('AudioContext init notice:', e);
-        }
-      }
-
-      unlock() {
-        this.init();
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume().then(() => {
-            this.isUnlocked = true;
-          }).catch(() => {});
-        }
-      }
-
-      // Phát âm thanh HTML5 Audio độc lập (hoạt động 100% ngay cả khi Web Audio API bị treo/tắt)
-      playHtmlAudio(wavUri) {
-        if (!wavUri) return;
-        try {
-          const snd = new Audio(wavUri);
-          snd.volume = 0.85;
-          const p = snd.play();
-          if (p && typeof p.catch === 'function') p.catch(() => {});
-        } catch (err) {}
-      }
-
-      // Khởi động lại âm thanh cưỡng bức (Lưu cài đặt và thử âm thanh ngay)
-      restartAudio(playTestSound = true) {
-        cfg.soundEnabled = true;
-        wordCfg.soundEnabled = true;
-        saveConfigToStorage(cfg);
-        saveWordConfigToStorage(wordCfg);
-
-        this.init(true);
-        if (this.ctx) {
-          this.ctx.resume().catch(() => {});
-        }
-        if (playTestSound) {
-          this.playHit(false, true);
-          this.playHtmlAudio(this.hitWav);
-        }
-      }
-
-      playHit(isWordGame = false, forcePlay = false) {
-        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
-        if (!soundOn && !forcePlay) return;
-
-        let playedWebAudio = false;
-        try {
-          this.init();
-          if (this.ctx && this.ctx.state === 'running') {
-            const now = this.ctx.currentTime + 0.005;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(540, now);
-            osc.frequency.linearRampToValueAtTime(960, now + 0.14);
-            gain.gain.setValueAtTime(0.75, now);
-            gain.gain.linearRampToValueAtTime(0.001, now + 0.14);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.14);
-            playedWebAudio = true;
-          } else if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(() => {});
-          }
-        } catch (e) {
-          playedWebAudio = false;
-        }
-
-        // Nếu Web Audio chưa chạy (ví dụ iOS/Chrome đang suspended), phát ngay lập tức qua HTML5 Audio độc lập!
-        if (!playedWebAudio) {
-          this.playHtmlAudio(this.hitWav);
-        }
-      }
-
-      playMiss(isWordGame = false, forcePlay = false) {
-        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
-        if (!soundOn && !forcePlay) return;
-
-        let playedWebAudio = false;
-        try {
-          this.init();
-          if (this.ctx && this.ctx.state === 'running') {
-            const now = this.ctx.currentTime + 0.005;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(240, now);
-            osc.frequency.linearRampToValueAtTime(140, now + 0.18);
-            gain.gain.setValueAtTime(0.65, now);
-            gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.18);
-            playedWebAudio = true;
-          } else if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(() => {});
-          }
-        } catch (e) {
-          playedWebAudio = false;
-        }
-
-        // Phát dự phòng HTML5 Audio ngay
-        if (!playedWebAudio) {
-          this.playHtmlAudio(this.missWav);
-        }
-      }
-
-      playMiss(isWordGame = false, forcePlay = false) {
-        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
-        if (!soundOn && !forcePlay) return;
-
-        let playedWebAudio = false;
-        try {
-          this.init();
-          if (this.ctx && this.ctx.state === 'running') {
-            const now = this.ctx.currentTime + 0.005;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(240, now);
-            osc.frequency.linearRampToValueAtTime(140, now + 0.18);
-            gain.gain.setValueAtTime(0.65, now);
-            gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.18);
-            playedWebAudio = true;
-          } else if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume().catch(() => {});
-          }
-        } catch (e) {
-          playedWebAudio = false;
-        }
-
-        // Phát dự phòng HTML5 Audio ngay
-        if (!playedWebAudio) {
-          this.playHtmlAudio(this.missWav);
-        }
-      }
-
-      playMiss(isWordGame = false, forcePlay = false) {
-        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
-        if (!soundOn && !forcePlay) return;
-
-        let playedWebAudio = false;
-        try {
-          this.init();
-          if (this.ctx && this.ctx.state !== 'closed') {
-            if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
-            const now = this.ctx.currentTime + 0.005;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(240, now);
-            osc.frequency.linearRampToValueAtTime(110, now + 0.18);
-            gain.gain.setValueAtTime(0.65, now);
-            gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.18);
-            playedWebAudio = true;
-          }
-        } catch (e) {
-          playedWebAudio = false;
-        }
-
-        if (!playedWebAudio) {
-          this.playHtmlAudio(this.missWav);
-        }
-      }
-
-      playSuccessWord() {
-        if (!wordCfg.soundEnabled && !cfg.soundEnabled) return;
-        this.init();
+      init() {
         if (!this.ctx) {
-          this.playHtmlAudio(this.hitWav);
-          return;
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
         }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playHit(isWordGame = false) {
+        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
+        if (!soundOn) return;
+        this.init();
+        if (!this.ctx) return;
         try {
-          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(540, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(920, this.ctx.currentTime + 0.12);
+          gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.12);
+        } catch (e) {}
+      }
+      playMiss(isWordGame = false) {
+        const soundOn = isWordGame ? wordCfg.soundEnabled : cfg.soundEnabled;
+        if (!soundOn) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.22);
+          gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.22);
+        } catch (e) {}
+      }
+      playSuccessWord() {
+        if (!wordCfg.soundEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
           const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-          const baseNow = this.ctx.currentTime + 0.005;
           notes.forEach((freq, i) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
             osc.type = 'sine';
-            const noteStart = baseNow + i * 0.08;
-            osc.frequency.setValueAtTime(freq, noteStart);
-            gain.gain.setValueAtTime(0.6, noteStart);
-            gain.gain.linearRampToValueAtTime(0.001, noteStart + 0.22);
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.08);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + i * 0.08 + 0.2);
             osc.connect(gain);
             gain.connect(this.ctx.destination);
-            osc.start(noteStart);
-            osc.stop(noteStart + 0.22);
+            osc.start(this.ctx.currentTime + i * 0.08);
+            osc.stop(this.ctx.currentTime + i * 0.08 + 0.2);
           });
-        } catch (e) {
-          this.playHtmlAudio(this.hitWav);
-        }
+        } catch (e) {}
       }
-
       playClockTick() {
+        this.init();
         if (!this.ctx) return;
         try {
-          if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
-          const now = this.ctx.currentTime + 0.002;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(1200, now);
-          gain.gain.setValueAtTime(0.08, now);
-          gain.gain.linearRampToValueAtTime(0.001, now + 0.035);
+          osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.03);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.035);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.03);
         } catch (e) {}
       }
     }
@@ -3742,7 +3121,7 @@
        ===================================================================== */
     function applyAppBgTheme(bgColor) {
       cfg.gameBgColor = bgColor;
-      if (document.documentElement && document.documentElement.style) document.documentElement.style.setProperty('--game-bg', bgColor);
+      document.documentElement.style.setProperty('--game-bg', bgColor);
       
       // Kiểm tra độ sáng để bật chế độ light-theme
       const isLight = (bgColor === '#F2F2F7' || bgColor === '#E3EEF9' || bgColor === '#E8F5E9' || bgColor === '#FAF3E0');
@@ -3932,29 +3311,20 @@
       }
 
       highlightKey(char) {
-        document.querySelectorAll('.kb-key.hint-highlight, .kb-key.key-hint').forEach(el => {
-          el.classList.remove('hint-highlight');
-          el.classList.remove('key-hint');
-        });
+        document.querySelectorAll('.kb-key.hint-highlight').forEach(el => el.classList.remove('hint-highlight'));
         this.highlightDeleteKey(false);
         if (!char) return;
         const target = char.toUpperCase();
 
         if (target === ' ') {
           const spEl = document.querySelector('.key-space');
-          if (spEl) {
-            spEl.classList.add('hint-highlight');
-            spEl.classList.add('key-hint');
-          }
+          if (spEl) spEl.classList.add('hint-highlight');
           return;
         }
 
         if (target === '\n' || target === 'ENTER') {
           const retEl = document.querySelector('.key-return');
-          if (retEl) {
-            retEl.classList.add('hint-highlight');
-            retEl.classList.add('key-hint');
-          }
+          if (retEl) retEl.classList.add('hint-highlight');
           return;
         }
         
@@ -3969,10 +3339,7 @@
         }
 
         const el = document.querySelector(`.kb-key[data-key="${target}"]`);
-        if (el) {
-          el.classList.add('hint-highlight');
-          el.classList.add('key-hint');
-        }
+        if (el) el.classList.add('hint-highlight');
       }
     }
     const kbManager = new IPhoneKeyboardManager();
@@ -4149,16 +3516,10 @@
           el.style.top = `0px`;
           el.innerHTML = `<span class="char-text">${char}</span>`;
 
-          const onCharTap = (e) => {
-            if (e) {
-              try { e.preventDefault(); e.stopPropagation(); } catch (_) {}
-            }
-            sound.unlock();
+          el.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             this.handleInput(char);
-          };
-          el.addEventListener('pointerdown', onCharTap);
-          el.addEventListener('touchstart', onCharTap, { passive: false });
-          el.addEventListener('click', onCharTap);
+          }, { passive: false });
 
           this.gameArea.appendChild(el);
 
@@ -4217,7 +3578,6 @@
         } else {
           this.combo = 0;
           this.updateStatsUI();
-          sound.playMiss();
         }
       }
 
@@ -4423,14 +3783,13 @@
 
       // Phát âm thanh đánh vần từ hiện tại theo yêu cầu
       spellCurrentWordNow() {
-        sound.unlock();
         if (!this.isTeachingMode) {
           const text = this.teacherInput.value.trim();
           if (text) {
             const firstWord = text.split(/\s+/)[0];
             const sp = spellVietnameseWord(firstWord);
-            if (sp) {
-              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true, wordCfg.voiceRate || 1.0, 'wordRepeatVoiceBtn');
+            if (sp && wordCfg.voiceEnabled) {
+              voiceEngine.speak(`Đánh vần từ ${firstWord}: ${sp.speech}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
             }
           }
           return;
@@ -4438,12 +3797,13 @@
 
         const wordInfo = this.getCurrentWordInfo();
         if (wordInfo && !wordInfo.isSeparator && wordInfo.spelling) {
-          voiceEngine.speak(`Đánh vần từ ${wordInfo.word}: ${wordInfo.spelling.speech}`, true, wordCfg.voiceRate || 1.0, 'wordRepeatVoiceBtn');
-        } else if (wordInfo && !wordInfo.isSeparator) {
-          const sp = spellVietnameseWord(wordInfo.word);
-          if (sp) {
-            voiceEngine.speak(`Đánh vần từ ${wordInfo.word}: ${sp.speech}`, true, wordCfg.voiceRate || 1.0, 'wordRepeatVoiceBtn');
+          if (this.guideSpellingBadge) this.guideSpellingBadge.style.display = 'flex';
+          if (this.guideSpellingText) this.guideSpellingText.textContent = wordInfo.spelling.display;
+          if (wordCfg.voiceEnabled) {
+            voiceEngine.speak(`Đánh vần từ ${wordInfo.rawWord}: ${wordInfo.spelling.speech}`, true, wordCfg.voiceRate, 'wordRepeatVoiceBtn');
           }
+        } else {
+          this.repeatPrompt();
         }
       }
 
@@ -4474,7 +3834,6 @@
           this.studentStatusBadge.style.color = '#007AFF';
         }
 
-        if (this.teacherInput) this.teacherInput.style.display = 'none';
         if (this.teacherTracker) this.teacherTracker.style.display = 'flex';
         this.renderTeacherTracker();
         this.renderStudentNotebook();
@@ -5055,7 +4414,18 @@
           txt.textContent = h;
           dialNumbers.appendChild(txt);
 
-          
+          const subR = 164;
+          const minVal = (h * 5) % 60;
+          const minStr = minVal === 0 ? '60' : (minVal < 10 ? '0' + minVal : minVal);
+          const sx = cx + subR * Math.sin(angle);
+          const sy = cy - subR * Math.cos(angle);
+
+          const subTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          subTxt.setAttribute('x', sx);
+          subTxt.setAttribute('y', sy);
+          subTxt.setAttribute('class', 'dial-min-sub');
+          subTxt.textContent = minStr;
+          dialNumbers.appendChild(subTxt);
         }
 
         this.updateClockUI();
@@ -5072,25 +4442,16 @@
       }
 
       updateClockUI() {
-        const secAngle = (this.sec * 6) % 360;
-        const minAngle = (this.min * 6 + (this.isLockedRealistic ? (this.sec * 0.1) : 0)) % 360;
+        const secAngle = this.sec * 6;
+        this.secGroup.style.transform = `rotate(${secAngle}deg)`;
+
+        const minAngle = this.min * 6 + (this.isLockedRealistic ? (this.sec * 0.1) : 0);
+        this.handMin.style.transform = `rotate(${minAngle}deg)`;
+
         const hourBase = (this.hour % 12) * 30;
         const hourOffset = this.isLockedRealistic ? (this.min * 0.5) : 0;
-        const hourAngle = (hourBase + hourOffset) % 360;
-
-        // Xoay chuẩn tâm (180, 180) theo chiều kim đồng hồ bằng SVG attribute (chuẩn SVG gốc)
-        if (this.secGroup) {
-          this.secGroup.setAttribute('transform', `rotate(${secAngle} 180 180)`);
-          this.secGroup.style.transform = '';
-        }
-        if (this.handMin) {
-          this.handMin.setAttribute('transform', `rotate(${minAngle} 180 180)`);
-          this.handMin.style.transform = '';
-        }
-        if (this.handHour) {
-          this.handHour.setAttribute('transform', `rotate(${hourAngle} 180 180)`);
-          this.handHour.style.transform = '';
-        }
+        const hourAngle = hourBase + hourOffset;
+        this.handHour.style.transform = `rotate(${hourAngle}deg)`;
 
         const fH = this.hour < 10 ? `0${this.hour}` : this.hour;
         const fM = this.min < 10 ? `0${this.min}` : this.min;
@@ -5535,70 +4896,51 @@
     }
 
     /* =====================================================================
-       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (10 BÀI TUẦN TỰ)
+       VIEW 4: GAME TẬP TÍNH TOÁN CỘNG TRỪ NHÂN CHIA (MATH GAME)
        ===================================================================== */
     class MathPracticeGame {
       constructor() {
-        this.currentLevel = 'single'; // 'single' | 'double' | 'times_table' | 'custom'
         this.questions = [];
-        this.currentQIndex = 0;
-        this.isPlaying = false;
+        this.studentAnswers = [];
+        this.isTesting = false;
         this.startTime = null;
         this.timerInterval = null;
         this.elapsedSeconds = 0;
-        this.retriesCount = 0;
         this.lastGradingSpeech = '';
 
-        // DOM elements
-        this.progressVal = document.getElementById('mathProgressVal');
-        this.timerVal = document.getElementById('mathTimerVal');
-        this.levelBadge = document.getElementById('mathCurrentLevelBadge');
-        this.btnVoiceRepeat = document.getElementById('btnMathVoiceRepeat');
-        this.btnRestart = document.getElementById('btnRestartMathGame');
-
-        this.stepsBar = document.getElementById('mathStepsBar');
-        this.card = document.getElementById('mathCard');
-        this.badgeQNum = document.getElementById('mathBadgeQNum');
-        this.cardHint = document.getElementById('mathCardHint');
-        this.exprText = document.getElementById('mathExprText');
-        this.input = document.getElementById('mathCurrentInput');
-        this.btnCheck = document.getElementById('btnMathCheck');
-        this.feedbackNotice = document.getElementById('mathFeedbackNotice');
-        this.feedbackIcon = document.getElementById('mathFeedbackIcon');
-        this.feedbackText = document.getElementById('mathFeedbackText');
-        this.numpad = document.getElementById('mathNumpad');
-
-        this.customPanel = document.getElementById('mathCustomPanel');
         this.teacherInput = document.getElementById('teacherMathInput');
-        this.btnStartCustom = document.getElementById('btnStartCustomMath');
+        this.studentSheet = document.getElementById('studentMathSheet');
+        this.studentStatus = document.getElementById('studentMathStatus');
+        this.btnStart = document.getElementById('btnStartMathTest');
+        this.btnSubmit = document.getElementById('btnSubmitMathTest');
+        this.btnClear = document.getElementById('btnClearMath');
         this.btnSample = document.getElementById('btnMathSample');
+        this.btnAutoDropdown = document.getElementById('btnAutoMathDropdown');
+        this.presetDropdown = document.getElementById('mathPresetDropdown');
+        this.btnVoiceRepeat = document.getElementById('btnMathVoiceRepeat');
+
+        this.timerVal = document.getElementById('mathTimerVal');
+        this.progressVal = document.getElementById('mathProgressVal');
+        this.scoreVal = document.getElementById('mathScoreVal');
       }
 
       init() {
-        this.bindEvents();
-        // Mặc định khởi tạo cấp độ 1 chữ số
-        this.startRound('single', false);
-      }
-
-      onTabActivated() {
-        this.focusInput();
-      }
-
-      focusInput() {
-        if (this.input && !this.input.disabled) {
-          setTimeout(() => {
-            try { this.input.focus(); } catch (_) {}
-          }, 100);
+        if (this.teacherInput && !this.teacherInput.value.trim()) {
+          this.loadPreset('add20');
         }
+        this.bindEvents();
       }
 
-      // Phân tích cú pháp biểu thức toán đơn
+      // Tự động phân tích và tính toán đáp án cho từng phép tính đơn (+, -, *, /)
       parseSingleMath(line) {
         if (!line || !line.trim()) return null;
         let raw = line.trim();
+        // Bỏ dấu = ở cuối nếu có
         let expr = raw.replace(/=/g, '').trim();
+        // Chuẩn hóa toán tử nhân chia
         let normalized = expr.replace(/[xX×.]/g, '*').replace(/[:÷]/g, '/');
 
+        // Khớp: số_1 toán_tử số_2
         const match = normalized.match(/^(-?\d+(?:\.\d+)?)\s*([\+\-\*\/])\s*(-?\d+(?:\.\d+)?)$/);
         if (!match) return null;
 
@@ -5617,7 +4959,6 @@
 
         result = Math.round(result * 100) / 100;
         const displayOp = op === '*' ? '×' : (op === '/' ? '÷' : op);
-        const spokenOp = op === '+' ? 'cộng' : (op === '-' ? 'trừ' : (op === '*' ? 'nhân' : 'chia'));
 
         return {
           original: raw,
@@ -5625,114 +4966,127 @@
           op: displayOp,
           num2: num2,
           displayExpr: `${num1} ${displayOp} ${num2} =`,
-          spokenExpr: `${num1} ${spokenOp} ${num2} bằng bao nhiêu?`,
           result: result
         };
       }
 
-      // Tự động sinh 10 câu hỏi theo từng cấp độ khó
-      generateQuestions(level) {
-        const list = [];
-        if (level === 'single') {
-          // CẤP ĐỘ 1: PHÉP TÍNH 01 CHỮ SỐ (Cộng, trừ, nhân trong phạm vi 1 chữ số)
-          // 5 phép cộng 1 chữ số
-          for (let i = 0; i < 5; i++) {
-            const a = Math.floor(Math.random() * 9) + 1; // 1..9
-            const b = Math.floor(Math.random() * 9) + 1; // 1..9
-            list.push(this.parseSingleMath(`${a} + ${b} =`));
+      // Tạo tự động 10 bài tập đơn
+      loadPreset(presetType) {
+        let lines = [];
+        if (presetType === 'add20') {
+          // Phép cộng trong phạm vi 20
+          for (let i = 0; i < 10; i++) {
+            const a = Math.floor(Math.random() * 11) + 1; // 1..11
+            const b = Math.floor(Math.random() * (20 - a + 1));
+            lines.push(`${a} + ${b} =`);
           }
-          // 3 phép trừ 1 chữ số
-          for (let i = 0; i < 3; i++) {
-            const a = Math.floor(Math.random() * 8) + 2; // 2..9
-            const b = Math.floor(Math.random() * (a - 1)) + 1; // 1..(a-1)
-            list.push(this.parseSingleMath(`${a} - ${b} =`));
+        } else if (presetType === 'sub20') {
+          // Phép trừ trong phạm vi 20
+          for (let i = 0; i < 10; i++) {
+            const a = Math.floor(Math.random() * 16) + 5; // 5..20
+            const b = Math.floor(Math.random() * (a + 1));
+            lines.push(`${a} - ${b} =`);
           }
-          // 2 phép nhân 1 chữ số đơn giản
-          for (let i = 0; i < 2; i++) {
-            const a = Math.floor(Math.random() * 4) + 2; // 2..5
-            const b = Math.floor(Math.random() * 4) + 2; // 2..5
-            list.push(this.parseSingleMath(`${a} x ${b} =`));
-          }
-        } else if (level === 'double') {
-          // CẤP ĐỘ 2: PHÉP TÍNH 02 CHỮ SỐ (Cộng, trừ phạm vi 2 chữ số 10 đến 99)
-          // 5 phép cộng 2 chữ số
-          for (let i = 0; i < 5; i++) {
-            const a = Math.floor(Math.random() * 50) + 11; // 11..60
-            const b = Math.floor(Math.random() * (98 - a)) + 10; // 10..(98-a)
-            list.push(this.parseSingleMath(`${a} + ${b} =`));
-          }
-          // 5 phép trừ 2 chữ số
-          for (let i = 0; i < 5; i++) {
-            const a = Math.floor(Math.random() * 70) + 25; // 25..95
-            const b = Math.floor(Math.random() * (a - 15)) + 10; // 10..(a-15)
-            list.push(this.parseSingleMath(`${a} - ${b} =`));
-          }
-        } else if (level === 'times_table') {
-          // CẤP ĐỘ 3: ĐỐ BẢNG CỬU CHƯƠNG (Nhân chia trong bảng từ 2 đến 9)
-          // 6 phép nhân bảng cửu chương
-          for (let i = 0; i < 6; i++) {
-            const a = Math.floor(Math.random() * 8) + 2; // 2..9
-            const b = Math.floor(Math.random() * 8) + 2; // 2..9
-            list.push(this.parseSingleMath(`${a} x ${b} =`));
-          }
-          // 4 phép chia bảng cửu chương
-          for (let i = 0; i < 4; i++) {
-            const a = Math.floor(Math.random() * 8) + 2; // số chia: 2..9
-            const res = Math.floor(Math.random() * 8) + 2; // thương: 2..9
-            const product = a * res;
-            list.push(this.parseSingleMath(`${product} : ${a} =`));
-          }
-        } else if (level === 'custom') {
-          // CẤP ĐỘ 4: ĐỀ THẦY TỰ SOẠN
-          const rawLines = (this.teacherInput ? this.teacherInput.value : '').split('\n').map(l => l.trim()).filter(l => l.length > 0);
-          rawLines.forEach(l => {
-            if (list.length < 10) {
-              const p = this.parseSingleMath(l);
-              if (p) list.push(p);
+        } else if (presetType === 'addsub100') {
+          // Cộng trừ trong phạm vi 100
+          for (let i = 0; i < 10; i++) {
+            const isAdd = Math.random() > 0.5;
+            if (isAdd) {
+              const a = Math.floor(Math.random() * 60) + 10;
+              const b = Math.floor(Math.random() * (99 - a)) + 1;
+              lines.push(`${a} + ${b} =`);
+            } else {
+              const a = Math.floor(Math.random() * 70) + 20;
+              const b = Math.floor(Math.random() * (a - 5)) + 1;
+              lines.push(`${a} - ${b} =`);
             }
-          });
-          // Nếu thiếu, bù cho đủ 10 bài
-          while (list.length < 10) {
-            const a = Math.floor(Math.random() * 9) + 1;
-            const b = Math.floor(Math.random() * 9) + 1;
-            list.push(this.parseSingleMath(`${a} + ${b} =`));
+          }
+        } else if (presetType === 'mul') {
+          // Bảng cửu chương nhân (2 đến 9)
+          for (let i = 0; i < 10; i++) {
+            const a = Math.floor(Math.random() * 8) + 2; // 2..9
+            const b = Math.floor(Math.random() * 9) + 1; // 1..9
+            lines.push(`${a} x ${b} =`);
+          }
+        } else if (presetType === 'div') {
+          // Bảng chia hết (2 đến 9)
+          for (let i = 0; i < 10; i++) {
+            const b = Math.floor(Math.random() * 8) + 2; // số chia: 2..9
+            const res = Math.floor(Math.random() * 9) + 1; // thương: 1..9
+            const a = b * res;
+            lines.push(`${a} : ${b} =`);
+          }
+        } else {
+          // Hỗn hợp 10 bài đơn
+          const ops = ['+', '-', 'x', ':'];
+          for (let i = 0; i < 10; i++) {
+            const op = ops[i % ops.length];
+            if (op === '+') {
+              const a = Math.floor(Math.random() * 15) + 3;
+              const b = Math.floor(Math.random() * 15) + 2;
+              lines.push(`${a} + ${b} =`);
+            } else if (op === '-') {
+              const a = Math.floor(Math.random() * 18) + 10;
+              const b = Math.floor(Math.random() * (a - 2)) + 1;
+              lines.push(`${a} - ${b} =`);
+            } else if (op === 'x') {
+              const a = Math.floor(Math.random() * 8) + 2;
+              const b = Math.floor(Math.random() * 8) + 2;
+              lines.push(`${a} x ${b} =`);
+            } else {
+              const b = Math.floor(Math.random() * 7) + 2;
+              const res = Math.floor(Math.random() * 8) + 2;
+              lines.push(`${b * res} : ${b} =`);
+            }
           }
         }
 
-        // Xáo trộn ngẫu nhiên thứ tự các câu hỏi để mỗi lần chơi là một trải nghiệm mới
-        return list.sort(() => Math.random() - 0.5);
+        if (this.teacherInput) {
+          this.teacherInput.value = lines.join('\n');
+        }
       }
 
-      // Khởi động 1 lượt chơi 10 bài tuần tự
-      startRound(level = null, speakIntro = true) {
-        if (level) this.currentLevel = level;
-
-        // Cập nhật nút cấp độ active
-        document.querySelectorAll('.math-level-btn').forEach(btn => {
-          if (btn.getAttribute('data-level') === this.currentLevel) btn.classList.add('active');
-          else btn.classList.remove('active');
-        });
-
-        const levelNames = {
-          'single': '1 Chữ Số',
-          'double': '2 Chữ Số',
-          'times_table': 'Cửu Chương',
-          'custom': 'Thầy Ra Đề'
-        };
-        if (this.levelBadge) {
-          this.levelBadge.textContent = levelNames[this.currentLevel] || 'Toán Học';
+      startTest() {
+        if (!this.teacherInput) return;
+        const rawLines = this.teacherInput.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (rawLines.length === 0) {
+          alert('Thầy hãy ra 10 bài tập phép tính đơn ở Khung 1 trước nhé!');
+          this.teacherInput.focus();
+          return;
         }
 
-        // Hiện/Ẩn bảng soạn đề của Thầy
-        if (this.customPanel) {
-          this.customPanel.style.display = this.currentLevel === 'custom' ? 'block' : 'none';
+        // Phân tích và lọc lấy tối đa 10 bài tập đơn hợp lệ
+        this.questions = [];
+        for (let i = 0; i < rawLines.length && this.questions.length < 10; i++) {
+          const parsed = this.parseSingleMath(rawLines[i]);
+          if (parsed) {
+            this.questions.push(parsed);
+          }
         }
 
-        this.questions = this.generateQuestions(this.currentLevel);
-        this.currentQIndex = 0;
-        this.retriesCount = 0;
+        // Nếu thiếu bài tập, tự động bổ sung cho tròn 10 bài
+        if (this.questions.length < 10) {
+          const needed = 10 - this.questions.length;
+          for (let i = 0; i < needed; i++) {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            this.questions.push(this.parseSingleMath(`${a} + ${b} =`));
+          }
+          this.teacherInput.value = this.questions.map(q => q.original).join('\n');
+        }
+
+        this.isTesting = true;
+        this.studentAnswers = new Array(10).fill('');
         this.elapsedSeconds = 0;
-        this.isPlaying = true;
+        this.renderStudentSheet();
+
+        if (this.studentStatus) {
+          this.studentStatus.textContent = 'Đang làm bài...';
+          this.studentStatus.style.color = '#007AFF';
+        }
+        if (this.btnSubmit) this.btnSubmit.style.display = 'block';
+        if (this.scoreVal) this.scoreVal.textContent = '-- / 10';
+        if (this.progressVal) this.progressVal.textContent = '0 / 10';
 
         // Bắt đầu bấm giờ
         if (this.timerInterval) clearInterval(this.timerInterval);
@@ -5743,17 +5097,14 @@
           this.updateTimerUI();
         }, 1000);
 
-        this.renderStepsBar();
-        this.renderCurrentQuestion();
+        // Focus vào ô làm bài đầu tiên
+        setTimeout(() => {
+          const firstInput = document.getElementById('mathAns_0');
+          if (firstInput) firstInput.focus();
+        }, 150);
 
-        if (speakIntro && cfg.voiceEnabled) {
-          const introTexts = {
-            'single': 'Bắt đầu mười bài toán một chữ số! Hãy tính thật nhanh và chính xác nhé!',
-            'double': 'Bắt đầu mười bài toán hai chữ số! Hãy tập trung tính toán nhé!',
-            'times_table': 'Bắt đầu thử thách đố bảng cửu chương! Cùng trổ tài tính nhẩm nào!',
-            'custom': 'Bắt đầu làm mười bài tập của Thầy ra đề! Cố gắng đạt điểm mười nhé!'
-          };
-          voiceEngine.speak(introTexts[this.currentLevel] || 'Bắt đầu làm toán nào!', true);
+        if (cfg.voiceEnabled) {
+          voiceEngine.speak('Bắt đầu làm bài toán! Có mười bài tập đơn, hãy tính thật nhanh và nộp bài nhé!', true);
         }
       }
 
@@ -5764,127 +5115,125 @@
         if (this.timerVal) this.timerVal.textContent = formatted;
       }
 
-      renderStepsBar() {
-        if (!this.stepsBar) return;
-        this.stepsBar.innerHTML = '';
-        for (let i = 0; i < 10; i++) {
-          const dot = document.createElement('div');
-          dot.className = 'math-step-dot';
-          if (i < this.currentQIndex) dot.classList.add('done');
-          else if (i === this.currentQIndex) dot.classList.add('current');
-          this.stepsBar.appendChild(dot);
-        }
+      renderStudentSheet() {
+        if (!this.studentSheet) return;
+        this.studentSheet.innerHTML = '';
+
+        this.questions.forEach((q, idx) => {
+          const row = document.createElement('div');
+          row.className = 'math-row';
+          row.id = `mathRow_${idx}`;
+
+          const left = document.createElement('div');
+          left.className = 'math-row-left';
+
+          const numBadge = document.createElement('span');
+          numBadge.className = 'math-row-num';
+          numBadge.textContent = `Bài ${idx + 1}`;
+
+          const exprTxt = document.createElement('span');
+          exprTxt.textContent = q.displayExpr;
+
+          left.appendChild(numBadge);
+          left.appendChild(exprTxt);
+
+          const right = document.createElement('div');
+          right.style.display = 'flex';
+          right.style.alignItems = 'center';
+          right.style.gap = '8px';
+
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.inputMode = 'numeric';
+          input.className = 'math-input-box';
+          input.id = `mathAns_${idx}`;
+          input.placeholder = '?';
+          input.value = this.studentAnswers[idx] || '';
+
+          // Tự động nhảy dòng khi nhấn Enter hoặc phím Xuống
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              const next = document.getElementById(`mathAns_${idx + 1}`);
+              if (next) next.focus();
+              else if (idx === 9) {
+                this.submitTest();
+              }
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              const prev = document.getElementById(`mathAns_${idx - 1}`);
+              if (prev) prev.focus();
+            }
+          });
+
+          input.addEventListener('input', (e) => {
+            this.studentAnswers[idx] = e.target.value.trim();
+            const filledCount = this.studentAnswers.filter(a => a !== '').length;
+            if (this.progressVal) this.progressVal.textContent = `${filledCount} / 10`;
+          });
+
+          const statusBadge = document.createElement('span');
+          statusBadge.className = 'math-row-status';
+          statusBadge.id = `mathStatus_${idx}`;
+
+          right.appendChild(input);
+          right.appendChild(statusBadge);
+
+          row.appendChild(left);
+          right.style.flex = '1';
+          right.style.justifyContent = 'flex-end';
+          row.appendChild(right);
+
+          this.studentSheet.appendChild(row);
+        });
       }
 
-      renderCurrentQuestion() {
-        if (this.currentQIndex >= 10) {
-          this.completeGame();
-          return;
-        }
-
-        const q = this.questions[this.currentQIndex];
-        if (!q) return;
-
-        if (this.progressVal) this.progressVal.textContent = `${this.currentQIndex + 1} / 10`;
-        if (this.badgeQNum) this.badgeQNum.textContent = `BÀI ${this.currentQIndex + 1} TRÊN 10`;
-        if (this.exprText) this.exprText.textContent = q.displayExpr;
-
-        if (this.card) {
-          this.card.classList.remove('correct-flash', 'wrong-shake');
-        }
-
-        if (this.feedbackNotice) {
-          this.feedbackNotice.style.display = 'none';
-        }
-
-        if (this.input) {
-          this.input.value = '';
-          this.input.disabled = false;
-        }
-
-        this.renderStepsBar();
-        this.focusInput();
-      }
-
-      // Kiểm tra đáp án khi người chơi gõ xong
-      checkAnswer() {
-        if (!this.isPlaying || !this.input) return;
-        const raw = this.input.value.trim();
-        if (raw === '') {
-          this.showFeedback(false, 'Em hãy gõ đáp án vào ô vuông nhé!');
-          this.focusInput();
-          return;
-        }
-
-        const userAns = parseFloat(raw);
-        const q = this.questions[this.currentQIndex];
-        if (!q) return;
-
-        const isMatch = (!isNaN(userAns) && Math.abs(userAns - q.result) < 0.001);
-
-        if (isMatch) {
-          // ĐÁP ÁN ĐÚNG!
-          sound.playHit();
-          if (this.card) this.card.classList.add('correct-flash');
-          this.showFeedback(true, 'Chính xác! Giỏi lắm! 🎉');
-
-          // Đợi 350ms hiển thị hiệu ứng xanh rồi chuyển ngay sang bài tiếp theo
-          setTimeout(() => {
-            this.currentQIndex++;
-            this.renderCurrentQuestion();
-          }, 350);
-        } else {
-          // ĐÁP ÁN CHƯA ĐÚNG -> KHÔNG CHO SANG BÀI SAU
-          sound.playMiss();
-          this.retriesCount++;
-          if (this.card) {
-            this.card.classList.remove('wrong-shake');
-            void this.card.offsetWidth; // force reflow
-            this.card.classList.add('wrong-shake');
-          }
-          this.showFeedback(false, 'Chưa đúng rồi! Em hãy tính lại nhé! 💡');
-          this.input.select();
-        }
-      }
-
-      showFeedback(isOk, text) {
-        if (!this.feedbackNotice) return;
-        this.feedbackNotice.style.display = 'flex';
-        this.feedbackNotice.className = isOk ? 'math-feedback-notice ok' : 'math-feedback-notice err';
-        if (this.feedbackIcon) this.feedbackIcon.textContent = isOk ? '✅' : '❌';
-        if (this.feedbackText) this.feedbackText.textContent = text;
-      }
-
-      // Đọc to đề bài câu hỏi hiện tại
-      speakCurrentQuestion() {
-        const q = this.questions[this.currentQIndex];
-        if (q && q.spokenExpr) {
-          voiceEngine.speak(q.spokenExpr, true);
-        }
-      }
-
-      // Bắt phím vật lý từ bàn phím máy tính
-      handleKey(key) {
-        if (!this.isPlaying || !this.input) return;
-
-        if (key >= '0' && key <= '9') {
-          this.input.value += key;
-        } else if (key === 'Backspace') {
-          this.input.value = this.input.value.slice(0, -1);
-        } else if (key === 'Enter') {
-          this.checkAnswer();
-        } else if (key === '-') {
-          if (!this.input.value.includes('-')) {
-            this.input.value = '-' + this.input.value;
-          }
-        }
-      }
-
-      // Hoàn thành xuất sắc 10 bài toán
-      completeGame() {
-        this.isPlaying = false;
+      // Nộp bài và chấm điểm bằng giọng nói
+      submitTest() {
+        if (!this.isTesting) return;
+        this.isTesting = false;
         clearInterval(this.timerInterval);
-        sound.playSuccessWord();
+
+        let correctCount = 0;
+        this.questions.forEach((q, idx) => {
+          const userAnsStr = this.studentAnswers[idx];
+          const userAns = parseFloat(userAnsStr);
+          const rowEl = document.getElementById(`mathRow_${idx}`);
+          const statusEl = document.getElementById(`mathStatus_${idx}`);
+          const inputEl = document.getElementById(`mathAns_${idx}`);
+
+          if (inputEl) inputEl.disabled = true;
+
+          const isMatch = (userAnsStr !== '' && !isNaN(userAns) && Math.abs(userAns - q.result) < 0.001);
+
+          if (isMatch) {
+            correctCount++;
+            if (rowEl) {
+              rowEl.classList.remove('incorrect');
+              rowEl.classList.add('correct');
+            }
+            if (statusEl) {
+              statusEl.className = 'math-row-status ok';
+              statusEl.textContent = '✅ Đúng';
+            }
+          } else {
+            if (rowEl) {
+              rowEl.classList.remove('correct');
+              rowEl.classList.add('incorrect');
+            }
+            if (statusEl) {
+              statusEl.className = 'math-row-status err';
+              statusEl.textContent = `❌ Đáp án: ${q.result}`;
+            }
+          }
+        });
+
+        const score = correctCount; // Thang điểm 10
+        if (this.scoreVal) this.scoreVal.textContent = `${score} / 10`;
+        if (this.studentStatus) {
+          this.studentStatus.textContent = `Đã chấm: ${score}/10 điểm`;
+          this.studentStatus.style.color = score >= 8 ? '#30D158' : (score >= 5 ? '#FF9F0A' : '#FF453A');
+        }
 
         const elapsedSec = Math.max(1, this.elapsedSeconds);
         const m = Math.floor(elapsedSec / 60);
@@ -5893,45 +5242,51 @@
         const timeDigital = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
         const avgPace = (elapsedSec / 10).toFixed(1);
 
-        const levelNames = {
-          'single': '1 Chữ Số',
-          'double': '2 Chữ Số',
-          'times_table': 'Bảng Cửu Chương',
-          'custom': 'Thầy Tự Ra Đề'
-        };
-        const levelName = levelNames[this.currentLevel] || 'Môn Toán';
-
-        // Lập nhận xét và đánh giá
-        let ratingTitle = 'Xuất sắc!';
-        let iconEmoji = '🏆';
+        // ĐÁNH GIÁ CHẤM ĐIỂM BẰNG GIỌNG NÓI TRÊN CƠ SỞ THỜI GIAN VÀ SỐ KẾT QUẢ ĐÚNG
+        let speechAssessment = '';
         let commentText = '';
-        let speechText = '';
+        let iconEmoji = '🌟';
 
-        if (elapsedSec <= 40) {
-          ratingTitle = 'Thần Đồng Tính Nhẩm! ⚡';
-          iconEmoji = '⚡';
-          commentText = `⚡ ĐẲNG CẤP THẦN TỐC! Hoàn thành 10 bài (${levelName}) chỉ trong ${timeStr} (trung bình ${avgPace}s/câu), số lần sửa: ${this.retriesCount} lần.`;
-          speechText = `Xuất sắc! Bạn là một thần đồng tính nhẩm! Đã giải đúng hoàn toàn mười bài toán cấp độ ${levelName} chỉ trong ${timeStr}. Tốc độ tính toán siêu nhanh và chính xác! Thầy khen bạn rất nhiều!`;
-        } else if (elapsedSec <= 90) {
-          ratingTitle = 'Rất Giỏi & Chuẩn Xác! ⭐';
-          iconEmoji = '🌟';
-          commentText = `🌟 RẤT GIỎI! Hoàn thành 10 bài (${levelName}) trong ${timeStr} (trung bình ${avgPace}s/câu), số lần sửa: ${this.retriesCount} lần.`;
-          speechText = `Tuyệt vời! Bạn đã hoàn thành trọn vẹn mười bài toán trong thời gian ${timeStr}. Bạn tính toán rất cẩn thận và giỏi giang!`;
+        if (score === 10) {
+          iconEmoji = '🏆';
+          if (elapsedSec <= 30) {
+            speechAssessment = `Xuất sắc! Thần đồng toán học! Bạn đã làm đúng tuyệt đối mười trên mười bài tập chỉ trong ${elapsedSec} giây! Đạt điểm mười tuyệt đối! Tốc độ tính toán siêu nhanh và cực kỳ chính xác. Thầy khen bạn rất nhiều!`;
+            commentText = `🏆 ĐẲNG CẤP THẦN TỐC! Đúng 10/10 câu chỉ trong ${elapsedSec} giây (trung bình ${avgPace}s/câu). Đạt điểm 10 tuyệt đối!`;
+          } else if (elapsedSec <= 60) {
+            speechAssessment = `Tuyệt vời! Bạn đã làm đúng toàn bộ mười trên mười bài tập trong thời gian ${elapsedSec} giây. Đạt điểm mười hoàn hảo! Bạn tính toán rất cẩn thận và giỏi giang.`;
+            commentText = `🌟 TUYỆT VỜI! Đúng trọn vẹn 10/10 bài tập trong ${timeStr}. Bạn tính toán rất chuẩn xác!`;
+          } else {
+            speechAssessment = `Rất tốt! Bạn đã trả lời đúng toàn bộ mười trên mười câu hỏi trong ${timeStr}. Đạt điểm mười! Lần sau cố gắng tăng tốc thêm một chút nữa nhé!`;
+            commentText = `👏 RẤT TỐT! Đúng 10/10 câu trong ${timeStr}. Cố gắng tăng tốc độ hơn nữa nhé!`;
+          }
+        } else if (score >= 8) {
+          iconEmoji = '🥇';
+          if (elapsedSec <= 40) {
+            speechAssessment = `Rất giỏi! Bạn làm đúng ${score} trên mười bài tập trong thời gian rất nhanh là ${elapsedSec} giây. Đạt ${score} điểm! Hãy kiểm tra lại những câu chưa đúng để giành điểm mười nhé!`;
+            commentText = `🥇 RẤT GIỎI! Đạt ${score}/10 điểm trong ${elapsedSec} giây. Tốc độ rất tốt!`;
+          } else {
+            speechAssessment = `Khá giỏi! Bạn làm đúng ${score} trên mười bài tập trong ${timeStr}. Đạt ${score} điểm. Thầy khen tinh thần làm bài chăm chỉ của bạn!`;
+            commentText = `👍 KHÁ GIỎI! Đạt ${score}/10 điểm trong ${timeStr}. Hãy rèn thêm để đạt điểm 10 nhé!`;
+          }
+        } else if (score >= 5) {
+          iconEmoji = '📈';
+          speechAssessment = `Bạn đã hoàn thành mười bài tập trong ${timeStr}. Làm đúng ${score} trên mười câu, đạt ${score} điểm. Bạn hãy luyện tập thêm các phép tính để đạt điểm cao hơn nhé!`;
+          commentText = `📈 TIẾN BỘ! Đạt ${score}/10 điểm trong ${timeStr}. Cùng thầy ôn lại các phép tính chưa đúng nhé!`;
         } else {
-          ratingTitle = 'Chăm Chỉ & Kiên Trì! 👏';
-          iconEmoji = '👏';
-          commentText = `👏 KIÊN TRÌ! Hoàn thành 10 bài (${levelName}) trong ${timeStr}, số lần sửa: ${this.retriesCount} lần. Lần sau hãy cố gắng tăng tốc độ hơn nữa nhé!`;
-          speechText = `Rất tốt! Bạn đã kiên trì giải xong mười bài toán trong ${timeStr}. Cố gắng luyện tập thêm để nâng cao tốc độ tính toán hơn nữa nhé!`;
+          iconEmoji = '💪';
+          speechAssessment = `Bạn đã hoàn thành bài làm trong ${timeStr}. Làm đúng ${score} trên mười câu, đạt ${score} điểm. Đừng nản lòng nhé, hãy ôn lại bảng tính và cùng thầy luyện tập nhiều hơn!`;
+          commentText = `💪 CỐ GẮNG LÊN! Đạt ${score}/10 điểm trong ${timeStr}. Đừng nản lòng, luyện tập thêm sẽ tiến bộ ngay!`;
         }
 
-        this.lastGradingSpeech = speechText;
+        this.lastGradingSpeech = speechAssessment;
+        if (cfg.voiceEnabled) {
+          voiceEngine.speak(speechAssessment, true);
+        }
 
-        // Cập nhật thông số vào Modal
+        // Hiển thị modal chấm điểm
         const modal = document.getElementById('mathGradeModal');
         if (modal) {
           const iconEl = document.getElementById('mathGradeIcon');
-          const titleEl = document.getElementById('mathGradeTitle');
-          const subEl = document.getElementById('mathGradeSubtitle');
           const finalScoreEl = document.getElementById('mathFinalScore');
           const sumTimeEl = document.getElementById('mathSumTime');
           const sumCorrectEl = document.getElementById('mathSumCorrect');
@@ -5940,95 +5295,67 @@
           const commentEl = document.getElementById('mathGradeComment');
 
           if (iconEl) iconEl.textContent = iconEmoji;
-          if (titleEl) titleEl.textContent = `XUẤT SẮC! HOÀN THÀNH 10 BÀI TOÁN!`;
-          if (subEl) subEl.textContent = `Cấp độ: ${levelName} | Đánh giá: ${ratingTitle}`;
-          if (finalScoreEl) finalScoreEl.textContent = '10';
+          if (finalScoreEl) finalScoreEl.textContent = score;
           if (sumTimeEl) sumTimeEl.textContent = timeDigital;
-          if (sumCorrectEl) sumCorrectEl.textContent = '10 / 10';
-          if (sumWrongEl) sumWrongEl.textContent = `${this.retriesCount} lần sửa`;
+          if (sumCorrectEl) sumCorrectEl.textContent = `${score} / 10`;
+          if (sumWrongEl) sumWrongEl.textContent = `${10 - score} / 10`;
           if (sumPaceEl) sumPaceEl.textContent = `${avgPace} s/câu`;
           if (commentEl) commentEl.textContent = commentText;
-
           modal.classList.add('active');
         }
 
-        if (cfg.voiceEnabled) {
-          voiceEngine.speak(speechText, true);
-        }
+        if (this.btnSubmit) this.btnSubmit.style.display = 'none';
       }
 
       bindEvents() {
-        // Nút chuyển cấp độ
-        document.querySelectorAll('.math-level-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const lvl = e.currentTarget.getAttribute('data-level');
-            this.startRound(lvl, true);
-          });
-        });
+        if (this.btnStart) this.btnStart.addEventListener('click', () => this.startTest());
+        if (this.btnSubmit) this.btnSubmit.addEventListener('click', () => this.submitTest());
 
-        // Bấm nút Kiểm Tra
-        if (this.btnCheck) {
-          this.btnCheck.addEventListener('click', () => this.checkAnswer());
-        }
-
-        // Bấm Enter trên ô input
-        if (this.input) {
-          this.input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              this.checkAnswer();
+        if (this.btnClear) {
+          this.btnClear.addEventListener('click', () => {
+            if (confirm('Thầy có chắc chắn muốn xóa bảng ra đề bài không?')) {
+              this.teacherInput.value = '';
+              this.studentSheet.innerHTML = '<div class="math-empty-tip">Thầy hãy chuẩn bị 10 phép tính đơn ở Khung 1 rồi nhấn <strong>[BẮT ĐẦU CHO TRÒ LÀM BÀI]</strong> nhé!</div>';
+              if (this.btnSubmit) this.btnSubmit.style.display = 'none';
             }
           });
         }
 
-        // Bấm các nút số trên Bàn phím số ảo (Numpad)
-        if (this.numpad) {
-          this.numpad.querySelectorAll('.math-np-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              const val = e.currentTarget.getAttribute('data-val');
-              if (val === 'enter') {
-                this.checkAnswer();
-              } else if (val === 'del') {
-                if (this.input) this.input.value = this.input.value.slice(0, -1);
-              } else if (val) {
-                if (this.input) this.input.value += val;
-              }
-              this.focusInput();
+        if (this.btnSample) {
+          this.btnSample.addEventListener('click', () => {
+            this.loadPreset('mix');
+          });
+        }
+
+        if (this.btnAutoDropdown && this.presetDropdown) {
+          this.btnAutoDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.presetDropdown.classList.toggle('show');
+          });
+
+          document.addEventListener('click', () => {
+            this.presetDropdown.classList.remove('show');
+          });
+
+          this.presetDropdown.querySelectorAll('.preset-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const preset = item.getAttribute('data-preset');
+              this.loadPreset(preset);
+              this.presetDropdown.classList.remove('show');
             });
           });
         }
 
-        // Bấm nút Khởi động lại / Chơi lại lượt mới
-        if (this.btnRestart) {
-          this.btnRestart.addEventListener('click', () => {
-            this.startRound(this.currentLevel, true);
-          });
-        }
-
-        // Bấm nút Đọc Đề
         if (this.btnVoiceRepeat) {
           this.btnVoiceRepeat.addEventListener('click', () => {
-            this.speakCurrentQuestion();
-          });
-        }
-
-        // Nút Bắt đầu cho trò làm bài Thầy tự soạn
-        if (this.btnStartCustom) {
-          this.btnStartCustom.addEventListener('click', () => {
-            this.startRound('custom', true);
-          });
-        }
-
-        // Đề mẫu cho Thầy
-        if (this.btnSample) {
-          this.btnSample.addEventListener('click', () => {
-            if (this.teacherInput) {
-              this.teacherInput.value = "8 + 5 =\n15 - 7 =\n6 x 4 =\n36 / 6 =\n9 + 9 =\n20 - 8 =\n7 x 3 =\n45 / 5 =\n12 + 18 =\n50 - 25 =";
+            if (this.lastGradingSpeech) {
+              voiceEngine.speak(this.lastGradingSpeech, true);
+            } else {
+              voiceEngine.speak('Chưa có kết quả chấm điểm. Trò hãy nộp bài để nghe Thầy chấm điểm nhé!', true);
             }
           });
         }
 
-        // Modal buttons
         const btnRepeatModal = document.getElementById('btnRepeatMathVoice');
         if (btnRepeatModal) {
           btnRepeatModal.addEventListener('click', () => {
@@ -6043,7 +5370,7 @@
           btnRetry.addEventListener('click', () => {
             const modal = document.getElementById('mathGradeModal');
             if (modal) modal.classList.remove('active');
-            this.startRound(this.currentLevel, true);
+            this.startTest();
           });
         }
 
@@ -6058,507 +5385,6 @@
     }
 
     /* =====================================================================
-       VIEW 5: GAME VẼ HÌNH & TÔ MÀU DÀNH CHO BÉ (DRAW & COLORING)
-       ===================================================================== */
-    class DrawingGame {
-      constructor() {
-        this.canvas = document.getElementById('drawCanvas');
-        this.ctx = null;
-        this.currentTool = 'brush'; // 'brush', 'bucket', 'eraser'
-        this.currentColor = '#FF3B30';
-        this.brushSize = 10;
-        this.isDrawing = false;
-        this.lastX = 0;
-        this.lastY = 0;
-        this.template = 'cat';
-        this.paletteColors = [
-          '#FF3B30', '#FF9500', '#FFCC00', '#34C759', 
-          '#00C7BE', '#007AFF', '#5856D6', '#AF52DE', 
-          '#FF2D55', '#A2845E', '#000000', '#8E8E93'
-        ];
-      }
-
-      init() {
-        if (!this.canvas) return;
-        this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-        this.setupPalette();
-        this.setupTools();
-        this.setupCanvasEvents();
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
-        this.loadTemplate(this.template);
-      }
-
-      resize() {
-        if (!this.canvas || !this.canvas.parentElement) return;
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        const w = Math.floor(rect.width);
-        const h = Math.floor(rect.height);
-        if (w <= 0 || h <= 0) return;
-
-        let imgData = null;
-        if (this.canvas.width > 0 && this.canvas.height > 0) {
-          try {
-            imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-          } catch (_) {}
-        }
-
-        this.canvas.width = w;
-        this.canvas.height = h;
-
-        if (imgData) {
-          this.ctx.fillStyle = '#FFFFFF';
-          this.ctx.fillRect(0, 0, w, h);
-          this.ctx.putImageData(imgData, 0, 0);
-        } else {
-          this.clearCanvas(false);
-          this.drawTemplateOutline(this.template);
-        }
-      }
-
-      clearCanvas(redrawTemplate = true) {
-        if (!this.ctx) return;
-        this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        if (redrawTemplate) {
-          this.drawTemplateOutline(this.template);
-        }
-      }
-
-      setupPalette() {
-        const palette = document.getElementById('drawColorPalette');
-        if (!palette) return;
-        palette.innerHTML = '';
-        this.paletteColors.forEach((color, idx) => {
-          const swatch = document.createElement('div');
-          swatch.className = 'draw-color-swatch' + (idx === 0 ? ' active' : '');
-          swatch.style.background = color;
-          swatch.setAttribute('data-color', color);
-          swatch.title = `Màu: ${color}`;
-          swatch.addEventListener('click', () => {
-            document.querySelectorAll('.draw-color-swatch').forEach(s => s.classList.remove('active'));
-            swatch.classList.add('active');
-            this.currentColor = color;
-            if (this.currentTool === 'eraser') {
-              this.setTool('brush');
-            }
-          });
-          palette.appendChild(swatch);
-        });
-      }
-
-      setTool(tool) {
-        this.currentTool = tool;
-        document.querySelectorAll('.draw-tool-btn').forEach(btn => btn.classList.remove('active'));
-        if (tool === 'brush') {
-          const b = document.getElementById('toolBrush');
-          if (b) b.classList.add('active');
-        } else if (tool === 'bucket') {
-          const b = document.getElementById('toolBucket');
-          if (b) b.classList.add('active');
-        } else if (tool === 'eraser') {
-          const b = document.getElementById('toolEraser');
-          if (b) b.classList.add('active');
-        }
-      }
-
-      setupTools() {
-        const bBrush = document.getElementById('toolBrush');
-        const bBucket = document.getElementById('toolBucket');
-        const bEraser = document.getElementById('toolEraser');
-        if (bBrush) bBrush.onclick = () => this.setTool('brush');
-        if (bBucket) bBucket.onclick = () => this.setTool('bucket');
-        if (bEraser) bEraser.onclick = () => this.setTool('eraser');
-
-        document.querySelectorAll('.draw-size-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('.draw-size-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            this.brushSize = parseInt(btn.dataset.size, 10) || 10;
-          });
-        });
-
-        const sel = document.getElementById('drawTemplateSelect');
-        if (sel) {
-          sel.addEventListener('change', (e) => {
-            this.template = e.target.value;
-            this.loadTemplate(this.template);
-          });
-        }
-
-        const bClear = document.getElementById('btnDrawClear');
-        if (bClear) bClear.onclick = () => {
-          this.clearCanvas(true);
-          sound.playHit(false, true);
-        };
-
-        const bDownload = document.getElementById('btnDrawDownload');
-        if (bDownload) bDownload.onclick = () => this.downloadImage();
-
-        const bPraise = document.getElementById('btnDrawPraise');
-        if (bPraise) bPraise.onclick = () => this.speakPraise();
-      }
-
-      getPos(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
-        return {
-          x: Math.round(clientX - rect.left),
-          y: Math.round(clientY - rect.top)
-        };
-      }
-
-      setupCanvasEvents() {
-        const onDown = (e) => {
-          e.preventDefault();
-          sound.unlock();
-          const pos = this.getPos(e);
-          if (this.currentTool === 'bucket') {
-            this.floodFill(pos.x, pos.y, this.currentColor);
-            return;
-          }
-          this.isDrawing = true;
-          this.lastX = pos.x;
-          this.lastY = pos.y;
-          this.drawDot(pos.x, pos.y);
-        };
-
-        const onMove = (e) => {
-          if (!this.isDrawing) return;
-          e.preventDefault();
-          const pos = this.getPos(e);
-          this.drawLine(this.lastX, this.lastY, pos.x, pos.y);
-          this.lastX = pos.x;
-          this.lastY = pos.y;
-        };
-
-        const onUp = (e) => {
-          if (this.isDrawing) {
-            this.isDrawing = false;
-          }
-        };
-
-        this.canvas.addEventListener('pointerdown', onDown);
-        this.canvas.addEventListener('pointermove', onMove);
-        window.addEventListener('pointerup', onUp);
-
-        this.canvas.addEventListener('touchstart', onDown, { passive: false });
-        this.canvas.addEventListener('touchmove', onMove, { passive: false });
-        window.addEventListener('touchend', onUp);
-      }
-
-      drawDot(x, y) {
-        if (!this.ctx) return;
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, this.brushSize / 2, 0, Math.PI * 2);
-        this.ctx.fillStyle = this.currentTool === 'eraser' ? '#FFFFFF' : this.currentColor;
-        this.ctx.fill();
-      }
-
-      drawLine(x1, y1, x2, y2) {
-        if (!this.ctx) return;
-        this.ctx.beginPath();
-        this.ctx.moveTo(x1, y1);
-        this.ctx.lineTo(x2, y2);
-        this.ctx.strokeStyle = this.currentTool === 'eraser' ? '#FFFFFF' : this.currentColor;
-        this.ctx.lineWidth = this.brushSize;
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
-        this.ctx.stroke();
-      }
-
-      floodFill(startX, startY, fillHex) {
-        if (!this.ctx) return;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        if (startX < 0 || startX >= w || startY < 0 || startY >= h) return;
-
-        const imgData = this.ctx.getImageData(0, 0, w, h);
-        const data = imgData.data;
-
-        const targetIdx = (startY * w + startX) * 4;
-        const tR = data[targetIdx];
-        const tG = data[targetIdx + 1];
-        const tB = data[targetIdx + 2];
-        const tA = data[targetIdx + 3];
-
-        const fillR = parseInt(fillHex.slice(1, 3), 16);
-        const fillG = parseInt(fillHex.slice(3, 5), 16);
-        const fillB = parseInt(fillHex.slice(5, 7), 16);
-        const fillA = 255;
-
-        if (Math.abs(tR - fillR) < 10 && Math.abs(tG - fillG) < 10 && Math.abs(tB - fillB) < 10 && Math.abs(tA - fillA) < 10) return;
-
-        const match = (idx) => {
-          const dr = Math.abs(data[idx] - tR);
-          const dg = Math.abs(data[idx + 1] - tG);
-          const db = Math.abs(data[idx + 2] - tB);
-          const da = Math.abs(data[idx + 3] - tA);
-          return (dr + dg + db + da) < 45;
-        };
-
-        const queue = [startX, startY];
-        const visited = new Uint8Array(w * h);
-        visited[startY * w + startX] = 1;
-
-        while (queue.length > 0) {
-          const cy = queue.pop();
-          const cx = queue.pop();
-          const idx = (cy * w + cx) * 4;
-
-          data[idx] = fillR;
-          data[idx + 1] = fillG;
-          data[idx + 2] = fillB;
-          data[idx + 3] = fillA;
-
-          const neighbors = [
-            [cx + 1, cy], [cx - 1, cy],
-            [cx, cy + 1], [cx, cy - 1]
-          ];
-
-          for (let i = 0; i < 4; i++) {
-            const nx = neighbors[i][0];
-            const ny = neighbors[i][1];
-            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-              const pos = ny * w + nx;
-              if (!visited[pos]) {
-                visited[pos] = 1;
-                if (match(pos * 4)) {
-                  queue.push(nx, ny);
-                }
-              }
-            }
-          }
-        }
-
-        this.ctx.putImageData(imgData, 0, 0);
-        sound.playHit(false, true);
-      }
-
-      loadTemplate(templateKey) {
-        this.clearCanvas(false);
-        this.drawTemplateOutline(templateKey);
-      }
-
-      drawTemplateOutline(key) {
-        if (!this.ctx || key === 'blank') return;
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        const cx = w / 2;
-        const cy = h / 2;
-        const s = Math.min(w, h) * 0.75;
-
-        this.ctx.save();
-        this.ctx.strokeStyle = '#1E293B';
-        this.ctx.lineWidth = 4;
-        this.ctx.lineCap = 'round';
-        this.ctx.lineJoin = 'round';
-
-        if (key === 'cat') {
-          this.ctx.beginPath();
-          this.ctx.ellipse(cx, cy + s * 0.05, s * 0.35, s * 0.3, 0, 0, Math.PI * 2);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx - s * 0.28, cy - s * 0.12);
-          this.ctx.lineTo(cx - s * 0.35, cy - s * 0.35);
-          this.ctx.lineTo(cx - s * 0.1, cy - s * 0.22);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx + s * 0.28, cy - s * 0.12);
-          this.ctx.lineTo(cx + s * 0.35, cy - s * 0.35);
-          this.ctx.lineTo(cx + s * 0.1, cy - s * 0.22);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.arc(cx - s * 0.14, cy, s * 0.04, 0, Math.PI * 2);
-          this.ctx.arc(cx + s * 0.14, cy, s * 0.04, 0, Math.PI * 2);
-          this.ctx.fillStyle = '#1E293B';
-          this.ctx.fill();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx, cy + s * 0.06);
-          this.ctx.lineTo(cx - s * 0.04, cy + s * 0.03);
-          this.ctx.lineTo(cx + s * 0.04, cy + s * 0.03);
-          this.ctx.closePath();
-          this.ctx.fill();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx, cy + s * 0.06);
-          this.ctx.lineTo(cx, cy + s * 0.11);
-          this.ctx.moveTo(cx - s * 0.07, cy + s * 0.14);
-          this.ctx.quadraticCurveTo(cx - s * 0.03, cy + s * 0.16, cx, cy + s * 0.11);
-          this.ctx.quadraticCurveTo(cx + s * 0.03, cy + s * 0.16, cx + s * 0.07, cy + s * 0.14);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx - s * 0.2, cy + s * 0.06); this.ctx.lineTo(cx - s * 0.38, cy + s * 0.02);
-          this.ctx.moveTo(cx - s * 0.2, cy + s * 0.1); this.ctx.lineTo(cx - s * 0.38, cy + s * 0.12);
-          this.ctx.moveTo(cx + s * 0.2, cy + s * 0.06); this.ctx.lineTo(cx + s * 0.38, cy + s * 0.02);
-          this.ctx.moveTo(cx + s * 0.2, cy + s * 0.1); this.ctx.lineTo(cx + s * 0.38, cy + s * 0.12);
-          this.ctx.stroke();
-        } else if (key === 'flower') {
-          const rCenter = s * 0.1;
-          const rPetal = s * 0.14;
-          for (let i = 0; i < 5; i++) {
-            const angle = (i * 72) * Math.PI / 180;
-            const px = cx + Math.cos(angle) * (rCenter + rPetal * 0.7);
-            const py = cy - s * 0.05 + Math.sin(angle) * (rCenter + rPetal * 0.7);
-            this.ctx.beginPath();
-            this.ctx.arc(px, py, rPetal, 0, Math.PI * 2);
-            this.ctx.stroke();
-          }
-          this.ctx.beginPath();
-          this.ctx.arc(cx, cy - s * 0.05, rCenter, 0, Math.PI * 2);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx, cy + rCenter + s * 0.05);
-          this.ctx.quadraticCurveTo(cx - s * 0.05, cy + s * 0.25, cx, cy + s * 0.4);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx - s * 0.02, cy + s * 0.22);
-          this.ctx.quadraticCurveTo(cx - s * 0.25, cy + s * 0.15, cx - s * 0.18, cy + s * 0.3);
-          this.ctx.quadraticCurveTo(cx - s * 0.08, cy + s * 0.28, cx, cy + s * 0.25);
-          this.ctx.stroke();
-        } else if (key === 'car') {
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx - s * 0.4, cy + s * 0.1);
-          this.ctx.lineTo(cx + s * 0.4, cy + s * 0.1);
-          this.ctx.lineTo(cx + s * 0.38, cy - s * 0.04);
-          this.ctx.lineTo(cx + s * 0.22, cy - s * 0.05);
-          this.ctx.lineTo(cx + s * 0.1, cy - s * 0.22);
-          this.ctx.lineTo(cx - s * 0.18, cy - s * 0.22);
-          this.ctx.lineTo(cx - s * 0.28, cy - s * 0.05);
-          this.ctx.lineTo(cx - s * 0.4, cy - s * 0.04);
-          this.ctx.closePath();
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx - s * 0.16, cy - s * 0.2);
-          this.ctx.lineTo(cx - s * 0.02, cy - s * 0.2);
-          this.ctx.lineTo(cx - s * 0.02, cy - s * 0.07);
-          this.ctx.lineTo(cx - s * 0.24, cy - s * 0.07);
-          this.ctx.closePath();
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx + s * 0.02, cy - s * 0.2);
-          this.ctx.lineTo(cx + s * 0.08, cy - s * 0.2);
-          this.ctx.lineTo(cx + s * 0.18, cy - s * 0.07);
-          this.ctx.lineTo(cx + s * 0.02, cy - s * 0.07);
-          this.ctx.closePath();
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.arc(cx - s * 0.22, cy + s * 0.12, s * 0.08, 0, Math.PI * 2);
-          this.ctx.stroke();
-          this.ctx.beginPath();
-          this.ctx.arc(cx - s * 0.22, cy + s * 0.12, s * 0.03, 0, Math.PI * 2);
-          this.ctx.fill();
-
-          this.ctx.beginPath();
-          this.ctx.arc(cx + s * 0.22, cy + s * 0.12, s * 0.08, 0, Math.PI * 2);
-          this.ctx.stroke();
-          this.ctx.beginPath();
-          this.ctx.arc(cx + s * 0.22, cy + s * 0.12, s * 0.03, 0, Math.PI * 2);
-          this.ctx.fill();
-        } else if (key === 'apple') {
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx, cy - s * 0.18);
-          this.ctx.bezierCurveTo(cx - s * 0.35, cy - s * 0.35, cx - s * 0.45, cy + s * 0.2, cx, cy + s * 0.35);
-          this.ctx.bezierCurveTo(cx + s * 0.45, cy + s * 0.2, cx + s * 0.35, cy - s * 0.35, cx, cy - s * 0.18);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx, cy - s * 0.18);
-          this.ctx.quadraticCurveTo(cx + s * 0.05, cy - s * 0.3, cx + s * 0.1, cy - s * 0.35);
-          this.ctx.lineWidth = 5;
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx + s * 0.05, cy - s * 0.28);
-          this.ctx.quadraticCurveTo(cx + s * 0.2, cy - s * 0.36, cx + s * 0.24, cy - s * 0.26);
-          this.ctx.quadraticCurveTo(cx + s * 0.15, cy - s * 0.22, cx + s * 0.05, cy - s * 0.28);
-          this.ctx.lineWidth = 4;
-          this.ctx.stroke();
-        } else if (key === 'house') {
-          this.ctx.strokeRect(cx - s * 0.25, cy - s * 0.05, s * 0.5, s * 0.4);
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx - s * 0.32, cy - s * 0.05);
-          this.ctx.lineTo(cx, cy - s * 0.32);
-          this.ctx.lineTo(cx + s * 0.32, cy - s * 0.05);
-          this.ctx.closePath();
-          this.ctx.stroke();
-
-          this.ctx.strokeRect(cx - s * 0.07, cy + s * 0.15, s * 0.14, s * 0.2);
-
-          this.ctx.strokeRect(cx + s * 0.09, cy, s * 0.12, s * 0.12);
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx + s * 0.15, cy); this.ctx.lineTo(cx + s * 0.15, cy + s * 0.12);
-          this.ctx.moveTo(cx + s * 0.09, cy + s * 0.06); this.ctx.lineTo(cx + s * 0.21, cy + s * 0.06);
-          this.ctx.stroke();
-
-          this.ctx.beginPath();
-          this.ctx.moveTo(cx + s * 0.14, cy - s * 0.18);
-          this.ctx.lineTo(cx + s * 0.14, cy - s * 0.28);
-          this.ctx.lineTo(cx + s * 0.22, cy - s * 0.28);
-          this.ctx.lineTo(cx + s * 0.22, cy - s * 0.12);
-          this.ctx.stroke();
-        } else if (key === 'sun') {
-          this.ctx.beginPath();
-          this.ctx.arc(cx - s * 0.1, cy - s * 0.1, s * 0.18, 0, Math.PI * 2);
-          this.ctx.stroke();
-
-          for (let i = 0; i < 8; i++) {
-            const angle = (i * 45) * Math.PI / 180;
-            const r1 = s * 0.21;
-            const r2 = s * 0.28;
-            this.ctx.beginPath();
-            this.ctx.moveTo(cx - s * 0.1 + Math.cos(angle) * r1, cy - s * 0.1 + Math.sin(angle) * r1);
-            this.ctx.lineTo(cx - s * 0.1 + Math.cos(angle) * r2, cy - s * 0.1 + Math.sin(angle) * r2);
-            this.ctx.stroke();
-          }
-
-          const cloudY = cy + s * 0.18;
-          this.ctx.beginPath();
-          this.ctx.arc(cx + s * 0.05, cloudY, s * 0.1, Math.PI * 0.7, Math.PI * 1.8);
-          this.ctx.arc(cx + s * 0.18, cloudY - s * 0.05, s * 0.12, Math.PI * 1.1, Math.PI * 2.1);
-          this.ctx.arc(cx + s * 0.32, cloudY, s * 0.09, Math.PI * 1.4, Math.PI * 0.3);
-          this.ctx.lineTo(cx + s * 0.05, cloudY + s * 0.08);
-          this.ctx.closePath();
-          this.ctx.stroke();
-        }
-
-        this.ctx.restore();
-      }
-
-      downloadImage() {
-        if (!this.canvas) return;
-        const link = document.createElement('a');
-        link.download = `tranh-ve-cua-be-${Date.now()}.png`;
-        link.href = this.canvas.toDataURL('image/png');
-        link.click();
-        sound.playHit(false, true);
-      }
-
-      speakPraise() {
-        const praises = [
-          "Bức tranh của con vẽ đẹp quá! Màu sắc rất tươi sáng, con giỏi lắm!",
-          "Tuyệt vời quá! Bé vẽ rất khéo tay và đáng yêu!",
-          "Bức tranh thật sáng tạo! Bố mẹ và thầy cô rất tự hào về con!",
-          "Hoan hô bé yêu! Con tô màu rất cẩn thận và rực rỡ!"
-        ];
-        const msg = praises[Math.floor(Math.random() * praises.length)];
-        voiceEngine.speak(msg, true);
-      }
-    }
-
-    /* =====================================================================
        KHỞI TẠO CÁC GAME & SỰ KIỆN TOÀN CỤC
        ===================================================================== */
     const game1 = new FreeFallingGame();
@@ -6567,9 +5393,7 @@
     window.sampleManager = sampleManager;
     const clockTeacher = new ClockTeacher();
     const mathGame = new MathPracticeGame();
-    // mathGame.init() moved to DOMContentLoaded
-      window.drawGame = new DrawingGame();
-      // drawGame.init() moved to DOMContentLoaded
+    mathGame.init();
 
     // Hook lặp lại giọng nói Game 1
     const btnRepeatFalling = document.getElementById('btnRepeatFallingSummaryVoice');
@@ -6616,26 +5440,13 @@
     const wordsView = document.getElementById('wordsPracticeView');
     const clockView = document.getElementById('clockView');
     const mathView = document.getElementById('mathView');
-    const tabDraw = document.getElementById('tabDraw');
-    const drawView = document.getElementById('drawView');
     const kbContainer = document.getElementById('keyboardContainer');
     const kbWrapper = document.getElementById('keyboardWrapper');
 
     function switchTab(target) {
-      sound.unlock();
       localStorage.setItem('game_active_tab', target);
-      const allTabs = [tabTyping, tabWords, tabClock, tabMath, tabDraw];
-      const allViews = [typingView, wordsView, clockView, mathView, drawView];
-      allTabs.forEach(t => { if (t) t.classList.remove('active'); });
-      allViews.forEach(v => { if (v) v.classList.remove('active'); });
-
-      const tabMap = { 'typing': tabTyping, 'words': tabWords, 'clock': tabClock, 'math': tabMath, 'draw': tabDraw };
-      const curTab = tabMap[target];
-      if (curTab && typeof curTab.scrollIntoView === 'function') {
-        curTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-      const mobileSel = document.getElementById('mobileGameSelect');
-      if (mobileSel) mobileSel.value = target;
+      [tabTyping, tabWords, tabClock, tabMath].forEach(t => { if (t) t.classList.remove('active'); });
+      [typingView, wordsView, clockView, mathView].forEach(v => { if (v) v.classList.remove('active'); });
 
       if (target === 'typing') {
         tabTyping.classList.add('active');
@@ -6652,21 +5463,17 @@
       } else if (target === 'clock') {
         tabClock.classList.add('active');
         clockView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none';
+        if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím khi coi đồng hồ
         game1.isPaused = true;
         clockTeacher.initDial();
+        if (!clockTeacher.isRealtimeRunning) {
+          clockTeacher.startRealtime();
+        }
       } else if (target === 'math') {
         tabMath.classList.add('active');
         mathView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none';
+        if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím iPhone khi làm toán
         game1.isPaused = true;
-        if (typeof mathGame !== 'undefined') mathGame.onTabActivated();
-      } else if (target === 'draw') {
-        if (tabDraw) tabDraw.classList.add('active');
-        if (drawView) drawView.classList.add('active');
-        if (kbWrapper) kbWrapper.style.display = 'none';
-        game1.isPaused = true;
-        if (window.drawGame) window.drawGame.resize();
       }
     }
 
@@ -6674,25 +5481,12 @@
     tabWords.addEventListener('click', () => switchTab('words'));
     tabClock.addEventListener('click', () => switchTab('clock'));
     if (tabMath) tabMath.addEventListener('click', () => switchTab('math'));
-      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
-      if (tabDraw) tabDraw.addEventListener('click', () => switchTab('draw'));
 
     // Bắt sự kiện phím vật lý từ bàn phím máy tính / iPad
     window.addEventListener('keydown', (e) => {
       // Nếu đang focus vào ô gõ đề bài (input/textarea) thì để người dùng gõ tự nhiên
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
         return;
-      }
-
-      // Nếu đang ở Tab Môn Toán: nhận phím số, xoá và Enter cho bài toán tuần tự
-      if (mathView && mathView.classList.contains('active')) {
-        if (typeof mathGame !== 'undefined' && mathGame) {
-          if ((e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Enter' || e.key === '-') {
-            e.preventDefault();
-            mathGame.handleKey(e.key);
-            return;
-          }
-        }
       }
 
       if (e.key === 'Escape') {
@@ -6898,19 +5692,6 @@
       });
     });
 
-    const btnTestAudio = document.getElementById('btnTestAudio');
-    if (btnTestAudio) {
-      btnTestAudio.addEventListener('click', () => {
-        cfg.soundEnabled = true;
-        document.getElementById('cfgSoundEnabled').checked = true;
-        sound.restartAudio(true);
-        btnTestAudio.innerHTML = '<span>✅</span> Đã kích hoạt & phát âm thử!';
-        setTimeout(() => {
-          btnTestAudio.innerHTML = '<span>🔊</span> Khởi động lại & Thử âm thanh ngay';
-        }, 1800);
-      });
-    }
-
     document.getElementById('saveSettingsBtn').addEventListener('click', () => {
       cfg.charMode = document.getElementById('cfgCharMode').value;
       if (document.getElementById('cfgGameDuration')) {
@@ -6921,10 +5702,6 @@
       cfg.voiceEnabled = document.getElementById('cfgVoiceEnabled').checked;
       cfg.voiceRate = parseFloat(document.getElementById('cfgVoiceRate').value);
       cfg.soundEnabled = document.getElementById('cfgSoundEnabled').checked;
-
-      if (cfg.soundEnabled) {
-        sound.restartAudio(false);
-      }
 
       saveConfigToStorage(cfg);
       game2.applyVoiceRate();
@@ -6949,23 +5726,16 @@
 
     // Khởi tạo toàn bộ ứng dụng
     window.addEventListener('DOMContentLoaded', () => {
-      try { applyAppBgTheme(cfg.gameBgColor); } catch (e) { console.error('applyAppBgTheme err:', e); }
-      try { kbManager.render(); } catch (e) { console.error('kbManager err:', e); }
-      try { game1.init(); } catch (e) { console.error('game1 err:', e); }
-      try { game2.init(); } catch (e) { console.error('game2 err:', e); }
-      try { clockTeacher.initDial(); } catch (e) { console.error('clockTeacher err:', e); }
-      try { if (typeof mathGame !== 'undefined' && mathGame) mathGame.init(); } catch (e) { console.error('mathGame err:', e); }
-      try { if (window.drawGame) window.drawGame.init(); } catch (e) { console.error('drawGame err:', e); }
+      applyAppBgTheme(cfg.gameBgColor);
+      kbManager.render();
+      game1.init();
+      game2.init();
+      clockTeacher.initDial();
 
-      const mobileSel = document.getElementById('mobileGameSelect');
-      if (mobileSel) {
-        mobileSel.addEventListener('change', (e) => switchTab(e.target.value));
-      }
-      const initialTab = localStorage.getItem('game_active_tab') || 'typing';
-      try { switchTab(initialTab); } catch (e) { console.error('switchTab err:', e); }
+      // Mở ngay tab Game 2 "Luyện từ của thầy" (hoặc tab người dùng vừa chọn gần nhất)
+      const initialTab = localStorage.getItem('game_active_tab') || 'words';
+      switchTab(initialTab);
     });
   </script>
-
 </body>
-
 </html>
