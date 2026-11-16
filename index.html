@@ -67,213 +67,97 @@
     }
 
     /* TOP TAB BAR (CHUYỂN ĐỔI 3 GAME) */
-    .app-nav {
+        .app-nav {
       position: relative;
       z-index: 20;
       display: flex;
-      background: rgba(14, 18, 28, 0.95);
-      border-bottom: 1px solid var(--surface-border);
-      padding: env(safe-area-inset-top, 6px) 10px 6px 10px;
+      align-items: center;
+      background: rgba(14, 18, 28, 0.96);
+      border-bottom: 1.5px solid var(--surface-border);
+      padding: env(safe-area-inset-top, 6px) 8px 6px 8px;
       gap: 6px;
+      flex-shrink: 0;
+      height: 50px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    /* Dropdown chọn game trên Mobile */
+    .mobile-nav-select-wrap {
+      display: none;
+      flex-shrink: 0;
+    }
+    .mobile-game-select {
+      background: linear-gradient(135deg, #1E293B, #0F172A);
+      color: #38BDF8;
+      border: 1.5px solid #0284C7;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+      max-width: 175px;
+    }
+
+    .nav-tabs-scroll {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+      padding: 2px 0;
+    }
+    .nav-tabs-scroll::-webkit-scrollbar {
+      height: 3px;
+    }
+    .nav-tabs-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 3px;
     }
 
     .nav-tab {
-      flex: 1;
-      display: flex;
+      flex: 0 0 auto;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
-      padding: 8px 8px;
+      gap: 6px;
+      padding: 7px 14px;
       border-radius: 12px;
       font-size: 13px;
       font-weight: 700;
       color: var(--text-muted);
       cursor: pointer;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid transparent;
+      border: 1px solid var(--surface-border);
       transition: all 0.2s;
       white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .nav-tab.active {
-      color: #FFFFFF;
-      background: rgba(10, 132, 255, 0.25);
-      border-color: rgba(10, 132, 255, 0.6);
-    }
-
-    /* VIEW CONTAINERS */
-    .game-view {
-      flex: 1;
-      display: none !important;
-      flex-direction: column;
-      height: calc(100% - 50px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .game-view.active {
-      display: flex !important;
-    }
-
-    /* =====================================================================
-       HEADER CHUNG CỦA GAME GÕ PHÍM
-       ===================================================================== */
-    .game-header {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 12px;
-      background: rgba(18, 22, 34, 0.85);
-      border-bottom: 1px solid var(--surface-border);
-    }
-
-    .stats-bar {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .stat-pill {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 3px 7px;
-      border-radius: 8px;
-      border: 1px solid var(--surface-border);
-      min-width: 50px;
-    }
-
-    /* =====================================================================
-       HEADER CHUNG CỦA GAME GÕ PHÍM
-       ===================================================================== */
-    .game-header {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 12px;
-      background: rgba(18, 22, 34, 0.85);
-      border-bottom: 1px solid var(--surface-border);
-    }
-
-    .stats-bar {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .stat-pill {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 3px 7px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .stat-pill .label {
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .stat-pill .val {
-      font-size: 14px;
-      font-weight: 700;
+      background: var(--primary-color);
       color: #fff;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 16px rgba(0, 122, 255, 0.4);
     }
 
-    .stat-pill .val.highlight {
-      color: var(--accent-color);
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .icon-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--surface-border);
-      color: #fff;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.2s;
-    }
-
-    .icon-btn:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .voice-badge-btn {
-      background: rgba(10, 132, 255, 0.2);
-      border: 1px solid rgba(10, 132, 255, 0.5);
-    #typingView {
-      background: var(--game-bg);
-      transition: background 0.3s;
-    }
-
-    #gameArea {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
-
-    .falling-char {
-      position: absolute;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      background: rgba(28, 34, 52, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transform: translate(-50%, 0);
-      will-change: transform, top;
-      cursor: pointer;
-    }
-
-    /* Khi nền game là màu sáng thì thẻ chữ rơi có phong cách nổi bật */
-    body.light-theme .falling-char {
-      background: #FFFFFF;
-      border-color: #0A84FF;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .falling-char .char-text {
-      line-height: 1;
-      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
-    }
-
-    body.light-theme .falling-char .char-text {
-      text-shadow: none;
-    }
-
-    @keyframes hitPop {
-      0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-      50% { transform: translate(-50%, -25px) scale(1.4); opacity: 0.85; filter: brightness(1.8); }
-      100% { transform: translate(-50%, -50px) scale(0.2); opacity: 0; }
+    @media (max-width: 680px) {
+      .mobile-nav-select-wrap {
+        display: block;
+      }
+      .nav-tab {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
     }
 
     .hit-anim {
@@ -369,27 +253,29 @@
     }
 
     .box-title {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 800;
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      gap: 6px;
+    }
     .box-title.teacher-title {
       color: #FEF08A;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 800;
     }
     .box-title.student-title {
       color: #0284C7;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 800;
     }
     .spelling-toggle-card {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(254, 240, 138, 0.15);
+      background: rgba(254, 240, 138, 0.18);
       border: 1px solid rgba(254, 240, 138, 0.4);
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 8px;
       cursor: pointer;
     }
@@ -407,8 +293,8 @@
     .board-stepper-box {
       display: inline-flex;
       align-items: center;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 8px;
       overflow: hidden;
     }
@@ -422,7 +308,7 @@
       cursor: pointer;
     }
     .btn-step:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.2);
     }
     .step-display {
       font-size: 11px;
@@ -432,6 +318,66 @@
       min-width: 32px;
       text-align: center;
     }
+
+    /* HÀNG NÚT THAO TÁC CỦA THẦY - ĐẦY ĐỦ MÀU SẮC, ĐẸP MẮT */
+    .board-actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .btn-board {
+      padding: 6px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1.5px solid transparent;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: all 0.15s;
+    }
+    .btn-board.clear-btn {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: #EF4444;
+      color: #FECACA;
+    }
+    .btn-board.clear-btn:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+    }
+    .btn-board.edit-btn {
+      background: rgba(59, 130, 246, 0.22);
+      border-color: #38BDF8;
+      color: #BAE6FD;
+    }
+    .btn-board.edit-btn:hover {
+      background: #0284C7;
+      color: #FFFFFF;
+    }
+    .btn-board.spell-btn {
+      background: rgba(245, 158, 11, 0.22);
+      border-color: #F59E0B;
+      color: #FEF08A;
+    }
+    .btn-board.spell-btn:hover {
+      background: #F59E0B;
+      color: #0F172A;
+    }
+    .btn-board.start-btn {
+      background: linear-gradient(135deg, #10B981, #059669);
+      border-color: #34D399;
+      color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+    }
+    .btn-board.start-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.02);
     }
 
     /* Textbox 1: Của Thầy */
@@ -667,7 +613,6 @@
       color: #8E8E93 !important;
       user-select: none;
     }
-    }
 
     body.light-theme .student-placeholder {
       color: #8E8E93 !important;
@@ -871,28 +816,7 @@
       to { transform: scale(1.08); background: #FDE047 !important; }
     }
 
-    /* =====================================================================
-       VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO - MENU ẨN HIỆN)
-       ===================================================================== */
-    #clockView {
-      background: radial-gradient(circle at center, #171d2f 0%, #0a0d17 100%);
-      overflow: hidden;
-      padding: 8px 12px;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      outline: 3px solid #D97706 !important;
-      background: #FEF08A !important;
-      color: #0F172A !important;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.9) !important;
-      animation: pulseKey 0.8s infinite alternate;
-      z-index: 5;
-    }
 
-    @keyframes pulseKey {
-      from { transform: scale(1); }
-      to { transform: scale(1.08); background: #FDE047 !important; }
-    }
 
     /* =====================================================================
        VIEW 3: GAME DẠY COI GIỜ TRÊN ĐỒNG HỒ (MẶT ĐỒNG HỒ SIÊU TO - MENU ẨN HIỆN)
@@ -2120,8 +2044,7 @@
     /* KIM ĐỒNG HỒ - NÉT RÕ, MÀU SẮC ĐẬM ĐÀ, TÂM XOAY 180px 180px */
     .hand {
       cursor: grab;
-      transform-origin: 180px 180px !important;
-      -webkit-transform-origin: 180px 180px !important;
+      
     }
     .hand:active {
       cursor: grabbing;
@@ -2132,8 +2055,7 @@
       stroke-width: 10 !important;
       stroke-linecap: round !important;
       filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-      transform-origin: 180px 180px !important;
-      -webkit-transform-origin: 180px 180px !important;
+      
     }
 
     #handMin {
@@ -2141,21 +2063,18 @@
       stroke-width: 6.5 !important;
       stroke-linecap: round !important;
       filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
-      transform-origin: 180px 180px !important;
-      -webkit-transform-origin: 180px 180px !important;
+      
     }
 
     #handSec, #secGroup line {
       stroke: #EF4444 !important;
       stroke-width: 3 !important;
       stroke-linecap: round !important;
-      transform-origin: 180px 180px !important;
-      -webkit-transform-origin: 180px 180px !important;
+      
     }
 
     #secGroup {
-      transform-origin: 180px 180px !important;
-      -webkit-transform-origin: 180px 180px !important;
+      
     }
 
     .center-pin {
@@ -2478,20 +2397,34 @@
 
   <!-- NAVIGATION TABS (5 TRÒ CHƠI) -->
   <nav class="app-nav">
-    <div class="nav-tab active" id="tabTyping">
-      <span>⌨️</span> Gõ Rơi Tự Do
+    <!-- Menu chọn nhanh Game trên Mobile (1 chạm đổi game ngay, không bị tràn màn hình) -->
+    <div class="mobile-nav-select-wrap">
+      <select id="mobileGameSelect" class="mobile-game-select" aria-label="Chọn Trò Chơi">
+        <option value="typing">⌨️ Gõ Rơi Tự Do</option>
+        <option value="words">📝 Luyện Từ Của Thầy</option>
+        <option value="clock">⏰ Coi Giờ Đồng Hồ</option>
+        <option value="math">🧮 Luyện Phép Tính</option>
+        <option value="draw">🎨 Vẽ Hình & Tô Màu</option>
+      </select>
     </div>
-    <div class="nav-tab" id="tabWords">
-      <span>📝</span> Luyện Từ Của Thầy
-    </div>
-    <div class="nav-tab" id="tabClock">
-      <span>⏰</span> Coi Giờ Đồng Hồ
-    </div>
-    <div class="nav-tab" id="tabMath">
-      <span>🧮</span> Luyện Phép Tính
-    </div>
-    <div class="nav-tab" id="tabDraw">
-      <span>🎨</span> Vẽ Hình & Tô Màu
+
+    <!-- Thanh Tab cuộn ngang mượt mà, hỗ trợ touch vuốt trượt trên điện thoại -->
+    <div class="nav-tabs-scroll" id="navTabsScroll">
+      <div class="nav-tab active" id="tabTyping" data-tab="typing">
+        <span>⌨️</span> Gõ Rơi Tự Do
+      </div>
+      <div class="nav-tab" id="tabWords" data-tab="words">
+        <span>📝</span> Luyện Từ Của Thầy
+      </div>
+      <div class="nav-tab" id="tabClock" data-tab="clock">
+        <span>⏰</span> Coi Giờ Đồng Hồ
+      </div>
+      <div class="nav-tab" id="tabMath" data-tab="math">
+        <span>🧮</span> Luyện Phép Tính
+      </div>
+      <div class="nav-tab" id="tabDraw" data-tab="draw">
+        <span>🎨</span> Vẽ Hình & Tô Màu
+      </div>
     </div>
   </nav>
 
@@ -2664,6 +2597,8 @@
     <!-- MẶT ĐỒNG HỒ SIÊU TO TỐI ĐA TRÊN MÀN HÌNH -->
     <div class="clock-stage" id="clockStage">
       <svg id="clockSvg" viewBox="0 0 360 360">
+        <!-- NỀN MẶT ĐỒNG HỒ TRÒN HOÀN HẢO -->
+        <circle id="clockFaceBg" cx="180" cy="180" r="172" fill="#F8F9FD" stroke="#334155" stroke-width="4" />
         <g id="dialTicks"></g>
         <g id="dialNumbers"></g>
 
@@ -4539,6 +4474,7 @@
           this.studentStatusBadge.style.color = '#007AFF';
         }
 
+        if (this.teacherInput) this.teacherInput.style.display = 'none';
         if (this.teacherTracker) this.teacherTracker.style.display = 'flex';
         this.renderTeacherTracker();
         this.renderStudentNotebook();
@@ -5119,18 +5055,7 @@
           txt.textContent = h;
           dialNumbers.appendChild(txt);
 
-          const subR = 164;
-          const minVal = (h * 5) % 60;
-          const minStr = minVal === 0 ? '60' : (minVal < 10 ? '0' + minVal : minVal);
-          const sx = cx + subR * Math.sin(angle);
-          const sy = cy - subR * Math.cos(angle);
-
-          const subTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          subTxt.setAttribute('x', sx);
-          subTxt.setAttribute('y', sy);
-          subTxt.setAttribute('class', 'dial-min-sub');
-          subTxt.textContent = minStr;
-          dialNumbers.appendChild(subTxt);
+          
         }
 
         this.updateClockUI();
@@ -5153,21 +5078,18 @@
         const hourOffset = this.isLockedRealistic ? (this.min * 0.5) : 0;
         const hourAngle = (hourBase + hourOffset) % 360;
 
-        // Xoay chuẩn tâm (180, 180) theo chiều kim đồng hồ bằng cả SVG attribute và CSS transform
+        // Xoay chuẩn tâm (180, 180) theo chiều kim đồng hồ bằng SVG attribute (chuẩn SVG gốc)
         if (this.secGroup) {
           this.secGroup.setAttribute('transform', `rotate(${secAngle} 180 180)`);
-          this.secGroup.style.transform = `rotate(${secAngle}deg)`;
-          this.secGroup.style.transformOrigin = '180px 180px';
+          this.secGroup.style.transform = '';
         }
         if (this.handMin) {
           this.handMin.setAttribute('transform', `rotate(${minAngle} 180 180)`);
-          this.handMin.style.transform = `rotate(${minAngle}deg)`;
-          this.handMin.style.transformOrigin = '180px 180px';
+          this.handMin.style.transform = '';
         }
         if (this.handHour) {
           this.handHour.setAttribute('transform', `rotate(${hourAngle} 180 180)`);
-          this.handHour.style.transform = `rotate(${hourAngle}deg)`;
-          this.handHour.style.transformOrigin = '180px 180px';
+          this.handHour.style.transform = '';
         }
 
         const fH = this.hour < 10 ? `0${this.hour}` : this.hour;
@@ -6712,6 +6634,8 @@
       if (curTab && typeof curTab.scrollIntoView === 'function') {
         curTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
+      const mobileSel = document.getElementById('mobileGameSelect');
+      if (mobileSel) mobileSel.value = target;
 
       if (target === 'typing') {
         tabTyping.classList.add('active');
@@ -7033,6 +6957,10 @@
       try { if (typeof mathGame !== 'undefined' && mathGame) mathGame.init(); } catch (e) { console.error('mathGame err:', e); }
       try { if (window.drawGame) window.drawGame.init(); } catch (e) { console.error('drawGame err:', e); }
 
+      const mobileSel = document.getElementById('mobileGameSelect');
+      if (mobileSel) {
+        mobileSel.addEventListener('change', (e) => switchTab(e.target.value));
+      }
       const initialTab = localStorage.getItem('game_active_tab') || 'typing';
       try { switchTab(initialTab); } catch (e) { console.error('switchTab err:', e); }
     });
