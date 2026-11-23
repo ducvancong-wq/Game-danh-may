@@ -2320,6 +2320,9 @@
         <div class="menu-dropdown-item" data-game="math" id="tabMath">
           <span>🧮</span> Luyện Phép Tính
         </div>
+        <div class="menu-dropdown-item" data-game="memory" id="tabMemory">
+          <span>🧠</span> Luyện Trí Nhớ
+        </div>
       </div>
     </div>
     <div class="nav-current-title" id="navCurrentTitle">
@@ -2374,6 +2377,16 @@
         </div>
         <h3>Luyện Phép Tính</h3>
         <p>Luyện tính nhẩm Cộng, Trừ, Nhân, Chia hoặc Tổng hợp. Mỗi lượt 10 phép tính từng câu có tính giờ.</p>
+        <span class="game-menu-cta">Chơi ngay ➔</span>
+      </div>
+
+      <div class="game-menu-card" data-game="memory">
+        <div class="game-menu-card-top">
+          <div class="game-menu-icon">🧠</div>
+          <span class="game-menu-badge">Trí Nhớ</span>
+        </div>
+        <h3>Luyện Trí Nhớ</h3>
+        <p>Trò chơi lật thẻ tìm cặp giống nhau với nhiều chủ đề, độ khó, giọng đọc và bảng lịch sử.</p>
         <span class="game-menu-cta">Chơi ngay ➔</span>
       </div>
     </div>
@@ -2751,6 +2764,13 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 5: GAME LUYỆN TRÍ NHỚ (GIỮ NGUYÊN THÔNG SỐ & CẤU HÌNH)
+       ===================================================================== -->
+  <section class="game-view" id="memoryView" style="background:#F8F9FA;">
+    <iframe id="memoryGameFrame" data-src="index-game luyen tri nho.html" title="Trò Chơi Luyện Trí Nhớ" style="width:100%;height:100%;border:none;flex:1;display:block;background:#F8F9FA;"></iframe>
   </section>
 
   <!-- BÀN PHÍM IPHONE CHUẨN IOS - NỀN XANH NHẠT GỢN MÂY -->
@@ -5775,12 +5795,15 @@
     const tabWords = document.getElementById('tabWords');
     const tabClock = document.getElementById('tabClock');
     const tabMath = document.getElementById('tabMath');
+    const tabMemory = document.getElementById('tabMemory');
 
     const menuView = document.getElementById('gameMenuView');
     const typingView = document.getElementById('typingView');
     const wordsView = document.getElementById('wordsPracticeView');
     const clockView = document.getElementById('clockView');
     const mathView = document.getElementById('mathView');
+    const memoryView = document.getElementById('memoryView');
+    const memoryGameFrame = document.getElementById('memoryGameFrame');
     const kbContainer = document.getElementById('keyboardContainer');
     const kbWrapper = document.getElementById('keyboardWrapper');
 
@@ -5789,16 +5812,17 @@
       typing: '<span>⌨️</span> Gõ Rơi Tự Do',
       words: '<span>📝</span> Luyện Từ Của Thầy',
       clock: '<span>⏰</span> Coi Giờ Đồng Hồ',
-      math: '<span>🧮</span> Luyện Phép Tính'
+      math: '<span>🧮</span> Luyện Phép Tính',
+      memory: '<span>🧠</span> Luyện Trí Nhớ'
     };
 
     function switchTab(target) {
-      const validTargets = ['menu', 'typing', 'words', 'clock', 'math'];
+      const validTargets = ['menu', 'typing', 'words', 'clock', 'math', 'memory'];
       if (!validTargets.includes(target)) target = 'menu';
 
       localStorage.setItem('game_active_tab', target);
-      [menuItemHome, tabTyping, tabWords, tabClock, tabMath].forEach(t => { if (t) t.classList.remove('active'); });
-      [menuView, typingView, wordsView, clockView, mathView].forEach(v => { if (v) v.classList.remove('active'); });
+      [menuItemHome, tabTyping, tabWords, tabClock, tabMath, tabMemory].forEach(t => { if (t) t.classList.remove('active'); });
+      [menuView, typingView, wordsView, clockView, mathView, memoryView].forEach(v => { if (v) v.classList.remove('active'); });
       if (btnHomeMenu) btnHomeMenu.classList.toggle('active', target === 'menu');
       if (navCurrentTitle) navCurrentTitle.innerHTML = GAME_TITLES[target] || GAME_TITLES.menu;
       if (gameMenuDropdown) gameMenuDropdown.classList.remove('show');
@@ -5834,6 +5858,15 @@
         if (mathView) mathView.classList.add('active');
         if (kbWrapper) kbWrapper.style.display = 'none'; // Ẩn bàn phím iPhone khi làm toán
         game1.isPaused = true;
+      } else if (target === 'memory') {
+        if (tabMemory) tabMemory.classList.add('active');
+        if (memoryView) memoryView.classList.add('active');
+        if (kbWrapper) kbWrapper.style.display = 'none';
+        game1.isPaused = true;
+        if (memoryGameFrame && memoryGameFrame.dataset.loaded !== '1') {
+          memoryGameFrame.src = memoryGameFrame.getAttribute('data-src');
+          memoryGameFrame.dataset.loaded = '1';
+        }
       }
     }
 
@@ -5853,6 +5886,7 @@
     if (tabWords) tabWords.addEventListener('click', () => switchTab('words'));
     if (tabClock) tabClock.addEventListener('click', () => switchTab('clock'));
     if (tabMath) tabMath.addEventListener('click', () => switchTab('math'));
+    if (tabMemory) tabMemory.addEventListener('click', () => switchTab('memory'));
 
     document.querySelectorAll('#gameMenuView .game-menu-card').forEach(card => {
       card.addEventListener('click', () => {
