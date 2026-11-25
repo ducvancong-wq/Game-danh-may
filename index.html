@@ -1641,6 +1641,18 @@
       color: #0284C7;
     }
 
+    #mathView .voice-badge-btn {
+      color: #0F172A;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px solid #94A3B8;
+      font-weight: 700;
+    }
+
+    #mathView .voice-badge-btn:hover {
+      background: #FFFFFF;
+      border-color: #0284C7;
+    }
+
     .math-stage {
       flex: 1;
       min-height: 0;
@@ -5868,6 +5880,10 @@
 
       stopListening() {
         this.isListening = false;
+        if (this.interimCommitTimer) {
+          clearTimeout(this.interimCommitTimer);
+          this.interimCommitTimer = null;
+        }
         if (this.micToggleBtn) this.micToggleBtn.classList.remove('listening');
         if (this.recognition) {
           try { this.recognition.abort(); } catch (e) {}
@@ -5889,6 +5905,16 @@
         }
 
         const sessionAtStart = this.questionSessionId;
+        let lastTranscript = '';
+        let transcriptHandled = false;
+
+        const commitTranscript = (text) => {
+          if (transcriptHandled || sessionAtStart !== this.questionSessionId || !this.isTesting || this.isTransitioning) return;
+          transcriptHandled = true;
+          this.stopListening();
+          this.handleVoiceTranscript(text, sessionAtStart);
+        };
+
         try {
           const rec = new SpeechRec();
           rec.lang = 'vi-VN';
@@ -5903,29 +5929,55 @@
           if (this.voiceTranscriptEl) this.voiceTranscriptEl.textContent = '';
 
           rec.onresult = (event) => {
-            if (sessionAtStart !== this.questionSessionId || !this.isTesting || this.isTransitioning) return;
+            if (transcriptHandled || sessionAtStart !== this.questionSessionId || !this.isTesting || this.isTransitioning) return;
             let interim = '';
             let finalText = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
+            for (let i = 0; i < event.results.length; i++) {
               const res = event.results[i];
               if (res.isFinal) finalText += res[0].transcript + ' ';
               else interim += res[0].transcript + ' ';
             }
 
             const shown = (finalText || interim).trim();
-            if (this.voiceTranscriptEl && shown) {
+            if (!shown) return;
+
+            lastTranscript = shown;
+            if (this.voiceTranscriptEl) {
               this.voiceTranscriptEl.textContent = `Bạn nói: "${shown}"`;
             }
 
-            if (finalText.trim()) {
-              this.stopListening();
-              this.handleVoiceTranscript(finalText.trim(), sessionAtStart);
+            // Hiển thị ngay số nhận diện được lên ô kết quả
+            const parsed = this.parseVietnameseSpokenNumber(shown);
+            const q = this.questions[this.currentIndex];
+            if (parsed !== null) {
+              this.setAnswerDisplay(String(parsed));
+              if (q && parsed === q.result) {
+                commitTranscript(shown);
+                return;
+              }
             }
+
+            if (finalText.trim()) {
+              commitTranscript(finalText.trim());
+              return;
+            }
+
+            // Trên iPhone Safari nhiều khi không phát isFinal, tự chốt sau 1.1s im lặng
+            if (this.interimCommitTimer) clearTimeout(this.interimCommitTimer);
+            this.interimCommitTimer = setTimeout(() => {
+              if (!transcriptHandled && lastTranscript) {
+                commitTranscript(lastTranscript);
+              }
+            }, 1100);
           };
 
           rec.onerror = (event) => {
             if (sessionAtStart !== this.questionSessionId) return;
             this.isListening = false;
+            if (this.interimCommitTimer) {
+              clearTimeout(this.interimCommitTimer);
+              this.interimCommitTimer = null;
+            }
             if (this.micToggleBtn) this.micToggleBtn.classList.remove('listening');
             if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
               if (this.voiceStatusEl) this.voiceStatusEl.textContent = '⚠️ Chưa cấp quyền Micro! Hãy cho phép Micro hoặc nhập bằng phím số.';
@@ -5941,6 +5993,9 @@
             if (sessionAtStart !== this.questionSessionId) return;
             this.isListening = false;
             if (this.micToggleBtn) this.micToggleBtn.classList.remove('listening');
+            if (!transcriptHandled && lastTranscript) {
+              commitTranscript(lastTranscript);
+            }
           };
 
           rec.start();
