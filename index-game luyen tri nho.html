@@ -327,6 +327,11 @@
               <option value="digital">Kiểu chữ điện tử (LED 7 đoạn)</option>
             </select>
           </div>
+
+          <div class="flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-teal-200">
+            <span class="font-medium text-teal-900">🗣️ Đọc tiếng Việt khi hiện Trái / Phải</span>
+            <input id="set-lr-voice" type="checkbox" checked class="w-5 h-5 accent-teal-700 cursor-pointer" />
+          </div>
         </div>
 
         <!-- Display Settings -->
@@ -418,7 +423,8 @@
       fingerHand: 'left',
       difficulty: 'easy',
       soundEnabled: true,
-      numberFont: 'normal' // 'normal' | 'digital'
+      numberFont: 'normal', // 'normal' | 'digital'
+      lrVoiceEnabled: true
     };
 
     const state = {
@@ -525,6 +531,9 @@
           if (p.numberFont === 'normal' || p.numberFont === 'digital') {
             state.settings.numberFont = p.numberFont;
           }
+          if (typeof p.lrVoiceEnabled === 'boolean') {
+            state.settings.lrVoiceEnabled = p.lrVoiceEnabled;
+          }
         }
       } catch (e) {}
       syncSettingsUI();
@@ -562,6 +571,8 @@
       if (setSound) setSound.checked = state.soundEnabled;
       const setNumFont = document.getElementById('set-number-font');
       if (setNumFont) setNumFont.value = cfg.numberFont || 'normal';
+      const setLrVoice = document.getElementById('set-lr-voice');
+      if (setLrVoice) setLrVoice.checked = cfg.lrVoiceEnabled !== false;
       syncSoundUI();
 
       document.getElementById('set-memorize-sec').value = cfg.memorizeSec;
@@ -1758,13 +1769,15 @@
           const box = document.getElementById('lr-display-box');
           if (box) {
             if (dir === 'L') {
-              box.className = 'w-full max-w-sm h-32 rounded-2xl border-4 border-blue-500 bg-blue-50 flex flex-col items-center justify-center transition animate-gentle-pulse';
-              box.innerHTML = `<span class="text-4xl">⬅️</span><span class="text-xl font-extrabold text-blue-800 mt-1">BÊN TRÁI (${idx + 1})</span>`;
+              box.className = 'w-full max-w-sm h-24 sm:h-32 rounded-2xl border-4 border-blue-500 bg-blue-50 flex flex-col items-center justify-center transition animate-gentle-pulse shrink-0';
+              box.innerHTML = `<span class="text-3xl sm:text-4xl">⬅️</span><span class="text-lg sm:text-xl font-extrabold text-blue-800 mt-1">BÊN TRÁI (${idx + 1})</span>`;
               playTone(349.23, 0.22, 'triangle', 0.16);
+              if (state.settings.lrVoiceEnabled !== false) speakVietnamese('Bên trái');
             } else {
-              box.className = 'w-full max-w-sm h-32 rounded-2xl border-4 border-orange-500 bg-orange-50 flex flex-col items-center justify-center transition animate-gentle-pulse';
-              box.innerHTML = `<span class="text-4xl">➡️</span><span class="text-xl font-extrabold text-orange-800 mt-1">BÊN PHẢI (${idx + 1})</span>`;
+              box.className = 'w-full max-w-sm h-24 sm:h-32 rounded-2xl border-4 border-orange-500 bg-orange-50 flex flex-col items-center justify-center transition animate-gentle-pulse shrink-0';
+              box.innerHTML = `<span class="text-3xl sm:text-4xl">➡️</span><span class="text-lg sm:text-xl font-extrabold text-orange-800 mt-1">BÊN PHẢI (${idx + 1})</span>`;
               playTone(523.25, 0.22, 'triangle', 0.16);
+              if (state.settings.lrVoiceEnabled !== false) speakVietnamese('Bên phải');
             }
           }
         }, idx * stepMs + 300);
@@ -1772,7 +1785,7 @@
         addTimer(() => {
           const box = document.getElementById('lr-display-box');
           if (box) {
-            box.className = 'w-full max-w-sm h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center transition';
+            box.className = 'w-full max-w-sm h-24 sm:h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center transition shrink-0';
             box.innerHTML = `<span class="text-sm font-medium text-slate-400">...</span>`;
           }
         }, idx * stepMs + 300 + onMs);
@@ -1793,36 +1806,36 @@
         if (idx < lr.userIndex) {
           const d = lr.sequence[idx];
           return d === 'L'
-            ? `<span class="px-3 py-1.5 rounded-xl bg-blue-100 border border-blue-300 text-blue-800 font-bold text-sm">⬅️ Trái</span>`
-            : `<span class="px-3 py-1.5 rounded-xl bg-orange-100 border border-orange-300 text-orange-800 font-bold text-sm">➡️ Phải</span>`;
+            ? `<span class="px-2.5 py-1 rounded-xl bg-blue-100 border border-blue-300 text-blue-800 font-bold text-xs sm:text-sm">⬅️ Trái</span>`
+            : `<span class="px-2.5 py-1 rounded-xl bg-orange-100 border border-orange-300 text-orange-800 font-bold text-xs sm:text-sm">➡️ Phải</span>`;
         }
-        return `<span class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-sm">${idx + 1}</span>`;
+        return `<span class="px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs sm:text-sm">${idx + 1}</span>`;
       }).join('');
 
       stage.innerHTML = `
-        <div class="w-full flex flex-col items-center gap-6">
-          <div id="lr-display-box" class="w-full max-w-sm h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center transition">
-            <span class="text-base font-semibold text-slate-500">
+        <div class="w-full h-full min-h-0 flex flex-col items-center justify-center gap-3 sm:gap-5">
+          <div id="lr-display-box" class="w-full max-w-sm h-24 sm:h-32 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center transition shrink-0 px-3 text-center">
+            <span class="text-sm sm:text-base font-semibold text-slate-500">
               ${lr.phase === 'won' ? '🎉 Hoàn thành chuỗi hướng!' : lr.phase === 'input' ? 'Hãy chạm nút Trái hoặc Phải bên dưới' : 'Đang chuẩn bị...'}
             </span>
           </div>
 
-          <div class="flex flex-wrap justify-center gap-2">
+          <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2 shrink-0">
             ${slotsHtml}
           </div>
 
-          <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-md shrink-0">
             <button id="btn-tap-left" type="button"
-              class="h-24 sm:h-28 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-xl sm:text-2xl shadow-md flex flex-col items-center justify-center gap-1 transition cursor-pointer disabled:opacity-50"
+              class="h-20 sm:h-28 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-lg sm:text-2xl shadow-md flex flex-col items-center justify-center gap-1 transition cursor-pointer disabled:opacity-50"
               ${lr.phase !== 'input' ? 'disabled' : ''}>
-              <span class="text-3xl">⬅️</span>
+              <span class="text-2xl sm:text-3xl">⬅️</span>
               <span>TRÁI</span>
             </button>
 
             <button id="btn-tap-right" type="button"
-              class="h-24 sm:h-28 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-extrabold text-xl sm:text-2xl shadow-md flex flex-col items-center justify-center gap-1 transition cursor-pointer disabled:opacity-50"
+              class="h-20 sm:h-28 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-extrabold text-lg sm:text-2xl shadow-md flex flex-col items-center justify-center gap-1 transition cursor-pointer disabled:opacity-50"
               ${lr.phase !== 'input' ? 'disabled' : ''}>
-              <span class="text-3xl">➡️</span>
+              <span class="text-2xl sm:text-3xl">➡️</span>
               <span>PHẢI</span>
             </button>
           </div>
@@ -1894,9 +1907,9 @@
     function renderDots(n) {
       let dots = '';
       for (let i = 0; i < n; i++) {
-        dots += `<span class="w-2.5 h-2.5 rounded-full bg-teal-600 inline-block"></span>`;
+        dots += `<span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-teal-600 inline-block"></span>`;
       }
-      return `<div class="flex flex-wrap justify-center gap-1 max-w-[68px] mt-1.5">${dots}</div>`;
+      return `<div class="flex flex-wrap justify-center gap-0.5 sm:gap-1 max-w-[54px] sm:max-w-[68px] mt-1">${dots}</div>`;
     }
 
     function renderNumbersStage() {
@@ -1905,24 +1918,24 @@
 
       const progressBadges = numState.sortedValues.map((val, idx) => {
         const done = idx < numState.nextTargetIndex;
-        return `<span class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border ${done ? 'bg-emerald-500 text-white border-emerald-600' : 'bg-slate-100 text-slate-400 border-slate-200'}">${done ? val : '?'}</span>`;
+        return `<span class="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold border ${done ? 'bg-emerald-500 text-white border-emerald-600' : 'bg-slate-100 text-slate-400 border-slate-200'}">${done ? val : '?'}</span>`;
       }).join('');
 
       let html = `
-        <div class="w-full flex flex-col items-center gap-6">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-medium text-slate-600">Thứ tự tăng dần:</span>
+        <div class="w-full h-full min-h-0 flex flex-col items-center justify-center gap-2.5 sm:gap-5">
+          <div class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 shrink-0">
+            <span class="text-xs sm:text-sm font-medium text-slate-600">Thứ tự tăng dần:</span>
             ${progressBadges}
           </div>
 
-          <div class="flex flex-wrap justify-center gap-3 sm:gap-4 w-full max-w-2xl">
+          <div class="flex flex-wrap justify-center gap-2 sm:gap-3.5 w-full max-w-2xl">
       `;
 
       numState.cards.forEach((card) => {
         const showFace = card.revealed || card.solved;
         html += `
           <button type="button" data-num-id="${card.id}"
-            class="num-card-btn w-24 h-32 sm:w-28 sm:h-36 rounded-2xl border-2 flex flex-col items-center justify-center p-2 shadow-sm transition cursor-pointer ${
+            class="num-card-btn w-[78px] h-[98px] sm:w-28 sm:h-36 rounded-xl sm:rounded-2xl border-2 flex flex-col items-center justify-center p-1.5 sm:p-2 shadow-sm transition cursor-pointer ${
               card.solved
                 ? 'bg-emerald-50 border-emerald-400 text-emerald-900'
                 : showFace
@@ -1930,8 +1943,8 @@
                   : 'bg-teal-700 hover:bg-teal-600 border-teal-800 text-white'
             }">
             ${showFace
-              ? `<span class="text-3xl sm:text-4xl font-extrabold leading-none">${card.value}</span>${renderDots(card.value)}`
-              : `<span class="text-2xl opacity-90">🔢</span><span class="text-xs font-medium mt-1 opacity-80">Chạm chọn</span>`
+              ? `<span class="text-2xl sm:text-4xl font-extrabold leading-none">${card.value}</span>${renderDots(card.value)}`
+              : `<span class="text-xl sm:text-2xl opacity-90">🔢</span><span class="text-[10px] sm:text-xs font-medium mt-1 opacity-80">Chạm chọn</span>`
             }
           </button>
         `;
@@ -1941,7 +1954,7 @@
 
       if (numState.phase === 'memorize') {
         html += `
-          <button id="btn-hide-now" type="button" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold cursor-pointer">
+          <button id="btn-hide-now" type="button" class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold cursor-pointer shrink-0">
             Tôi đã nhớ xong, úp thẻ ngay
           </button>
         `;
@@ -2123,6 +2136,10 @@
 
       document.getElementById('set-number-font').addEventListener('change', (e) => {
         state.settings.numberFont = e.target.value;
+      });
+
+      document.getElementById('set-lr-voice').addEventListener('change', (e) => {
+        state.settings.lrVoiceEnabled = e.target.checked;
       });
 
       document.getElementById('btn-reset-settings').addEventListener('click', () => {
